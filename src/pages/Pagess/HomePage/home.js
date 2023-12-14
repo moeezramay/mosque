@@ -26,7 +26,8 @@ export default function HomePage() {
         console.error("Error on resoponse:", errorMessage.error);
         return;
       } else {
-        console.log("Server connected!");
+        const msg = await res.json();
+        console.log("Server connected!", msg);
       }
     };
     GetResponse();
