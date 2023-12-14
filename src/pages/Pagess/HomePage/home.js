@@ -9,6 +9,24 @@ import Head from "next/head";
 export default function HomePage() {
   const [t, i18n] = useTranslation("global");
 
+  useEffect(() => {
+    const GetResponse = async () => {
+      const res = await fetch("/api/createAcc/check", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify("hello"),
+      });
+      if (!res.ok) {
+        const errorMessage = await res.json();
+        console.error("Error if:", errorMessage.error);
+        return;
+      }
+    };
+    GetResponse();
+  }, []);
+
   return (
     <div style={{ height: "auto" }}>
       <Head>
