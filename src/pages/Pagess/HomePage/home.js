@@ -12,6 +12,8 @@ export default function HomePage() {
 
   useEffect(() => {
     const GetResponse = async () => {
+      console.log("Api call sent!");
+
       const res = await fetch("/api/createAcc/check", {
         method: "POST",
         headers: {
@@ -21,7 +23,7 @@ export default function HomePage() {
       });
       if (!res.ok) {
         const errorMessage = await res.json();
-        console.error("Error if:", errorMessage.error);
+        console.error("Error on resoponse:", errorMessage.error);
         return;
       }
     };
