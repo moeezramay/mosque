@@ -5,6 +5,7 @@ import Google from "../../../../public/googlesvg";
 import Apple from "../../../../public/applesvg";
 import Footer from "../footer/footer";
 import Head from "next/head";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [t, i18n] = useTranslation("global");
