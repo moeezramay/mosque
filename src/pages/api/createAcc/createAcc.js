@@ -1,4 +1,4 @@
-import excuteQuery from "@/lib/db";
+//import excuteQuery from "@/lib/db";
 
 const dotenv = require("dotenv");
 dotenv.config();
