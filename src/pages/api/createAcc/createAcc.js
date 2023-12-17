@@ -57,7 +57,7 @@ export default async function CreateAccount(req, res) {
     });*/
 
         console.log("ttt", result);
-        res.json({
+        /*res.json({
             message: content.email,
             name: fullName,
             token: jwt.sign(
@@ -67,7 +67,8 @@ export default async function CreateAccount(req, res) {
                 },
                 KEY
             ),
-        });
+        });*/
+        res.json({ message: "Account created successfully" });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Internal server error" });
