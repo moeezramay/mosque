@@ -34,7 +34,13 @@ export default async function CreateAccount(req, res) {
     const content = req.body;
     console.log("content", content);
 
-    if (!content) {
+    if (
+      !content ||
+      !content.email ||
+      !content.password ||
+      !content.firstName ||
+      !content.lastName
+    ) {
       res.status(400).json({ error: "Content cannot be empty." });
       return;
     }
@@ -45,15 +51,15 @@ export default async function CreateAccount(req, res) {
     const password = content.password;
     console.log("pass", password);
 
-    const encryptedPassword = encryptData(password, secretKey, iv);
-    console.log("encryptedPassword", encryptedPassword);
+    // const encryptedPassword = encryptData(password, secretKey, iv);
+    // console.log("encryptedPassword", encryptedPassword);
 
     const fullName = content.firstName + " " + content.lastName;
     console.log("fullName", fullName);
 
     const result = await excuteQuery({
       query: "INSERT INTO createacc(email, password, username) VALUES(?, ?, ?)",
-      values: [email, encryptedPassword, fullName],
+      values: [email, password, fullName],
     });
 
     console.log("ttt", result);
