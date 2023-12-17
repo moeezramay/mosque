@@ -40,12 +40,11 @@ import { sql } from "@vercel/postgres";
 
 export default async function excuteQuery({ query, values }) {
   try {
-    const results = await sql.query(
-      "INSERT INTO createacc(email, password, username) VALUES(?, ?, ?)",
-      ["moeez", "moeez", "moeez"]
-    );
+    const client = await sql.connect();
+    const results = await client.query(query, values);
+    client.release(); // Release the connection after use
     return results;
   } catch (error) {
-    return { error };
+    return { error: "Executing query" };
   }
 }
