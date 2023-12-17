@@ -53,18 +53,23 @@ export default async function CreateAccount(req, res) {
     const result = await excuteQuery({
         query: "INSERT INTO createAcc(email, password, username) VALUES(?, ?, ?)",
         values: [email, encryptedPassword, fullName],
-    });
-
-    console.log("ttt", result);
-    res.json({
-        message: content.email,
-        name: fullName,
-        token: jwt.sign(
-            {
-                email: content.email,
+    })
+        .then((result) => {
+            console.log("ttt", result);
+            res.json({
+                message: content.email,
                 name: fullName,
-            },
-            KEY
-        ),
-    });
+                token: jwt.sign(
+                    {
+                        email: content.email,
+                        name: fullName,
+                    },
+                    KEY
+                ),
+            });
+        })
+        .error((error) => {
+            console.log("error", error);
+            res.status(400).json({ error: error });
+        });
 }
