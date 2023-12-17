@@ -52,9 +52,8 @@ export default async function CreateAccount(req, res) {
     console.log("fullName", fullName);
 
     const result = await excuteQuery({
-      query:
-        "INSERT INTO messages(sender_email, receiver_email, message_text) VALUES(?, ?, ?)",
-      values: ["sdas", "dasd", "Hello Duniya"],
+      query: "INSERT INTO createacc(email, password, username) VALUES(?, ?, ?)",
+      values: [email, encryptedPassword, fullName],
     });
 
     console.log("ttt", result);
