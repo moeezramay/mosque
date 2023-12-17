@@ -1,4 +1,4 @@
-import mysql from "serverless-mysql";
+/*import mysql from "serverless-mysql";
 
 const db = mysql({
   config: {
@@ -18,4 +18,16 @@ export default async function excuteQuery({ query, values }) {
   } catch (error) {
     return { error };
   }
+}
+*/
+
+import { sql } from "@vercel/postgres";
+
+export default async function executeQuery({ query, values }) {
+    try {
+        const results = await sql.query(query, values);
+        return results;
+    } catch (error) {
+        return { error };
+    }
 }
