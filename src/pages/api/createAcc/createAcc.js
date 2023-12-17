@@ -51,15 +51,14 @@ export default async function CreateAccount(req, res) {
     const fullName = content.firstName + " " + content.lastName;
     console.log("fullName", fullName);
 
-    const result = await excuteQuery({
-      query: "INSERT INTO createacc(email, password, username) VALUES(?, ?, ?)",
-      values: [email, encryptedPassword, fullName],
-    });
-
-    if (result === "h") {
-      res.status(500).json({ error: "Internal server error2" });
-    }
-
+    // const result = await excuteQuery({
+    //   query: "INSERT INTO createacc(email, password, username) VALUES(?, ?, ?)",
+    //   values: [email, encryptedPassword, fullName],
+    // });
+    // if (result === "h") {
+    //   res.status(500).json({ error: "Internal server error2" });
+    // }
+    const result = 1;
     console.log("ttt", result);
     res.json({
       message: content.email,
