@@ -40,11 +40,20 @@ import { sql } from "@vercel/postgres";
 
 export default async function excuteQuery({ query, values }) {
   try {
+    const results = await sql.query(query, values);
+    return results;
+  } catch (error) {
+    return { error };
+  }
+}
+
+/*export default async function excuteQuery({ query, values }) {
+  try {
     const client = await sql.connect();
     const results = await client.query(query, values);
     client.release(); // Release the connection after use
     return results;
   } catch (error) {
-    return { error: "Executing query" };
+    return "h";
   }
-}
+} */

@@ -56,6 +56,10 @@ export default async function CreateAccount(req, res) {
       values: [email, encryptedPassword, fullName],
     });
 
+    if (result === "h") {
+      res.status(500).json({ error: "Internal server error2" });
+    }
+
     console.log("ttt", result);
     res.json({
       message: content.email,
