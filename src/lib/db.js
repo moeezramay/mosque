@@ -40,12 +40,14 @@ import { sql } from "@vercel/postgres";
 
 export default async function executeQuery({ query, values }) {
   try {
-    const results = await sql`
-      ${query} 
-      ${sql(...values)}
-    `;
-
-    return results;
+    // const results = await sql`
+    //   ${query}
+    //   ${sql(...values)}
+    // `;
+    sql.query(
+      `INSERT INTO createacc(email, password, username) VALUES('czxc', 'dasd', 'dasd')`
+    );
+    // return results;
   } catch (error) {
     return { error };
   }
