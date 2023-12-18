@@ -40,8 +40,9 @@ import { sql } from "@vercel/postgres";
 
 export default async function excuteQuery({ query, values }) {
   try {
-    const results =
-      await sql`INSERT INTO createacc(email, password, username) VALUES('vsd, 'cxz', 'das')`;
+    const results = await sql`
+      ${sql(query, ...values)}
+    `;
 
     return results;
   } catch (error) {
