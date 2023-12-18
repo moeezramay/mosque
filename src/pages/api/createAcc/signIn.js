@@ -48,7 +48,11 @@ export default async function SignIn(req, res) {
       return { error: "Database error" };
     }
     console.log("Result recieved from db: ", result);
-    const user = result[0];
+    const user = result.rows[0];
+
+    if (!user) {
+      res.status(400).json({ error: "User does not exist." });
+    }
 
     console.log("Username: ", user.username);
 
