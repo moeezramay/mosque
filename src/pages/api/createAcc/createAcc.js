@@ -60,7 +60,7 @@ export default async function CreateAccount(req, res) {
     } catch (error) {
       res.status(500).json({ error: "Error connecting" });
     }
-
+    return;
     // try {
     //   const result = await excuteQuery({
     //     query:
