@@ -52,8 +52,8 @@ export default async function CreateAccount(req, res) {
     const fullName = content.firstName + " " + content.lastName;
     console.log("fullName", fullName);
     try {
-      checkDatabaseConnection();
-      res.json({ message: "Database connected successfully!" });
+      let something1 = checkDatabaseConnection();
+      res.json({ message: something1 });
     } catch (error) {
       res.json({ error: "Error connecting" });
     }
