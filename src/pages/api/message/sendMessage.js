@@ -1,4 +1,4 @@
-import excuteQuery from "@/lib/db";
+import { sql } from "@vercel/postgres";
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -21,16 +21,9 @@ export default async function SendMessage(req, res) {
     const receiverEmail = content.receiverEmail;
     const messageText = content.messageText;
 
-    const updateQuery = `
-    INSERT INTO messages (sender_email, receiver_email, message_text)
-    VALUES (?, ?, ?)
-  `;
-    const values = [senderEmail, receiverEmail, messageText];
+    const result =
+      await sql`INSERT INTO messages (sender_email, receiver_email, message_text) VALUES (${senderEmail}, ${receiverEmail}, ${messageText});`;
 
-    const result = await excuteQuery({
-      query: updateQuery,
-      values,
-    });
     res.json({ message: "Success" });
   } catch (error) {
     console.log(error);

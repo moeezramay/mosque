@@ -1,4 +1,4 @@
-import excuteQuery from "@/lib/db";
+import { sql } from "@vercel/postgres";
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -14,17 +14,9 @@ export default async function GetInfoAcc(req, res) {
       res.status(400).json({ error: "Content cannot be empty." });
       return;
     }
-    const selectQuery = `
-      SELECT * FROM createAcc
-      WHERE email != ?;
-    `;
-
     const email = content;
 
-    const result = await excuteQuery({
-      query: selectQuery,
-      values: [email],
-    });
+    const result = await sql`SELECT * FROM createAcc WHERE email = ${content};`;
 
     if (result.error) {
       console.log("Database Error:", result.error);

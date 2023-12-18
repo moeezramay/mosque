@@ -14,18 +14,13 @@ export default async function AddInfoAcc(req, res) {
       return;
     }
     const username = content.username;
+    try {
+      const result =
+        await sql`UPDATE createAcc SET views = COALESCE(views, 0) + 1 WHERE username = ?;`;
+    } catch (error) {
+      return res.status(500).json({ error: "Error in query addview" });
+    }
 
-    const updateQuery = `
-  UPDATE createAcc
-  SET views = COALESCE(views, 0) + 1
-  WHERE username = ?;
-`;
-    const values = [username];
-
-    const result = await excuteQuery({
-      query: updateQuery,
-      values,
-    });
     res.json({ message: "Success" });
   } catch (error) {
     console.log(error);

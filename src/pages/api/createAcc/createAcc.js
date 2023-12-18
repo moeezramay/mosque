@@ -52,12 +52,8 @@ export default async function CreateAccount(req, res) {
     const fullName = content.firstName + " " + content.lastName;
     console.log("fullName", fullName);
 
-    try {
-      const result =
-        await sql`INSERT INTO createacc(email, password, username) VALUES(${email}, ${encryptedPassword}, ${fullName});`;
-    } catch (error) {
-      return res.status(500).json({ error: "Error in query" });
-    }
+    const result =
+      await sql`INSERT INTO createacc(email, password, username) VALUES(${email}, ${encryptedPassword}, ${fullName});`;
 
     res.json({
       message: content.email,

@@ -1,4 +1,4 @@
-import excuteQuery from "@/lib/db";
+import { sql } from "@vercel/postgres";
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -42,20 +42,11 @@ export default async function SignIn(req, res) {
     const email = content.email;
     const password = content.password;
 
-    const updateQuery = `
-    SELECT *
-    FROM createAcc
-    WHERE email = ?;
-    `;
-    const values = [email];
-
-    const result = await excuteQuery({
-      query: updateQuery,
-      values,
-    });
-
-    console.log("result: ", result);
-
+    const result = await sql`SELECT * FROM createAcc WHERE email = ${email};`;
+    if (result.error || result.length === 0 || !result) {
+      console.log("Database Error:", result.error);
+      return { error: "Database error" };
+    }
     const user = result;
 
     console.log("Username: ", user[0].username);

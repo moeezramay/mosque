@@ -1,4 +1,4 @@
-import excuteQuery from "@/lib/db";
+import { sql } from "@vercel/postgres";
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -18,18 +18,8 @@ export default async function RecieveMessage(req, res) {
     }
     const receiverEmail = content;
 
-    const updateQuery = `
-  SELECT *
-  FROM messages
-  WHERE receiver_email = ?;
-`;
-    const values = [receiverEmail];
-
-    const result = await excuteQuery({
-      query: updateQuery,
-      values,
-    });
-    console.log("SENDER: ", result);
+    const result =
+      await sql`SELECT * FROM messages WHERE receiver_email = ${receiverEmail};`;
 
     res.json({
       message: result,
