@@ -50,9 +50,9 @@ export default async function SignIn(req, res) {
     console.log("Result recieved from db: ", result);
     const user = result[0];
 
-    console.log("Username: ", user[0].username);
+    console.log("Username: ", user.username);
 
-    const decryptedPassword = decryptData(user[0].password, keyBuffer, iv);
+    const decryptedPassword = decryptData(user.password, keyBuffer, iv);
 
     if (password !== decryptedPassword) {
       res.status(400).json({ error: "Wrong password." });
@@ -62,8 +62,8 @@ export default async function SignIn(req, res) {
 
     res.json({
       token,
-      email: user[0].email,
-      name: user[0].username,
+      email: user.email,
+      name: user.username,
     });
   } catch (error) {
     console.log(error);
