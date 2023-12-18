@@ -47,6 +47,7 @@ export default async function SignIn(req, res) {
       console.log("Database Error:", result.error);
       return { error: "Database error" };
     }
+    console.log("Result recieved from db: ", result);
     const user = result[0];
 
     console.log("Username: ", user[0].username);
