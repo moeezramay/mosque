@@ -30,48 +30,51 @@ function encryptData(data, key, iv) {
 
 //---------------Create Account-------------------------->
 export default async function CreateAccount(req, res) {
-  //   try {
-  const content = req.body;
-  console.log("content", content);
+  try {
+    const content = req.body;
+    console.log("content", content);
 
-  if (!content) {
-    res.status(400).json({ error: "Content cannot be empty." });
-    return;
+    if (!content) {
+      res.status(400).json({ error: "Content cannot be empty." });
+      return;
+    }
+
+    const email = content.email;
+    console.log("email", email);
+
+    const password = content.password;
+    console.log("pass", password);
+
+    const encryptedPassword = encryptData(password, secretKey, iv);
+    console.log("encryptedPassword", encryptedPassword);
+
+    const fullName = content.firstName + " " + content.lastName;
+    console.log("fullName", fullName);
+
+    try {
+      const result = await excuteQuery({
+        query:
+          "INSERT INTO createacc(email, password, username) VALUES(?, ?, ?)",
+        values: [email, encryptedPassword, fullName],
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Error in query" });
+    }
+
+    console.log("ttt", result);
+    res.json({
+      message: content.email,
+      name: fullName,
+      token: jwt.sign(
+        {
+          email: content.email,
+          name: fullName,
+        },
+        KEY
+      ),
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  const email = content.email;
-  console.log("email", email);
-
-  const password = content.password;
-  console.log("pass", password);
-
-  const encryptedPassword = encryptData(password, secretKey, iv);
-  console.log("encryptedPassword", encryptedPassword);
-
-  const fullName = content.firstName + " " + content.lastName;
-  console.log("fullName", fullName);
-
-  //   const result = await excuteQuery({
-  //     query: "INSERT INTO createacc(email, password, username) VALUES(?, ?, ?)",
-  //     values: [email, encryptedPassword, fullName],
-  //   });
-  //   if (result === "h") {
-  //     res.status(500).json({ error: "Internal server error2" });
-  //   }
-  //   console.log("ttt", result);
-  res.json({
-    message: content.email,
-    name: fullName,
-    token: jwt.sign(
-      {
-        email: content.email,
-        name: fullName,
-      },
-      KEY
-    ),
-  });
-  //   } catch (error) {
-  console.log(error);
-  res.status(500).json({ error: "Internal server error" });
-  //   }
 }
