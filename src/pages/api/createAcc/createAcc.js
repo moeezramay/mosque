@@ -51,34 +51,28 @@ export default async function CreateAccount(req, res) {
 
     const fullName = content.firstName + " " + content.lastName;
     console.log("fullName", fullName);
-    try {
-      let something1 = checkDatabaseConnection();
-      res.json({ message: something1 });
-    } catch (error) {
-      res.json({ error: "Error connecting" });
-    }
-    return;
-    // try {
-    //   const result = await excuteQuery({
-    //     query:
-    //       "INSERT INTO createacc(email, password, username) VALUES($1, $2, $3)",
-    //     values: [email, encryptedPassword, fullName],
-    //   });
-    // } catch (error) {
-    //   return res.status(500).json({ error: "Error in query" });
-    // }
 
-    // res.json({
-    //   message: content.email,
-    //   name: fullName,
-    //   token: jwt.sign(
-    //     {
-    //       email: content.email,
-    //       name: fullName,
-    //     },
-    //     KEY
-    //   ),
-    // });
+    try {
+      const result = await excuteQuery({
+        query:
+          "INSERT INTO createacc(email, password, username) VALUES($1, $2, $3)",
+        values: [email, encryptedPassword, fullName],
+      });
+    } catch (error) {
+      return res.status(500).json({ error: "Error in query" });
+    }
+
+    res.json({
+      message: content.email,
+      name: fullName,
+      token: jwt.sign(
+        {
+          email: content.email,
+          name: fullName,
+        },
+        KEY
+      ),
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
