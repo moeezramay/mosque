@@ -38,10 +38,11 @@ import { sql } from "@vercel/postgres";
     );
 }*/
 
-export default async function excuteQuery({ query, values }) {
+export default async function executeQuery({ query, values }) {
   try {
     const results = await sql`
-      ${sql(query, ...values)}
+      ${query} 
+      ${sql(...values)}
     `;
 
     return results;

@@ -54,7 +54,7 @@ export default async function CreateAccount(req, res) {
     try {
       const result = await excuteQuery({
         query:
-          "INSERT INTO createacc(email, password, username) VALUES(?, ?, ?)",
+          "INSERT INTO createacc(email, password, username) VALUES($1, $2, $3)",
         values: [email, encryptedPassword, fullName],
       });
     } catch (error) {
