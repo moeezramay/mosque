@@ -65,7 +65,6 @@ export default async function CreateAccount(req, res) {
       return res.status(500).json({ error: "Error in query" });
     }
 
-    console.log("ttt", result);
     res.json({
       message: content.email,
       name: fullName,
