@@ -16,7 +16,7 @@ export default async function AddInfoAcc(req, res) {
     const username = content.username;
     try {
       const result =
-        await sql`UPDATE createAcc SET views = COALESCE(views, 0) + 1 WHERE username = ?;`;
+        await sql`UPDATE createAcc SET views = COALESCE(views, 0) + 1 WHERE username = ${username};`;
     } catch (error) {
       return res.status(500).json({ error: "Error in query addview" });
     }
