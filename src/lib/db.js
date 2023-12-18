@@ -20,9 +20,6 @@ export default async function excuteQuery({ query, values }) {
   }
 }
 */
-
-import { sql } from "@vercel/postgres";
-
 /*export default async function Cart({ params }) {
     const { rows } =
         await sql`SELECT * from CARTS where user_id=${params.user}`;
@@ -37,6 +34,7 @@ import { sql } from "@vercel/postgres";
         </div>
     );
 }*/
+import { sql } from "@vercel/postgres";
 
 export default async function executeQuery({ query, values }) {
   try {
