@@ -1,4 +1,4 @@
-import excuteQuery from "@/lib/db";
+import { sql } from "@vercel/postgres";
 
 const dotenv = require("dotenv");
 dotenv.config();
