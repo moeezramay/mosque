@@ -1,5 +1,5 @@
-import excuteQuery from "@/lib/db";
 import checkDatabaseConnection from "@/lib/db2";
+import { sql } from "@vercel/postgres";
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -53,11 +53,8 @@ export default async function CreateAccount(req, res) {
     console.log("fullName", fullName);
 
     try {
-      const result = await excuteQuery({
-        query:
-          "INSERT INTO createacc(email, password, username) VALUES($1, $2, $3)",
-        values: [email, encryptedPassword, fullName],
-      });
+      const result =
+        await sql`INSERT INTO createacc(email, password, username) VALUES(${email}, ${encryptedPassword}, ${fullName});`;
     } catch (error) {
       return res.status(500).json({ error: "Error in query" });
     }
