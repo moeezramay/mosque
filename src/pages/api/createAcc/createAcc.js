@@ -1,4 +1,5 @@
 import excuteQuery from "@/lib/db";
+import checkDatabaseConnection from "@/lib/db2";
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -52,26 +53,35 @@ export default async function CreateAccount(req, res) {
     console.log("fullName", fullName);
 
     try {
-      const result = await excuteQuery({
-        query:
-          "INSERT INTO createacc(email, password, username) VALUES($1, $2, $3)",
-        values: [email, encryptedPassword, fullName],
-      });
+      checkDatabaseConnection();
+      if (checkDatabaseConnection() == "success") {
+        res.status(200).json({ message: "Database connected successfully!" });
+      }
     } catch (error) {
-      return res.status(500).json({ error: "Error in query" });
+      res.status(500).json({ error: "Error connecting" });
     }
 
-    res.json({
-      message: content.email,
-      name: fullName,
-      token: jwt.sign(
-        {
-          email: content.email,
-          name: fullName,
-        },
-        KEY
-      ),
-    });
+    // try {
+    //   const result = await excuteQuery({
+    //     query:
+    //       "INSERT INTO createacc(email, password, username) VALUES($1, $2, $3)",
+    //     values: [email, encryptedPassword, fullName],
+    //   });
+    // } catch (error) {
+    //   return res.status(500).json({ error: "Error in query" });
+    // }
+
+    // res.json({
+    //   message: content.email,
+    //   name: fullName,
+    //   token: jwt.sign(
+    //     {
+    //       email: content.email,
+    //       name: fullName,
+    //     },
+    //     KEY
+    //   ),
+    // });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });

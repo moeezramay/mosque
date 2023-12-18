@@ -44,8 +44,8 @@ export default async function executeQuery({ query, values }) {
     //   ${query}
     //   ${sql(...values)}
     // `;
-    sql.query(
-      `INSERT INTO createacc(email, password, username) VALUES('czxc', 'dasd', 'dasd')`
+    await sql.query(
+      `INSERT INTO createacc(email, password, username) VALUES('cxcsa', 'dasd', 'das')`
     );
     // return results;
   } catch (error) {
