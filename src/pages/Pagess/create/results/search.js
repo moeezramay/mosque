@@ -369,6 +369,7 @@ export default function Search() {
           return;
         }
         const response = await res.json();
+        console.log("Response from getInfoAcc: ", response.user);
         setData(response.user);
       } catch (error) {
         console.error("Error on first try fetching data:", error.message);

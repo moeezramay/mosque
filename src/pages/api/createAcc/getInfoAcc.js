@@ -16,8 +16,8 @@ export default async function GetInfoAcc(req, res) {
     }
     const email = content;
 
-    const result = await sql`SELECT * FROM createAcc WHERE email = ${content};`;
-
+    const result = await sql`SELECT * FROM createAcc WHERE email = ${email};`;
+    console.log("result for all users: ", result);
     if (result.error) {
       console.log("Database Error:", result.error);
       return { error: "Database error" };
