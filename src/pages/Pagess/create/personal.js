@@ -3,6 +3,7 @@ import NavMini from "./navMini";
 import { useTranslation } from "react-i18next";
 import { AppContext } from "../AppContext";
 import { useState, useContext, useEffect } from "react";
+import { Countries, Height, Ethnicity } from "@/pages/data/dataAcc";
 
 export default function Personal() {
   const [t, i18n] = useTranslation("global");
@@ -96,9 +97,9 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Pakistani</option>
-                  <option>Saudi</option>
-                  <option>Palestinian</option>
+                  {Countries.map((city) => (
+                    <option key={city}>{city}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -111,9 +112,9 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Pakistan</option>
-                  <option>Bristol</option>
-                  <option>Birmingham</option>
+                  {Countries.map((city) => (
+                    <option key={city}>{city}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -127,9 +128,9 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Yes</option>
-                  <option>No</option>
-                  <option>Not sure</option>
+                  {Countries.map((city) => (
+                    <option key={city}>{city}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -157,9 +158,10 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>1 Year</option>
-                  <option>2 Year</option>
-                  <option>3 Year</option>
+                  <option>This Year</option>
+                  <option>Next Year</option>
+                  <option>As soon as possible</option>
+                  <option>Any Time</option>
                 </select>
               </div>
             </div>
@@ -173,9 +175,11 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Married</option>
+                  <option>Never Married</option>
+                  <option>Legally Married</option>
                   <option>Divorced</option>
-                  <option>Birmingham</option>
+                  <option>Widowed</option>
+                  <option>Analled</option>
                 </select>
               </div>
             </div>
@@ -188,9 +192,8 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Yes</option>
-                  <option>Bristol</option>
-                  <option>Birmingham</option>
+                  <option>Yes I want to have</option>
+                  <option>No I don't want to have</option>
                 </select>
               </div>
             </div>
@@ -204,8 +207,7 @@ export default function Personal() {
                 >
                   <option></option>
                   <option>Yes</option>
-                  <option>Bristol</option>
-                  <option>Birmingham</option>
+                  <option>No</option>
                 </select>
               </div>
             </div>
@@ -218,9 +220,10 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Independent</option>
-                  <option>Bristol</option>
-                  <option>Birmingham</option>
+                  <option>Alone</option>
+                  <option>Family</option>
+                  <option>Friends</option>
+                  <option>Other</option>
                 </select>
               </div>
             </div>
@@ -233,9 +236,9 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>165cm</option>
-                  <option>Bristol</option>
-                  <option>Birmingham</option>
+                  {Height.map((city) => (
+                    <option key={city}>{city} cm</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -248,9 +251,12 @@ export default function Personal() {
                   required
                 >
                   <option></option>
+                  <option>Petite</option>
                   <option>Slim</option>
-                  <option>Bristol</option>
-                  <option>Birmingham</option>
+                  <option>Athletic</option>
+                  <option>Medium</option>
+                  <option>Muscular</option>
+                  <option>Large</option>
                 </select>
               </div>
             </div>
@@ -263,9 +269,9 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Asian</option>
-                  <option>Indian</option>
-                  <option>Birmingham</option>
+                  {Ethnicity.map((city) => (
+                    <option key={city}>{city}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -294,9 +300,10 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>No Drink</option>
-                  <option>Bristol</option>
-                  <option>Birmingham</option>
+                  <option>No</option>
+                  <option>Yes</option>
+                  <option>Sometimes</option>
+                  <option>Stopped</option>
                 </select>
               </div>
             </div>
@@ -312,8 +319,16 @@ export default function Personal() {
                 >
                   <option></option>
                   <option>No Disability</option>
-                  <option>Bristol</option>
-                  <option>Birmingham</option>
+                  <option>Yes Disability</option>
+                  <option>Speech Language</option>
+                  <option>Hearing Loss</option>
+                  <option>Vision Loss</option>
+                  <option>Physical Disability</option>
+                  <option>Learning Disability</option>
+                  <option>Mental illness</option>
+                  <option>Chronic Disability</option>
+                  <option>Autisim</option>
+                  <option>Ask me</option>
                 </select>
               </div>
             </div>
@@ -326,9 +341,9 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Glued to phone</option>
-                  <option>Bristol</option>
-                  <option>Birmingham</option>
+                  <option>Attatched to my phone</option>
+                  <option>Regular use</option>
+                  <option>Not much</option>
                 </select>
               </div>
             </div>

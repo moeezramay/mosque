@@ -44,7 +44,7 @@ export default function SignUp() {
       }
       const response = await res.json();
 
-      const token = 1;
+      const token = response.token;
       const msg = response.message;
       const username = "dsa";
       console.log("msg", msg);
