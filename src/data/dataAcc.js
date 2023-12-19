@@ -548,9 +548,6 @@ const Ethnicity = [
   "Other",
 ];
 //------------^^^^^---------------
-const something = 1;
-
-export default something;
 
 export {
   WhereLive,

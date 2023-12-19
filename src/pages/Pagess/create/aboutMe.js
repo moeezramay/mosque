@@ -4,13 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { AppContext } from "../AppContext";
 import { useState, useContext } from "react";
-import {
-  WhereLive,
-  Countries,
-  Dates,
-  Months,
-  Years,
-} from "@/pages/data/dataAcc";
+import { WhereLive, Countries, Dates, Months, Years } from "@/data/dataAcc";
 
 export default function AboutMeSection() {
   const { aboutmeContext, setAboutmeContext } = useContext(AppContext);

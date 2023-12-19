@@ -3,12 +3,7 @@ import NavMini from "./navMini";
 import { useTranslation } from "react-i18next";
 import { AppContext } from "../AppContext";
 import { useState, useContext, useEffect } from "react";
-import {
-  Education,
-  Profession,
-  JobTitle,
-  Languages,
-} from "@/pages/data/dataAcc";
+import { Education, Profession, JobTitle, Languages } from "@/data/dataAcc";
 
 export default function Educwork() {
   const [t, i18n] = useTranslation("global");
