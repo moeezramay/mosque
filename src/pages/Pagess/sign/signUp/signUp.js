@@ -1,8 +1,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { signIn, useSession, signOut } from "next-auth/react";
+import SignUpGoogle from "../../../../../public/signupGooglesvg";
 
 export default function SignUp() {
+  const { status, data: session } = useSession();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
@@ -19,6 +22,77 @@ export default function SignUp() {
     console.log("signIn Clicked");
     push("/Pagess/sign/signIn/signIn");
   };
+
+  //---------------SignInWith GOOGLE----------------------------
+
+  const signUpWithGoogle = async () => {
+    const result = await signUp("google");
+
+    //Check if user exists
+    if (status === "authenticated") {
+      const checkEmail = session?.user?.email;
+      try {
+        const res = await fetch("/api/google/checkUserExist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(checkEmail),
+        });
+        if (!res.ok) {
+          const errorMessage = await res.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const responseData = await res.json();
+        if (responseData && responseData.userExists === true) {
+          setUserExist(true);
+        } else {
+          setUserExist(false);
+          alert("User does not exist, please signup first");
+        }
+      } catch (error) {
+        console.log("Error on first if statement: ", error);
+      }
+    }
+
+    //If the user exists
+    if (status === "authenticated" && userExist === true) {
+      const name = session?.user?.name;
+      const email = session?.user?.email;
+      setGoogleUser(name);
+      setGoogleEmail(email);
+      localStorage.setItem("email", googleEmail);
+      localStorage.setItem("username", googleUser);
+
+      push("/Pagess/create/results/results");
+    } else {
+      console.log("Google SignIn Failed");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/google/getToken", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(googleEmail),
+      });
+      if (!res.ok) {
+        const errorMessage = await res.json();
+        console.error("Error if:", errorMessage.error);
+        return;
+      }
+      const responseData = await res.json();
+      const token = responseData.token;
+      localStorage.setItem("token", token);
+      console.log("res", token);
+    } catch (error) {
+      console.log("Could not create token from google signin", error);
+    }
+  };
+  //---------------^^^^^^^^^-----------------------------
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -133,6 +207,19 @@ export default function SignUp() {
                 <button type="submit" className="signUp-button-signUp">
                   {t("signIn.register")}
                 </button>
+              </div>
+              <div className="or-container-signIn">
+                <div className="or-left-signIn"></div>
+                <div className="or-signIn">OR</div>
+                <div className="or-right-signIn"></div>
+              </div>
+              <div className="signGoogle-signIn">
+                <div
+                  // onClick={signInWithGoogle}
+                  className="signIn-google-container-signIn"
+                >
+                  <SignUpGoogle />
+                </div>
               </div>
               <div className="no-acc-container-signUp">
                 <div className="no-acc-signUp">
