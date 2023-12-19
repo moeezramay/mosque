@@ -549,7 +549,7 @@ const Ethnicity = [
 ];
 //------------^^^^^---------------
 
-export {
+export default {
   WhereLive,
   Countries,
   Dates,
