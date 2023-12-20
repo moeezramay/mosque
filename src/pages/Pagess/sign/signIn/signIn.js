@@ -68,6 +68,7 @@ export default function SignIn() {
         }
       } catch (error) {
         console.log("Error on first if statement: ", error);
+        alert("User does not exist, please signup first");
       }
     }
     console.log("check", check);
@@ -109,8 +110,9 @@ export default function SignIn() {
       let name = localStorage.getItem("username");
       if (em != "" && name != "" && em != null && name != null) {
         console.log("push");
+        push("/Pagess/create/results/results");
       } else {
-        console.log("NOOOOOOOOOOOOOOO push");
+        console.log("OOOOOOOOOOOOOOO push");
       }
     };
     checkGoogleUser();
