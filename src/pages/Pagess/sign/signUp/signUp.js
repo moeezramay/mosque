@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { signIn, useSession, signOut } from "next-auth/react";
 import SignUpGoogle from "../../../../../public/signupGooglesvg";
+import emailjs from "emailjs-com";
 
 export default function SignUp() {
   const { status, data: session } = useSession();
@@ -22,6 +23,29 @@ export default function SignUp() {
     console.log("signIn Clicked");
     push("/Pagess/sign/signIn/signIn");
   };
+
+  //------------------Email send-----------------------
+  const sendEmail = (user) => {
+    const templateId = "template_ucwlucj";
+    console.log(emailAddress);
+    const templateParams = {
+      to_name: user,
+    };
+
+    // Send the email
+    emailjs
+      .send("service_2offjoq", templateId, templateParams, "N3l8CQkoHqaZ8p5Ro")
+      .then(
+        (result) => {
+          console.log(result.text);
+        },
+        (error) => {
+          console.log(error.text);
+        }
+      );
+  };
+
+  //------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   //---------------SignInWith GOOGLE----------------------------
 
@@ -129,6 +153,7 @@ export default function SignUp() {
         localStorage.setItem("username", username);
         console.log("token", token);
       }
+      sendEmail(emailAddress);
       push("/Pagess/create/gender");
     } catch (error) {
       console.log("Error cought on last", error);
