@@ -137,7 +137,8 @@ export default function SignUp() {
       });
       if (!res.ok) {
         const errorMessage = await res.json();
-        console.error("Error if:", errorMessage.error);
+        console.error("Error if res:", errorMessage.error);
+        alert("Email already exists");
         return;
       }
       const response = await res.json();

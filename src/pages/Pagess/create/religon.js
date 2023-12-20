@@ -21,16 +21,16 @@ export default function Religon() {
   //-----------------^^^^^^^^^^--------------------------
 
   //------------------Checks for token----------------
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
 
-    if (token === null && !token) {
-      console.log("token not found");
-      push("/Pagess/sign/signIn/signIn");
-    } else {
-      console.log("Token found!");
-    }
-  }, []);
+  //   if (token === null && !token) {
+  //     console.log("token not found");
+  //     push("/Pagess/sign/signIn/signIn");
+  //   } else {
+  //     console.log("Token found!");
+  //   }
+  // }, []);
   //------------------^^^^^^^^^^^^^^^----------------
 
   //------------------Updates State----------------

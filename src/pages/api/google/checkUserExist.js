@@ -20,9 +20,14 @@ export default async function CheckUserExist(req, res) {
     const email = content;
 
     const result = await sql`SELECT * FROM createAcc WHERE email = ${email};`;
-
-    if (result && result.length > 0) {
+    console.log("Result fetched: ", result.rows[0].gender);
+    if (
+      result.rows[0].gender !== null ||
+      result.rows[0].gender !== undefined ||
+      result.rows[0].gender != ""
+    ) {
       res.json({ user: true });
+      return;
     } else {
       res.json({ user: false });
     }
