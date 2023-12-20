@@ -33,48 +33,52 @@ export default function SignIn() {
   //   }
   // };
   const signInWithGoogle = async () => {
-    const result = await signIn("google");
+    if (navigator.userAgent.includes("Mac")) {
+      if (!localStorage.getItem("goog")) {
+        const result = await signIn("google");
+        localStorage.setItem("goog", 1);
+      }
+    } else {
+      const result = await signIn("google");
+    }
     //Check if user exists
 
     let tempEmail = "";
     let tempName = "";
-    if (status === "authenticated") {
-      const checkEmail = session?.user?.email;
-      const checkName = session?.user?.name;
-      try {
-        const res = await fetch("/api/google/checkUserExist", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(checkEmail),
-        });
-        if (!res.ok) {
-          const errorMessage = await res.json();
-          console.error("Error if:", errorMessage.error);
-          return;
-        }
-        const responseData = await res.json();
-        console.log("responseData", responseData.user);
-
-        if (responseData.user === true) {
-          check = true;
-          console.log("Check set to true", checkEmail);
-          tempEmail = checkEmail;
-          tempName = checkName;
-        } else {
-          alert("User does not exist, please signup first");
-          check = false;
-        }
-      } catch (error) {
-        console.log("Error on first if statement: ", error);
-        alert("User does not exist, please signup first");
+    const checkEmail = session?.user?.email;
+    const checkName = session?.user?.name;
+    try {
+      const res = await fetch("/api/google/checkUserExist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: checkEmail }),
+      });
+      if (!res.ok) {
+        const errorMessage = await res.json();
+        console.error("Error if:", errorMessage.error);
+        return;
       }
+      const responseData = await res.json();
+      console.log("User exists:", responseData);
+      if (responseData.user === true) {
+        check = true;
+        console.log("Check set to true", checkEmail);
+        tempEmail = checkEmail;
+        tempName = checkName;
+      } else {
+        alert("User does not exist, please signup first");
+        check = false;
+      }
+    } catch (error) {
+      console.log("Error on first if statement: ", error);
     }
     console.log("check", check);
 
     //If the user exists
     if (status === "authenticated" && check === true) {
+      console.log("Google SignIn Success", tempEmail);
       localStorage.setItem("email", tempEmail);
       localStorage.setItem("username", tempName);
     } else {
@@ -98,7 +102,6 @@ export default function SignIn() {
       const token = responseData.token;
       localStorage.setItem("token", token);
       console.log("res", token);
-      simulateDelay(6000);
       push("/Pagess/create/results/results");
     } catch (error) {
       console.log("Could not create token from google signin", error);

@@ -4,8 +4,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 export default async function CheckUserExist(req, res) {
+  console.log("CHECKING");
   try {
-    const content = req.body;
+    const content = req.body.email;
 
     console.log("content: ", content);
 
