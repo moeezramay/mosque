@@ -16,12 +16,12 @@ export default async function CheckEmail(req, res) {
       return;
     }
 
-    // const result = await sql`SELECT * FROM createAcc WHERE email = ${email};`;
+    const result = await sql`SELECT * FROM createAcc WHERE email = ${email};`;
 
-    // if (result.error) {
-    //   console.log("Database Error CheckEmail forgot:", result.error);
-    //   return { error: "Database error" };
-    // }
+    if (result.error) {
+      console.log("Database Error CheckEmail forgot:", result.error);
+      return { error: "Database error" };
+    }
     // console.log("Result recieved from db: ", result);
     // if (result.rowCount === 0) {
     //   console.log("Email not found");
