@@ -199,6 +199,16 @@ export default function SignIn() {
                   Policy
                 </div>
               </div>
+              <div className="forgot-container-signIn">
+                <div
+                  className="forgot-signIn"
+                  onClick={() => {
+                    push("/Pagess/sign/forgotPass/forgotPass");
+                  }}
+                >
+                  {t("signIn.forgot")}
+                </div>
+              </div>
               <div className="signIn-btn-container-signIn">
                 <button className="signIn-button-signIn" onClick={SignIn}>
                   {t("signIn.login")}

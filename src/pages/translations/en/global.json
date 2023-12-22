@@ -85,7 +85,12 @@
     "register": "Register",
     "already1": "Already have an account?",
     "already2": "Sign In",
-    "policy": "Policy"
+    "policy": "Policy",
+    "forgot": "Forgot Password?",
+    "forgot2": "Forgotten your password?",
+    "forgot3": "We've got you covered",
+    "remember": "Remember your password? Login",
+    "reset": "Reset Password"
   },
   "gender": {
     "heading": "Choose Your Gender",
