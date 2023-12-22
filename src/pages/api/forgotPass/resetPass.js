@@ -8,15 +8,14 @@ export default async function CheckEmail(req, res) {
   try {
     const email = req.body.email;
     const pass = req.body.password;
-    console.log("body recieved on reset", req.body);
 
     if (!email) {
-      console.log("content empty no email no pass on resetPass api");
+      console.log("content empty no email on resetPass api");
       res.status(400).json({ error: "Content cannot be empty." });
       return;
     }
     if (!pass) {
-      console.log("content empty no email no pass on resetPass api");
+      console.log("content empty no pass on resetPass api");
       res.status(400).json({ error: "Content cannot be empty." });
       return;
     }
