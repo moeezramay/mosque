@@ -6,8 +6,8 @@ import { useTranslation } from "react-i18next";
 export default function ResetPassPage() {
   const router = useRouter();
   const { params } = router.query;
-  const userEmail = params[0];
-  const token = params[1];
+  const userEmail = params;
+  const token = params;
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [t, i18n] = useTranslation("global");

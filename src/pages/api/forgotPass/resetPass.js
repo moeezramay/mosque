@@ -6,7 +6,7 @@ dotenv.config();
 //Function to check if email exists
 export default async function CheckEmail(req, res) {
   try {
-    const email = req.body.email;
+    const email = req.body.email[0];
     const pass = req.body.password;
     console.log("Email recieved from frontend: ", email);
     console.log("Password recieved from frontend: ", pass);
