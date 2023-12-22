@@ -43,6 +43,7 @@ export default function ResetPassPage() {
         return;
       }
       const data = await res.json();
+      console.log("Data recieved from backend: ", data);
       if (data.check === true) {
         alert("Password Reset");
         push("/Pagess/sign/signIn/signIn");
