@@ -81,12 +81,12 @@ export default function ForgotPass() {
         return;
       }
       const data2 = await res2.json();
-
+      const userEmail = email;
       setTokenLink(
         (prevTokenLink) =>
-          "https://www.teksa.co.uk/Pagess/sign/forgotPass/resetPass/" +
-          data2.token
+          `https://www.teksa.co.uk/Pagess/sign/forgotPass/resetPass/${userEmail}/${data2.token}`
       );
+
       localStorage.setItem("email", email);
       console.log("Token link: ", tokenLink);
     } catch (error) {

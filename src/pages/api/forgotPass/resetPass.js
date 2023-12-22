@@ -10,7 +10,7 @@ export default async function CheckEmail(req, res) {
     const pass = req.body.password;
     console.log("Email recieved from frontend: ", email);
     console.log("Password recieved from frontend: ", pass);
-    if (!email || !pass) {
+    if (!email) {
       console.log("content empty no email on resetPass api");
       res.status(400).json({ error: "Content cannot be empty." });
       return;
@@ -22,7 +22,7 @@ export default async function CheckEmail(req, res) {
       console.log("Database Error CheckEmail forgot:", result.error);
       return { error: "Database error" };
     }
-    if (result.rowCount === 1 || result.rowCount > 1) {
+    if (result.rowCount === 1) {
       console.log("Email found");
       const result2 =
         await sql`UPDATE createAcc SET password = ${pass} WHERE email = ${email};`;

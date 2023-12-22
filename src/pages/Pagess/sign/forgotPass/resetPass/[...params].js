@@ -5,37 +5,33 @@ import { useTranslation } from "react-i18next";
 
 export default function ResetPassPage() {
   const router = useRouter();
-  const { token } = router.query;
+  const { params } = router.query;
+  const userEmail = params[0];
+  const token = params[1];
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [t, i18n] = useTranslation("global");
-  const [email, setEmail] = useState("");
   const { push } = useRouter();
 
   useEffect(() => {
-    const verifyTokenAndProcess = async () => {
-      if (token && localStorage.getItem("email")) {
-        console.log("Reset Token:", token);
-        console.log("Email:", localStorage.getItem("email"));
-        setEmail(localStorage.getItem("email"));
-      } else {
-        //push("/Pagess/sign/signIn/signIn");
-      }
-    };
-
-    verifyTokenAndProcess();
-  }, [token]);
+    if (userEmail && token) {
+      console.log("User Email:", userEmail);
+      console.log("Token:", token);
+    } else {
+      console.log("User Email or token is empty");
+    }
+  }, [userEmail, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Email found on front:", userEmail);
     try {
-      console.log(email, password);
       const res = await fetch("/api/forgotPass/resetPass", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ password: password, email: email }),
+        body: JSON.stringify({ password: password, email: userEmail }),
       });
       if (!res.ok) {
         const errorMessage = await res.json();
