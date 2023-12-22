@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import emailjs from "emailjs-com";
 
 export default function ForgotPass() {
@@ -15,6 +15,10 @@ export default function ForgotPass() {
   const sendEmail = () => {
     const templateId = "template_i3b962y";
     console.log("token recieved before: ", tokenLink);
+    if (tokenLink === "" || tokenLink === undefined || tokenLink === null) {
+      console.log("Token link is empty");
+      return;
+    }
     const templateParams = {
       to_email: email,
       message: tokenLink,
@@ -76,7 +80,8 @@ export default function ForgotPass() {
       const data2 = await res2.json();
 
       setTokenLink(
-        "https://www.teksa.co.uk/Pagess/sign/forgotPass/resetPass/" +
+        (prevTokenLink) =>
+          "https://www.teksa.co.uk/Pagess/sign/forgotPass/resetPass/" +
           data2.token
       );
       localStorage.setItem("email", email);
@@ -84,9 +89,15 @@ export default function ForgotPass() {
     } catch (error) {
       console.log("Error while getting token on forgot pass: ", error);
     }
-
-    const result = sendEmail(); //Email sent
   };
+
+  useEffect(() => {
+    if (tokenLink !== "" && tokenLink !== undefined && tokenLink !== null) {
+      // Token link has been updated, call sendEmail
+      sendEmail();
+      setTokenLink("");
+    }
+  }, [tokenLink]);
 
   //---------------^^^^^^^^^^^^--------------------
 
