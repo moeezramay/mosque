@@ -22,11 +22,7 @@ export default async function CheckEmail(req, res) {
       console.log("Database Error CheckEmail forgot:", result.error);
       return { error: "Database error" };
     }
-    if (result.rowCount !== 1) {
-      console.log("Email not found");
-      res.json({ check: false });
-      return;
-    } else {
+    if (result.rowCount === 1 || result.rowCount > 1) {
       console.log("Email found");
       const result2 =
         await sql`UPDATE createAcc SET password = ${pass} WHERE email = ${email};`;
@@ -35,6 +31,9 @@ export default async function CheckEmail(req, res) {
         return { error: "Database error" };
       }
       res.json({ check: true });
+    } else {
+      console.log("Email not found");
+      res.json({ check: false });
     }
 
     res.json({ check: true });
