@@ -19,7 +19,6 @@ export default async function GetToken(req, res) {
     const decodedToken = jwt.decode(token);
 
     const decode = new Date(decodedToken.exp * 1000);
-    console.log("decode", decode);
 
     // const result =
     //   await sql`INSERT INTO resetpassword(email, reset_token, expiration_time) VALUES(${id}, ${token}, ${decode});`;
