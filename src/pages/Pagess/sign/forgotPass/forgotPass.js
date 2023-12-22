@@ -35,6 +35,9 @@ export default function ForgotPass() {
           console.log(error.text);
         }
       );
+
+    alert("Email sent, please check your inbox");
+    push("/Pagess/sign/signIn/signIn");
   };
 
   //------------------^^^^^^^^^^^^^---------------------
