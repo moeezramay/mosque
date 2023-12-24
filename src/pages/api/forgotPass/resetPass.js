@@ -34,8 +34,6 @@ export default async function CheckEmail(req, res) {
         res.json({ check: true });
       }
     }
-
-    res.json({ check: false });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
