@@ -25,7 +25,9 @@ export default async function CheckEmail(req, res) {
     if (result.rowCount === 1) {
       console.log("Email found");
       const result2 =
-        await sql`UPDATE createAcc SET password = ${pass} WHERE email = ${email};`;
+        await sql`SELECT * FROM createAcc WHERE email = ${email};`;
+      // const result2 =
+      //   await sql`UPDATE createAcc SET password = ${pass} WHERE email = ${email};`;
       if (result2.error) {
         console.log("Database Error updating new password:", result2.error);
         res.status(500).json({ error: "Database error in result 2" });
