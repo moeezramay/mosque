@@ -47,7 +47,7 @@ export default async function SignIn(req, res) {
       console.log("Database Error:", result.error);
       return { error: "Database error" };
     }
-    console.log("Result recieved from db: ", result);
+    console.log("Result recieved from db: ");
     const user = result.rows[0];
 
     if (!user) {
@@ -57,12 +57,15 @@ export default async function SignIn(req, res) {
     console.log("Username: ", user.username);
 
     const decryptedPassword = decryptData(user.password, keyBuffer, iv);
+    console.log("Decrypted password: ", decryptedPassword);
 
     if (password !== decryptedPassword) {
+      console.log("Wrong password");
       res.status(400).json({ error: "Wrong password." });
     }
 
     const token = jwt.sign({ id: user.id }, KEY);
+    console.log("Token: ", token);
 
     res.json({
       token,
