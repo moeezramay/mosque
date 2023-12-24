@@ -6,7 +6,7 @@ dotenv.config();
 //Function to check if email exists
 export default async function CheckEmail(req, res) {
   try {
-    const email = req.body.email;
+    const email = req.body.email[0];
     const pass = req.body.password;
     console.log("Email recieved from frontend: ", email);
     console.log("Password recieved from frontend: ", pass);
@@ -17,14 +17,13 @@ export default async function CheckEmail(req, res) {
     }
 
     const result = await sql`SELECT * FROM createAcc WHERE email = ${email};`; //Check if user exists
-    console.log("Email found and first result: ", result);
 
     if (result.error) {
       console.log("Database Error CheckEmail forgot:", result.error);
       return { error: "Database error" };
     }
     if (result.rowCount === 1) {
-      console.log("Email found and first result: ", result);
+      console.log("Email found and first result: ", email, pass, result);
       const result2 =
         await sql`UPDATE createAcc SET password = ${pass} WHERE email = ${email};`;
       if (result2.error) {
