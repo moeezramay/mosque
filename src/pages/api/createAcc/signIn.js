@@ -58,7 +58,6 @@ export default async function SignIn(req, res) {
 
     console.log("Decrypting password: ", user.password);
     const decryptedPassword = decryptData(user.password, keyBuffer, iv);
-    console.log("Decrypted password: ", decryptedPassword);
 
     if (password !== decryptedPassword) {
       console.log("Wrong password");
