@@ -14,7 +14,7 @@ export default function ResetPassPage() {
   const { push } = useRouter();
 
   useEffect(() => {
-    if (userEmail && token) {
+    if (params) {
       console.log("User Email:", userEmail);
       console.log("Token:", token);
     } else {

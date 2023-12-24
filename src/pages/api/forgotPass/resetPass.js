@@ -28,7 +28,7 @@ export default async function CheckEmail(req, res) {
         await sql`UPDATE createAcc SET password = ${pass} WHERE email = ${email};`;
       if (result2.error) {
         console.log("Database Error updating new password:", result2.error);
-        return { error: "Database error" };
+        res.status(500).json({ error: "Database error in result 2" });
       }
       res.json({ check: true });
     } else {

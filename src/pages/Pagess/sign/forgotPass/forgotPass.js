@@ -82,6 +82,7 @@ export default function ForgotPass() {
       }
       const data2 = await res2.json();
       const userEmail = email;
+      console.log("userEmail: ", userEmail);
       setTokenLink(
         (prevTokenLink) =>
           `https://www.teksa.co.uk/Pagess/sign/forgotPass/resetPass/${userEmail}/${data2.token}`
