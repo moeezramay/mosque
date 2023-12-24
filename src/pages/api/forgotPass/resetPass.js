@@ -33,12 +33,9 @@ export default async function CheckEmail(req, res) {
         console.log("Password updated");
         res.json({ check: true });
       }
-    } else {
-      console.log("Email not found");
-      res.json({ check: false });
     }
 
-    res.json({ check: true });
+    res.json({ check: false });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
