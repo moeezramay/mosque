@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default async (req, res) => {
   const { latitude, longitude } = req.query;
-  const apiKey = "AIzaSyD2vzJGdXaHatCi0Hf-2Z6PvQyRYlh3Akc";
+  const apiKey = process.env.MAP_API;
 
   try {
     const response = await axios.get(

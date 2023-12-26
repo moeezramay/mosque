@@ -15,59 +15,67 @@ export default async function AddInfoAcc(req, res) {
     }
 
     const result = await sql`
-    UPDATE createAcc
-    SET
-      gender = ${content.gender},
-      aboutme_location = ${content.aboutMe.location},
-      aboutme_country = ${content.aboutMe.country},
-      aboutme_day = ${content.aboutMe.day},
-      aboutme_month = ${content.aboutMe.month},
-      aboutme_year = ${content.aboutMe.year},
-      aboutme_tag = ${content.aboutMe.tag},
-      aboutme_about = ${content.aboutMe.about},
-      aboutme_looking = ${content.aboutMe.looking},
-      personal_citizen = ${content.personal.citizen},
-      personal_origin = ${content.personal.origin},
-      personal_relocate = ${content.personal.relocate},
-      personal_income = ${content.personal.income},
-      personal_marriage = ${content.personal.marriage},
-      personal_marital = ${content.personal.marital},
-      personal_children1 = ${content.personal.children1},
-      personal_children2 = ${content.personal.children2},
-      personal_living = ${content.personal.living},
-      personal_height = ${content.personal.height},
-      personal_build = ${content.personal.build},
-      personal_smoke = ${content.personal.smoke},
-      personal_drink = ${content.personal.drink},
-      personal_disability = ${content.personal.disability},
-      personal_long = ${content.personal.long},
-      eduwork_education = ${content.eduwork.education},
-      eduwork_subject = ${content.eduwork.subject},
-      eduwork_profession = ${content.eduwork.profession},
-      eduwork_job = ${content.eduwork.job},
-      eduwork_language1 = ${content.eduwork.language1},
-      eduwork_language2 = ${content.eduwork.language2},
-      religion_religious = ${content.religion.religious},
-      religion_sector = ${content.religion.sector},
-      religion_hijab = ${content.religion.hijab},
-      religion_beard = ${content.religion.beard},
-      religion_revert = ${content.religion.revert},
-      religion_halal = ${content.religion.halal},
-      religion_pray = ${content.religion.pray},
-      mosque = ${content.mosque},
-      personal_ethnicity = ${content.personal.ethnicity},
-      religon_quran = ${content.religion.quran}
-    WHERE
-      email = ${content.email}
-  `;
-
-    console.log("ttt", result);
+      UPDATE createAcc
+      SET
+        gender = ${content.gender},
+        aboutme_location = ${content.aboutMe.location},
+        aboutme_country = ${content.aboutMe.country},
+        aboutme_day = ${content.aboutMe.day},
+        aboutme_month = ${content.aboutMe.month},
+        aboutme_year = ${content.aboutMe.year},
+        aboutme_tag = ${content.aboutMe.tag},
+        aboutme_about = ${content.aboutMe.about},
+        aboutme_looking = ${content.aboutMe.looking},
+        personal_citizen = ${content.personal.citizen},
+        personal_origin = ${content.personal.origin},
+        personal_relocate = ${content.personal.relocate},
+        personal_income = ${content.personal.income},
+        personal_marriage = ${content.personal.marriage},
+        personal_marital = ${content.personal.marital},
+        personal_children1 = ${content.personal.children1},
+        personal_children2 = ${content.personal.children2},
+        personal_living = ${content.personal.living},
+        personal_height = ${content.personal.height},
+        personal_build = ${content.personal.build},
+        personal_smoke = ${content.personal.smoke},
+        personal_drink = ${content.personal.drink},
+        personal_disability = ${content.personal.disability},
+        personal_long = ${content.personal.long},
+        eduwork_education = ${content.eduwork.education},
+        eduwork_subject = ${content.eduwork.subject},
+        eduwork_profession = ${content.eduwork.profession},
+        eduwork_job = ${content.eduwork.job},
+        eduwork_language1 = ${content.eduwork.language1},
+        eduwork_language2 = ${content.eduwork.language2},
+        religion_religious = ${content.religion.religious},
+        religion_sector = ${content.religion.sector},
+        religion_hijab = ${content.religion.hijab},
+        religion_beard = ${content.religion.beard},
+        religion_revert = ${content.religion.revert},
+        religion_halal = ${content.religion.halal},
+        religion_pray = ${content.religion.pray},
+        personal_ethnicity = ${content.personal.ethnicity},
+        religon_quran = ${content.religion.quran}
+      WHERE
+        email = ${content.email}
+    `;
 
     console.log("Result:", result);
 
     if (result.error) {
       console.log("Database Error:", result.error);
     }
+
+    //Now adding mosques
+    console.log("Mosque array: ", content.mosque);
+    for (const mosque of content.mosque) {
+      const result = await sql`
+        INSERT INTO mosques (mosque_id, mosque_name, user_email)
+        VALUES (${mosque.id}, ${mosque.name},${content.email});
+      `;
+      console.log("Name:", mosque.name, " ID:", mosque.id);
+    }
+
     res.json({
       username: "Info Added successfully",
     });

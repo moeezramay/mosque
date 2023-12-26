@@ -700,7 +700,14 @@
   padding-left: 2%;
   font-size: 14px;
 }
-
+.option-container-mosque {
+}
+.mini-option-mosque {
+  display: flex;
+  justify-content: space-between;
+}
+.check-option-mosque {
+}
 .button-container-mosque {
   width: 100%;
   display: flex;
