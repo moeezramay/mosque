@@ -7,7 +7,6 @@ dotenv.config();
 export default async function GetInfoAcc(req, res) {
   try {
     const content = req.body;
-    console.log("content getInfoAcc: ", content);
 
     if (!content) {
       console.log("content empty no email");
@@ -17,12 +16,10 @@ export default async function GetInfoAcc(req, res) {
     const email = content;
 
     const result = await sql`SELECT * FROM createAcc WHERE email != ${email};`;
-    console.log("result for all users: ", result);
     if (result.error) {
       console.log("Database Error:", result.error);
       return { error: "Database error" };
     }
-    console.log("Result recieved from db: ", result);
 
     res.json({ user: result });
   } catch (error) {

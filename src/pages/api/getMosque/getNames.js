@@ -15,7 +15,7 @@ export default async function GetMosques(req, res) {
         components: "country:uk", // Set the country to the UK
       },
     });
-    console.log("server:", response.data.predictions);
+    console.log("server:", response.data.predictions[0].structured_formatting);
     const predictions = response.data.predictions.map((prediction) => {
       const mosqueName = prediction.description;
 
@@ -24,7 +24,6 @@ export default async function GetMosques(req, res) {
         name: mosqueName,
       };
     });
-    console.log("predictions:", predictions);
 
     res.json(predictions);
   } catch (error) {

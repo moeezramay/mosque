@@ -21,9 +21,10 @@ export default function Search() {
   const [loadMap, setLoadMap] = useState(false);
   const [locAccess, setLocAccess] = useState(true);
   const [mapData, setMapData] = useState([]);
+  const [tempData, setTempData] = useState([]); //To store temp data for maps
   const [zoom, setZoom] = useState(10);
   const [viewBio, setViewBio] = useState(false);
-  const [selectedUserInfo, setSelectedUserInfo] = useState(null); //Temporary storage
+  const [selectedUserInfo, setSelectedUserInfo] = useState(null); //Temporary storage for users
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
 
@@ -229,7 +230,7 @@ export default function Search() {
   };
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
 
-  //-------------------Api to get mosque------------------------
+  //-------------------Api to get nearest mosque mosque------------------------
 
   const getMosqueData = async (latitude, longitude) => {
     try {
@@ -239,12 +240,42 @@ export default function Search() {
       const data = await response.json();
 
       if (response.ok && data.status === "OK" && data.results.length > 0) {
-        return [
-          data["results"][0]["geometry"]["location"],
-          data["results"][0]["name"],
-        ];
+        const mosquesData = data.results.slice(0, 5).map((result) => ({
+          location: result.geometry.location,
+          name: result.name,
+        }));
+        console.log("Sliced mosque data: ", mosquesData);
+
+        return mosquesData;
       } else {
         console.error("Error fetching data from Google Places API:", data);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  //-------------------^^^^^^^^^^^^^^^^^^^^------------------
+
+  //-------------------Api to get user's mosque------------------------
+
+  const getUserData = async () => {
+    try {
+      const email = localStorage.getItem("email");
+      const res = await fetch("/api/getMosque/getUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(email),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log("Data fetched from user's mosque: ", data);
+        return data;
+      } else {
+        console.error("Error fetching data of user selected mosque:", data);
         return null;
       }
     } catch (error) {
@@ -284,14 +315,47 @@ export default function Search() {
           setMapData((prev) => [...prev, ...sortedUserData]);
 
           let getData = new Promise((resolve, reject) => {
+            //Contains data for 5 closest mosques
             resolve(getMosqueData(latitude, longitude));
           });
 
-          getData.then((r) => {
-            setMapData((prev) => [
-              ...prev,
-              { ...r[0], type: "mosque", name: r[1] },
+          getData.then((mosquesData) => {
+            //Data sorted into MapData with closest mosques
+            const updatedMapData = mosquesData.map((mosque) => ({
+              location: {
+                lat: mosque.location.lat,
+                lng: mosque.location.lng,
+              },
+              name: mosque.name,
+              type: "mosque",
+            }));
+
+            setMapData((prev) => [...prev, ...updatedMapData]);
+            console.log("New map data :", updatedMapData);
+          });
+
+          //Getting user selected mosques
+          let getData2 = new Promise((resolve, reject) => {
+            resolve(getUserData());
+          });
+
+          getData2.then((userData) => {
+            const updatedMapData = userData.map((data) => ({
+              location: {
+                lat: data.location.lat,
+                lng: data.location.lng,
+              },
+              name: data.name,
+              type: "mosque2",
+            }));
+            console.log("Map data before FILTERING: ", mapData);
+            const uniqueMapData = filterUniqueLocations([
+              ...mapData,
+              ...updatedMapData,
             ]);
+
+            setMapData((prev) => [...prev, ...uniqueMapData]);
+            console.log("map data after FILTERING: ", mapData);
           });
 
           setLoadMap(true);
@@ -335,6 +399,21 @@ export default function Search() {
       }
     }
   };
+  useEffect(() => {
+    console.log("Map data:", mapData);
+  }, [mapData]);
+
+  const filterUniqueLocations = (data) => {
+    const uniqueLocations = new Set();
+    return data.filter((item) => {
+      const key = `${item.location.lat}-${item.location.lng}`;
+      if (!uniqueLocations.has(key)) {
+        uniqueLocations.add(key);
+        return true;
+      }
+      return false;
+    });
+  };
 
   //-------------Checks for token----------------
   useEffect(() => {
@@ -369,7 +448,6 @@ export default function Search() {
           return;
         }
         const response = await res.json();
-        console.log("Response from getInfoAcc: ", response.user);
         setData(response.user.rows);
       } catch (error) {
         console.error("Error on first try fetching data:", error.message);

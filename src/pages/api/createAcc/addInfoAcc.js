@@ -1,4 +1,5 @@
 import { sql } from "@vercel/postgres";
+import axios from "axios";
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -7,7 +8,6 @@ dotenv.config();
 export default async function AddInfoAcc(req, res) {
   try {
     const content = req.body;
-    console.log("content email new: ", content.gender);
     if (!content) {
       console.log("content empty");
       res.status(400).json({ error: "Content cannot be empty on addInfoAcc." });
@@ -60,20 +60,53 @@ export default async function AddInfoAcc(req, res) {
         email = ${content.email}
     `;
 
-    console.log("Result:", result);
-
     if (result.error) {
       console.log("Database Error:", result.error);
     }
 
     //Now adding mosques
-    console.log("Mosque array: ", content.mosque);
-    for (const mosque of content.mosque) {
-      const result = await sql`
-        INSERT INTO mosques (mosque_id, mosque_name, user_email)
-        VALUES (${mosque.id}, ${mosque.name},${content.email});
-      `;
-      console.log("Name:", mosque.name, " ID:", mosque.id);
+    const apiKey = process.env.MAP_API; // Replace with your API key
+    const formattedData = [];
+
+    // Iterate through each place ID and fetch details
+    console.log("Mosque array before: ", content.mosque);
+    for (const place of content.mosque) {
+      const apiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.id}&key=${apiKey}`;
+
+      try {
+        const response = await axios.get(apiUrl);
+
+        if (response.status === 200) {
+          const result = response.data.result;
+          const placeData = {
+            location: {
+              lat: result.geometry.location.lat,
+              lng: result.geometry.location.lng,
+            },
+            name: result.name,
+            type: "mosque", // You can customize the type as needed
+          };
+
+          // Add the formatted data to the array
+          formattedData.push(placeData);
+        } else {
+          console.error(
+            `Error getting place details for ${place.name}:`,
+            response.data
+          );
+        }
+      } catch (error) {
+        console.error(`Error making API request for ${place.name}:`, error);
+      }
+    }
+    console.log("Mosque array after: ", formattedData);
+
+    for (const mosque of formattedData) {
+      const result =
+        await sql`INSERT INTO mosques (email, latitude, longitude, type)
+      VALUES
+      (${content.email}, ${mosque.location.lat}, ${mosque.location.lng}, ${mosque.name});`;
+      console.log("mosque:", mosque);
     }
 
     res.json({
