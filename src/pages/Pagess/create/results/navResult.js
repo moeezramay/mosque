@@ -46,7 +46,8 @@ export default function ResultsNav() {
 
   //------------------Shift to messages----------------
   const shiftToMessages = () => {
-    push("/Pagess/create/results/messages/messages");
+    // push("/Pagess/create/results/messages/messages");
+    push("/Pagess/create/results/messages/liveMessage");
   };
 
   const shiftToSearch = () => {

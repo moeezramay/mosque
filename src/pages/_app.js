@@ -26,51 +26,51 @@ import AppContextProvider from "./Pagess/AppContext";
 
 //Using i18next for translation
 i18next
-    .use(Backend)
-    .use(LanguageDetector)
-    .use(initReactI18next)
-    .init({
-        interpolation: { escapeValue: false },
-        lng: "en", // Setting default language
-        resources: {
-            en: {
-                global: global_en,
-            },
-            es: {
-                global: global_es,
-            },
-            fr: {
-                global: global_fr,
-            },
-            de: {
-                global: global_de,
-            },
-            ru: {
-                global: global_ru,
-            },
-            it: {
-                global: global_it,
-            },
-            pt: {
-                global: global_pt,
-            },
-            fi: {
-                global: global_fi,
-            },
-            nl: {
-                global: global_nl,
-            },
-        },
-    });
+  .use(Backend)
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    interpolation: { escapeValue: false },
+    lng: "en", // Setting default language
+    resources: {
+      en: {
+        global: global_en,
+      },
+      es: {
+        global: global_es,
+      },
+      fr: {
+        global: global_fr,
+      },
+      de: {
+        global: global_de,
+      },
+      ru: {
+        global: global_ru,
+      },
+      it: {
+        global: global_it,
+      },
+      pt: {
+        global: global_pt,
+      },
+      fi: {
+        global: global_fi,
+      },
+      nl: {
+        global: global_nl,
+      },
+    },
+  });
 
 export default function App({ Component, pageProps, session }) {
-    return (
-        <SessionProvider session={session}>
-            <AppContextProvider>
-                <I18nextProvider i18n={i18next}>
-                    <Component {...pageProps} />
-                </I18nextProvider>
-            </AppContextProvider>
-        </SessionProvider>
-    );
+  return (
+    <SessionProvider session={session}>
+      <AppContextProvider>
+        <I18nextProvider i18n={i18next}>
+          <Component {...pageProps} />
+        </I18nextProvider>
+      </AppContextProvider>
+    </SessionProvider>
+  );
 }

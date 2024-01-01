@@ -1,4 +1,5 @@
 import { sql } from "@vercel/postgres";
+import { Trigger } from "./socket";
 
 const dotenv = require("dotenv");
 dotenv.config();

@@ -1,4 +1,4 @@
-import excuteQuery from "@/lib/db";
+import { sql } from "@vercel/postgres";
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -6,33 +6,24 @@ dotenv.config();
 //Function to retrieve all data on email match
 export default async function GetInfoAcc(req, res) {
   try {
-    const content = req.body;
-    console.log("content getInfoAcc: ", content);
+    const email = req.body.email;
 
-    if (!content) {
-      console.log("content empty no email");
+    if (!email) {
+      console.log("content empty no email on getUsername.js");
       res.status(400).json({ error: "Content cannot be empty." });
       return;
     }
-    const selectQuery = `
-      SELECT * FROM createAcc
-      WHERE email = ?;
-    `;
 
-    const email = content;
-
-    const result = await excuteQuery({
-      query: selectQuery,
-      values: [email],
-    });
-
+    const result =
+      await sql`SELECT username FROM createAcc WHERE email = ${email};`;
+    console.log("email:", email);
+    console.log("result:", result.rows[0].username);
     if (result.error) {
       console.log("Database Error:", result.error);
       return { error: "Database error" };
     }
-    console.log("Result recieved from db: ", result);
 
-    res.json({ user: result });
+    res.json({ user: result.rows[0].username });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
