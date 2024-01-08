@@ -140,10 +140,10 @@
     "religious": "Religiousness",
     "sector": "My sector",
     "prefer": "Do you prefer Hijab / Niqab?",
-    "beard": "Do you prefer a beard?",
+    "beard": "Do you have a beard?",
     "revert": "Are you a revert?",
     "halal": "Do you keep halal?",
-    "pray": "Do you pay?",
+    "pray": "Do you pray?",
     "quran": "How often do you read Quran?"
   }
 }
