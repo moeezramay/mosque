@@ -19,16 +19,16 @@ export default function Gender() {
   const { push } = useRouter();
 
   //-------------Checks for token----------------
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
 
-    if (token === null && !token) {
-      console.log("token not found");
-      push("/Pagess/sign/signIn/signIn");
-    } else {
-      console.log("Token found!");
-    }
-  }, []);
+  //   if (token === null && !token) {
+  //     console.log("token not found");
+  //     push("/Pagess/sign/signIn/signIn");
+  //   } else {
+  //     console.log("Token found!");
+  //   }
+  // }, []);
   //-------------^^^^^^^^^^^^^^^-----------------
 
   //-------------Upload and Update Data and shift----------------

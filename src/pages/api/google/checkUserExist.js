@@ -12,30 +12,28 @@ export default async function CheckUserExist(req, res) {
 
     if (!content) {
       console.log("content empty");
-      res
-        .status(400)
-        .json({ error: "Content cannot be empty on Check user exist." });
+      res.status(400).json({
+        error: "Content cannot be empty on Check user exist.",
+      });
       return;
     }
 
     const email = content;
+    console.log("email: ", email);
 
+    //Removed the Gender Data from result due to NULL Errors
     const result = await sql`SELECT * FROM createAcc WHERE email = ${email};`;
-    console.log("Result fetched: ", result.rows[0].gender);
-    if (
-      result.rows[0].gender !== null ||
-      result.rows[0].gender !== undefined ||
-      result.rows[0].gender != ""
-    ) {
+
+    console.log("RESULT: ", result);
+    if (result["rows"].length > 0) {
       res.json({ user: true });
-      return;
     } else {
       res.json({ user: false });
     }
   } catch (error) {
     console.log("Error cought on creating token /getToken.js: ", error);
-    res
-      .status(500)
-      .json({ error: "Internal server error related to /getToken.js" });
+    res.status(500).json({
+      error: "Internal server error related to /getToken.js",
+    });
   }
 }

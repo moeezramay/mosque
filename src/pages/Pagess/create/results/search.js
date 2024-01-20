@@ -8,6 +8,7 @@ import Envelope from "../../../../../public/envelope";
 import Stop from "../../../../../public/stopsvg";
 import Excalim from "../../../../../public/exclaimsvg";
 import Wali from "../../../../../public/waliSVG";
+import HeartClick from "../../../../../public/heartClickSvg";
 import { useLoadScript } from "@react-google-maps/api";
 import Map from "./map";
 
@@ -27,6 +28,7 @@ export default function Search() {
   const [selectedUserInfo, setSelectedUserInfo] = useState(null); //Temporary storage for users
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
+  const [heartClicked, setHeartClicked] = useState(false);
 
   const ethnicities_existing = [
     "asian",
@@ -663,8 +665,11 @@ export default function Search() {
                   )}
                 </div>
                 <div className="mini-seprator-search"></div>
-                <div className="heart-container-search">
-                  <ResultHeart />
+                <div
+                  className="heart-container-search"
+                  onClick={() => setHeartClicked(!heartClicked)}
+                >
+                  {heartClicked ? <HeartClick /> : <ResultHeart />}
                 </div>
                 <div
                   className="heart-container-search"

@@ -29,8 +29,33 @@
 }
 .account-navResult {
   margin-left: auto;
-  margin-right: 80px;
+  margin-right: 40px;
   cursor: pointer;
+  background-color: #b52d3b;
+  color: white;
+  cursor: pointer;
+  height: 60px;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 30px;
+}
+.logout-container-navResult {
+  margin-left: auto;
+  width: 20%;
+  background-color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+.logout-btn-navResult {
+  background-color: #b52d3b;
+  width: 120px;
+  outline: none;
+  border: none;
+  height: 40px;
+  color: white;
 }
 @media (max-width: 764px) {
   .navbar-logo-navResult {

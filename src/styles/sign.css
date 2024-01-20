@@ -3,6 +3,7 @@
   flex-direction: column;
   background-color: rgb(236, 235, 235);
   height: 100vh;
+  padding-bottom: 40px;
 }
 .logo-signIn {
   width: 100%;
@@ -107,11 +108,22 @@
   padding-top: 5%;
   padding-bottom: 3%;
 }
+.no-acc-imam-signIn {
+  width: 100%;
+  color: #b52d3b;
+  margin-top: 10px;
+  padding-bottom: 20px;
+  cursor: pointer;
+}
 .signGoogle-signIn {
   display: flex;
   justify-content: center;
   align-items: center;
   padding-top: 4%;
+}
+.user-not-google-signIn {
+  color: #b52d3b;
+  text-align: center;
 }
 .signIn-google-container-signIn {
   height: 45px;
@@ -236,6 +248,7 @@
   padding-top: 5%;
   padding-bottom: 3%;
 }
+
 .signGoogle-signUp {
   display: flex;
   justify-content: center;

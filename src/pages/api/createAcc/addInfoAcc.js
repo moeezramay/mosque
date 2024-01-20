@@ -65,7 +65,7 @@ export default async function AddInfoAcc(req, res) {
     }
 
     //Now adding mosques
-    const apiKey = process.env.MAP_API; // Replace with your API key
+    const apiKey = process.env.MAP_API;
     const formattedData = [];
 
     // Iterate through each place ID and fetch details

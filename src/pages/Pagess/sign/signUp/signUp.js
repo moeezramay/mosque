@@ -12,6 +12,10 @@ export default function SignUp() {
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState(false);
+  const [flag, setFlag] = useState(false);
+  const [googleUser, setGoogleUser] = useState("");
+  const [googleEmail, setGoogleEmail] = useState("");
 
   const [t, i18n] = useTranslation("global");
 
@@ -30,6 +34,7 @@ export default function SignUp() {
     console.log(emailAddress);
     const templateParams = {
       to_name: user,
+      to_email: emailAddress,
     };
 
     // Send the email
@@ -45,23 +50,20 @@ export default function SignUp() {
       );
   };
 
-  //------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  useEffect(() => {
+    if (session && session.user && session.user.name) {
+      console.log("GOOGLE USER SUCCESSFULLY CONNECTED");
+      console.log(session.user.name);
+      console.log(session.user.email);
 
-  //---------------SignInWith GOOGLE----------------------------
-
-  const signUpWithGoogle = async () => {
-    const result = await signUp("google");
-
-    //Check if user exists
-    if (status === "authenticated") {
-      const checkEmail = session?.user?.email;
-      try {
-        const res = await fetch("/api/google/checkUserExist", {
+      const fetchToken = async () => {
+        //If the User Exists the Token Is fetched
+        const res = await fetch("/api/google/getToken", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(checkEmail),
+          body: JSON.stringify(session.user.email),
         });
         if (!res.ok) {
           const errorMessage = await res.json();
@@ -69,52 +71,160 @@ export default function SignUp() {
           return;
         }
         const responseData = await res.json();
-        if (responseData && responseData.userExists === true) {
-          setUserExist(true);
-        } else {
-          setUserExist(false);
-          alert("User does not exist, please signup first");
+        const token = responseData.token;
+
+        //Successful Redirection
+        setGoogleUser(session.user.name);
+        setGoogleEmail(session.user.email);
+        localStorage.setItem("token", token);
+        localStorage.setItem("email", session.user.email);
+        localStorage.setItem("username", session.user.name);
+        console.log("res", responseData);
+
+        push("/Pagess/create/results/results");
+      };
+
+      const validateUser = async () => {
+        try {
+          const res = await fetch("/api/google/checkUserExist", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: session.user.email }),
+          });
+          if (!res.ok) {
+            const errorMessage = await res.json();
+            console.error("ERROR: ", errorMessage.error);
+            return;
+          }
+          const responseData = await res.json();
+          console.log("DATA RECIEVED", responseData);
+          //setUserExist(true);
+          if (responseData.user === true) {
+            // fetchToken();
+            //Since user exists, he/she will have to signIn instead
+            setError(true);
+          } else {
+            //-----------USER DOESNOT EXIST-----------
+            console.log("USER IS NOT REGISTERED");
+            //setUserExist(false);
+            console.log("PUSHING");
+            setFlag(true);
+          }
+        } catch (error) {
+          console.log("VALIDATION ERROR", error);
         }
-      } catch (error) {
-        console.log("Error on first if statement: ", error);
-      }
-    }
-
-    //If the user exists
-    if (status === "authenticated" && userExist === true) {
-      const name = session?.user?.name;
-      const email = session?.user?.email;
-      setGoogleUser(name);
-      setGoogleEmail(email);
-      localStorage.setItem("email", googleEmail);
-      localStorage.setItem("username", googleUser);
-
-      push("/Pagess/create/results/results");
+      };
+      validateUser();
     } else {
-      console.log("Google SignIn Failed");
-      return;
+      console.log("GOOGLE USER NOT CONNECTED");
     }
+  }, [session]);
 
-    try {
-      const res = await fetch("/api/google/getToken", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(googleEmail),
-      });
-      if (!res.ok) {
-        const errorMessage = await res.json();
-        console.error("Error if:", errorMessage.error);
-        return;
+  //------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      if (flag === true) {
+        console.log("WORKING");
+        console.log(session.user.email);
+        localStorage.setItem("email", session.user.email);
+        localStorage.setItem("username", session.user.name);
+        try {
+          const res = await fetch("/api/google/getToken", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: session.user.email }),
+          });
+          if (!res.ok) {
+            const errorMessage = await res.json();
+            console.error("ERROR: ", errorMessage.error);
+            return;
+          }
+          const responseData = await res.json();
+          const token = responseData.token;
+          localStorage.setItem("token", token);
+          push("/Pagess/create/gender");
+        } catch (error) {
+          console.log("Error cought on try catch line 135 of signUp", error);
+        }
       }
-      const responseData = await res.json();
-      const token = responseData.token;
-      localStorage.setItem("token", token);
-      console.log("res", token);
-    } catch (error) {
-      console.log("Could not create token from google signin", error);
-    }
+    }, 3000); // 3000 milliseconds = 3 seconds
+
+    // Clear the interval when the component is unmounted or when flag changes
+    return () => clearInterval(intervalId);
+  }, [flag]);
+
+  //---------------SignInWith GOOGLE----------------------------
+
+  const signUpWithGoogle = async () => {
+    const result = await signIn("google");
+    /*if (status === "authenticated") {
+            const checkEmail = session?.user?.email;
+            try {
+                const res = await fetch("/api/google/checkUserExist", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(checkEmail),
+                });
+                if (!res.ok) {
+                    const errorMessage = await res.json();
+                    console.error("Error if:", errorMessage.error);
+                    return;
+                }
+                const responseData = await res.json();
+                if (responseData && responseData.userExists === true) {
+                    setUserExist(true);
+                } else {
+                    setUserExist(false);
+                    alert("User does not exist, please signup first");
+                    //Set User Sign Up Data
+                }
+            } catch (error) {
+                console.log("Error on first if statement: ", error);
+            }
+        }
+
+        //If the user exists
+        if (status === "authenticated" && userExist === true) {
+            const name = session?.user?.name;
+            const email = session?.user?.email;
+            setGoogleUser(name);
+            setGoogleEmail(email);
+            localStorage.setItem("email", googleEmail);
+            localStorage.setItem("username", googleUser);
+
+            push("/Pagess/create/results/results");
+        } else {
+            console.log("Google SignIn Failed");
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/google/getToken", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(googleEmail),
+            });
+            if (!res.ok) {
+                const errorMessage = await res.json();
+                console.error("Error if:", errorMessage.error);
+                return;
+            }
+            const responseData = await res.json();
+            const token = responseData.token;
+            localStorage.setItem("token", token);
+            console.log("res", token);
+        } catch (error) {
+            console.log("Could not create token from google signin", error);
+        }*/
   };
   //---------------^^^^^^^^^-----------------------------
 
@@ -241,18 +351,26 @@ export default function SignUp() {
               </div>
               <div className="signGoogle-signIn">
                 <div
-                  // onClick={signInWithGoogle}
+                  onClick={signUpWithGoogle}
                   className="signIn-google-container-signIn"
                 >
                   <SignUpGoogle />
                 </div>
               </div>
+              {error && (
+                <div className="user-not-google-signIn">
+                  User is already registered
+                </div>
+              )}
               <div className="no-acc-container-signUp">
                 <div className="no-acc-signUp">
                   {t("signIn.already1")}{" "}
                   <span
                     onClick={shiftToSignIn}
-                    style={{ color: "#b52d3b", cursor: "pointer" }}
+                    style={{
+                      color: "#b52d3b",
+                      cursor: "pointer",
+                    }}
                   >
                     {t("signIn.already2")}
                   </span>
