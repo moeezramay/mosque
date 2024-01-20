@@ -13,9 +13,14 @@ import Map from "./map";
 
 export default function Search() {
     const [data, setData] = useState([]);
+    //Setting the Current User's Coordinates
+    const [cLocation, setcLocation] = useState(null);
+    let locationSet = false;
     const [email, setEmail] = useState("");
     const [filteredData, setFilteredData] = useState([]);
     const { filterContext, setFilterContext } = useContext(AppContext);
+    //Context Range Variable
+    const { rangeContext, setRangeContext } = useContext(AppContext);
     const [mapText, setMapText] = useState("Show Map");
     const [mapVisible, setMapVisible] = useState(false);
     const [loadMap, setLoadMap] = useState(false);
@@ -167,6 +172,27 @@ export default function Search() {
         },
     ]);
 
+    //Updator for Current Location
+    useEffect(() => {
+        console.log("Current Location Has Been Set");
+        console.log(cLocation);
+        if (cLocation && !locationSet) {
+            locationSet = true;
+            var tempData = data.map((e) => {
+                let tempLoc = JSON.parse(e.locations)[0];
+                e.distance = Math.round(
+                    getDistance(
+                        cLocation[0],
+                        cLocation[1],
+                        tempLoc[0],
+                        tempLoc[1]
+                    )
+                );
+                return e;
+            });
+        }
+    }, [cLocation]);
+
     //-------------------Sending Message------------------------
     const SendMessage = async (e, user) => {
         e.preventDefault();
@@ -209,7 +235,8 @@ export default function Search() {
             Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
         dist = Math.acos(dist);
         dist = (dist * 180) / Math.PI;
-        dist = dist * 60 * 1.1515;
+        dist = dist * 60 * 1.1515; // distance in miles
+        dist = dist * 1.609344; // convert miles to kilometers
         return dist;
     };
     //-------------------^^^^^^^^^^^^^^^^^^^^------------------
@@ -301,6 +328,7 @@ export default function Search() {
             navigator.geolocation.watchPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
+                    setcLocation([latitude, longitude]);
                     setMapCenter({ lat: latitude, lng: longitude });
 
                     setMapData((prev) => [
@@ -458,6 +486,15 @@ export default function Search() {
                     return;
                 }
                 const response = await res.json();
+                console.log("Incoming Data:");
+                console.log(response.user.rows);
+
+                //Adding a Distance Tracker to the Users
+                response.user.rows = response.user.rows.map((e) => {
+                    e["distance"] = "Unknown";
+                    return e;
+                });
+
                 setData(response.user.rows);
             } catch (error) {
                 console.error(
@@ -521,8 +558,6 @@ export default function Search() {
     };
 
     useEffect(() => {
-        console.log(filterContext);
-
         var filtered = data.filter((item) => {
             if (
                 filterContext.ethnicities.length == 0 ||
@@ -596,7 +631,20 @@ export default function Search() {
                                                                     item.religion_pray
                                                                 )
                                                             ) {
-                                                                return item;
+                                                                if (
+                                                                    item.distance !=
+                                                                        "Unknown" &&
+                                                                    item.distance <
+                                                                        rangeContext *
+                                                                            1
+                                                                ) {
+                                                                    return item;
+                                                                } else if (
+                                                                    item.distance ==
+                                                                    "Unknown"
+                                                                ) {
+                                                                    return item;
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -612,7 +660,7 @@ export default function Search() {
             }
         });
         setFilteredData(filtered);
-    }, [filterContext, data]);
+    }, [filterContext, data, rangeContext]);
 
     return (
         <div>
@@ -858,7 +906,7 @@ export default function Search() {
                                 {/* ^^^^^^^^^^^^^ */}
                             </div>
                             <div className="result-line3-container-search">
-                                <div>20km away</div>
+                                <div>{userInfo.distance + " Km Away"}</div>
                                 <div className="mini-seprator-search"></div>
                                 <div className="distance-search">
                                     {userInfo.mosque}

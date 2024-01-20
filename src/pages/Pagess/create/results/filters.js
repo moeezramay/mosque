@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { AppContext } from "../../AppContext";
 
 export default function Filters() {
@@ -20,6 +20,13 @@ export default function Filters() {
     const [quran, setQuran] = useState(false);
 
     const [checked, isChecked] = useState(true);
+
+    //Setting the Slider Data
+    const [sliderValue, setSliderValue] = useState(100);
+
+    //Context Range Variable
+    const { rangeContext, setRangeContext } = useContext(AppContext);
+    const rangeInputRef = useRef("");
 
     //--------------Intializing context----------------
     const { filterContext, setFilterContext } = useContext(AppContext);
@@ -93,6 +100,16 @@ export default function Filters() {
         setFilterContext(filterRules);
     }, [filterRules]);
 
+    let handleSliderChange = (e) => {
+        setSliderValue(parseInt(e.target.value, 10));
+    };
+
+    //Send Slider Value Globally
+    useEffect(() => {
+        setRangeContext(sliderValue);
+        rangeInputRef.current.value = sliderValue + " KM";
+    }, [sliderValue]);
+
     /*-------------^^^^^^^^^-------------------*/
     return (
         <div className="filters-parent-result">
@@ -102,8 +119,24 @@ export default function Filters() {
             {/* Input for masjid filter*/}
             <input
                 className="filters-location-result"
+                ref={rangeInputRef}
                 placeholder="City, post code, region, area, etc"
             />
+
+            <input
+                type="range"
+                name="region-slider"
+                className="region-slider"
+                min="0"
+                max="100"
+                value={sliderValue}
+                step="1"
+                onChange={handleSliderChange}
+            />
+            <div className="region-slider-labels">
+                <div>0 KM</div>
+                <div>100 KM</div>
+            </div>
             <div className="filters-line-result"></div>
             <div className="filters-button-container-result">
                 <button className="filters-searchBtn-result">Search</button>
