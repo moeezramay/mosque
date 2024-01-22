@@ -604,40 +604,6 @@ export default function Search() {
 
   return (
     <div>
-      <div
-        className="black-sheet-search"
-        style={{ visibility: mapVisible ? "visible" : "hidden" }}
-      ></div>
-      <div
-        className="map-container-search"
-        style={{
-          height: mapVisible ? 500 : 0,
-        }}
-      >
-        <div className="map-header-search">
-          <div>Global Map</div>
-          <button
-            className="close-map-search"
-            onClick={(e) => {
-              e.preventDefault();
-              setMapVisible(false);
-              setMapText("Show Map");
-            }}
-          >
-            Hide Map
-          </button>
-        </div>
-        <div className="map-body-search">
-          {isLoaded ? (
-            <Map
-              positions={mapData}
-              center={mapCenter}
-              display={mapVisible}
-              zoom={zoom}
-            />
-          ) : null}
-        </div>
-      </div>
       <div className="top-container-search">
         <div className="top-left-search">
           <div className="search-heading-search">Search Results</div>
@@ -670,7 +636,23 @@ export default function Search() {
           </div>
         </div>
       </div>
-
+      <div
+        className="map-container-search"
+        style={{
+          height: mapVisible ? 500 : 0,
+        }}
+      >
+        <div className="map-body-search">
+          {isLoaded ? (
+            <Map
+              positions={mapData}
+              center={mapCenter}
+              display={mapVisible}
+              zoom={zoom}
+            />
+          ) : null}
+        </div>
+      </div>
       <div className="bottom-container-search">
         {filteredData.map((userInfo) => (
           <div key={userInfo.id} className="result-parent-container-search">
