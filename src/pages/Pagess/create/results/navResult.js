@@ -3,17 +3,30 @@ import SearchIcon from "../../../../../public/searchsvg";
 import MessageIcon from "../../../../../public/messageIconsvg";
 import HeartIcon from "../../../../../public/hearticonSvg";
 import { useState, useEffect } from "react";
+import { signIn, useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function ResultsNav() {
+  const { data: session } = useSession();
   const [t, i18n] = useTranslation("global");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [logout, setLogout] = useState(false);
   const { push } = useRouter();
 
   //------------------Retrieves data----------------
   useEffect(() => {
     const fetchData = async () => {
+      if (
+        localStorage.getItem("email") === null ||
+        localStorage.getItem("email") === undefined ||
+        localStorage.getItem("email") === "" ||
+        localStorage.getItem("username") === null ||
+        localStorage.getItem("username") === undefined ||
+        localStorage.getItem("username") === ""
+      ) {
+        push("/Pagess/sign/signIn/signIn");
+      }
       const email1 = localStorage.getItem("email");
       setEmail(email1);
       const user1 = localStorage.getItem("username");
@@ -21,23 +34,6 @@ export default function ResultsNav() {
 
       console.log("email found nav:", email);
 
-      // If need to retrieve username from db
-
-      // //Retrieving data
-      // const res = await fetch("/api/createAcc/getInfoAcc", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(email),
-      // });
-      // if (!res.ok) {
-      //   const errorMessage = await res.json();
-      //   console.error("Error if:", errorMessage.error);
-      //   return;
-      // }
-      // const response = await res.json();
-      // const username = response.username;
       console.log("username", username);
     };
     fetchData();
@@ -52,6 +48,18 @@ export default function ResultsNav() {
 
   const shiftToSearch = () => {
     push("/Pagess/create/results/results");
+  };
+
+  //------------------^^^^^^^^^^^^^^^----------------
+
+  //------------------Log out----------------
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    localStorage.removeItem("email");
+    localStorage.removeItem("username");
+    localStorage.removeItem("token");
+    await signOut("google");
+    push("/Pagess/HomePage/home");
   };
 
   //------------------^^^^^^^^^^^^^^^----------------
@@ -79,8 +87,22 @@ export default function ResultsNav() {
             <HeartIcon />
           </div>
         </div>
-        <div className="account-navResult">{username}</div>
+        <div className="account-navResult" onClick={() => setLogout(!logout)}>
+          {username}
+        </div>
       </div>
+      {logout && (
+        <div className="logout-container-navResult">
+          <button
+            className="logout-btn-navResult"
+            onClick={(e) => {
+              handleLogout(e);
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      )}
     </div>
   );
 }
