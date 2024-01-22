@@ -3,9 +3,11 @@ import SearchIcon from "../../../../../public/searchsvg";
 import MessageIcon from "../../../../../public/messageIconsvg";
 import HeartIcon from "../../../../../public/hearticonSvg";
 import { useState, useEffect } from "react";
+import { signIn, useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function ResultsNav() {
+  const { data: session } = useSession();
   const [t, i18n] = useTranslation("global");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -51,13 +53,15 @@ export default function ResultsNav() {
   //------------------^^^^^^^^^^^^^^^----------------
 
   //------------------Log out----------------
-  const handleLogout = (e) => {
+  const handleLogout = async (e) => {
     e.preventDefault();
     localStorage.removeItem("email");
     localStorage.removeItem("username");
     localStorage.removeItem("token");
-    push("/Pagess/sign/signIn/signIn");
+    await signOut("google");
+    push("/Pagess/HomePage/home");
   };
+  //das
 
   //------------------^^^^^^^^^^^^^^^----------------
 

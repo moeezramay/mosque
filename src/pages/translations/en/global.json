@@ -81,10 +81,6 @@
     "login": "Login",
     "acc1": "Don't have an account?",
     "acc2": "Sign Up",
-    "imam": "Sign In As Imam?",
-    "imam2": "SignUp As Imam?",
-    "user": "Sign In As User?",
-    "user2": "SignUp As User?",
     "confirm": "Confirm Password",
     "register": "Register",
     "already1": "Already have an account?",
@@ -144,10 +140,10 @@
     "religious": "Religiousness",
     "sector": "My sector",
     "prefer": "Do you prefer Hijab / Niqab?",
-    "beard": "Do you have a beard?",
+    "beard": "Do you prefer a beard?",
     "revert": "Are you a revert?",
     "halal": "Do you keep halal?",
-    "pray": "Do you pray?",
+    "pray": "Do you pay?",
     "quran": "How often do you read Quran?"
   }
 }

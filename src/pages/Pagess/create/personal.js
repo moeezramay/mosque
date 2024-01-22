@@ -128,8 +128,9 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Yes</option>
-                  <option>No</option>
+                  {Countries.map((city) => (
+                    <option key={city}>{city}</option>
+                  ))}
                 </select>
               </div>
             </div>
