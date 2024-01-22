@@ -81,7 +81,7 @@ export default function SignUp() {
         localStorage.setItem("username", session.user.name);
         console.log("res", responseData);
 
-        push("/Pagess/create/results/results");
+        // push("/Pagess/create/results/results");
       };
 
       const validateUser = async () => {
@@ -123,7 +123,6 @@ export default function SignUp() {
   }, [session]);
 
   //------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
   useEffect(() => {
     const intervalId = setInterval(async () => {
       if (flag === true) {
@@ -147,14 +146,46 @@ export default function SignUp() {
           const responseData = await res.json();
           const token = responseData.token;
           localStorage.setItem("token", token);
-          push("/Pagess/create/gender");
+          try {
+            const acc = {
+              email: session.user.email,
+              password: responseData.token,
+              firstName: session.user.name,
+              lastName: " ",
+            };
+            localStorage.setItem("email", session.user.email);
+            localStorage.setItem("username", session.user.name);
+            const res = await fetch("/api/createAcc/createAcc", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(acc),
+            });
+            if (!res.ok) {
+              const errorMessage = await res.json();
+              console.error("Error if res:", errorMessage.error);
+              alert("Email already exists");
+              return;
+            }
+            const response = await res.json();
+
+            const token = response.token;
+            const msg = response.message;
+            const username = "dsa";
+            console.log("msg", msg);
+
+            push("/Pagess/create/gender");
+          } catch (error) {
+            console.log("Error caught on try-catch line 181 of signUp", error);
+          }
         } catch (error) {
-          console.log("Error cought on try catch line 135 of signUp", error);
+          console.log("eror on 183", error);
         }
       }
     }, 3000); // 3000 milliseconds = 3 seconds
 
-    // Clear the interval when the component is unmounted or when flag changes
+    // Clear the interval on component unmount to prevent memory leaks
     return () => clearInterval(intervalId);
   }, [flag]);
 
