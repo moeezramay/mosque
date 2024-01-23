@@ -187,6 +187,10 @@
   margin-top: 2%;
   color: rgb(70, 70, 70);
 }
+.user-not-google-signIn {
+  color: #b52d3b;
+  text-align: center;
+}
 .terms-signUp {
   font-size: 14px;
 }
