@@ -8,7 +8,7 @@ import Envelope from "../../../../../public/envelope";
 import Stop from "../../../../../public/stopsvg";
 import Excalim from "../../../../../public/exclaimsvg";
 import Wali from "../../../../../public/waliSVG";
-import { useLoadScript } from "@react-google-maps/api";
+import { Data, useLoadScript } from "@react-google-maps/api";
 import Map from "./map";
 import HeartClick from "../../../../../public/heartClickSvg";
 
@@ -356,7 +356,6 @@ export default function Search() {
             }));
 
             setMapData((prev) => [...prev, ...updatedMapData]);
-            console.log("New map data :", updatedMapData);
           });
 
           //Getting user selected mosques
@@ -373,14 +372,12 @@ export default function Search() {
               name: data.name,
               type: "mosque2",
             }));
-            console.log("Map data before FILTERING: ", mapData);
             const uniqueMapData = filterUniqueLocations([
               ...mapData,
               ...updatedMapData,
             ]);
 
             setMapData((prev) => [...prev, ...uniqueMapData]);
-            console.log("map data after FILTERING: ", mapData);
           });
 
           setLoadMap(true);
@@ -424,9 +421,6 @@ export default function Search() {
       }
     }
   };
-  useEffect(() => {
-    console.log("Map data:", mapData);
-  }, [mapData]);
 
   const filterUniqueLocations = (data) => {
     const uniqueLocations = new Set();
@@ -649,6 +643,7 @@ export default function Search() {
               center={mapCenter}
               display={mapVisible}
               zoom={zoom}
+              people={data}
             />
           ) : null}
         </div>

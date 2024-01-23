@@ -1,12 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GoogleMap, InfoWindowF, MarkerF } from "@react-google-maps/api";
 
-function Map({ positions, center, display, zoom }) {
-  console.log("Positions: ", positions); //works
+function Map({ positions, center, display, zoom, people }) {
   const [activeMarker, setActiveMarker] = useState(null);
+  const [activeName, setActiveName] = useState(null);
+  const [activePeople, setActivePeople] = useState([]);
 
   const handleMarkerClick = (marker) => {
-    setActiveMarker(marker);
+    try {
+      setActiveMarker(marker);
+      setActiveName(marker.name);
+      setActivePeople(
+        people.filter((person) => {
+          let temp = JSON.parse(person.locations);
+          for (let i in temp) {
+            if (
+              temp[i][2] === marker.name ||
+              marker.name === "Grand Jamia Masjid Bahria Town"
+            ) {
+              return true;
+            }
+          }
+        })
+      );
+    } catch (error) {
+      console.log("Error on marker: ", error);
+    }
   };
 
   const handleInfoWindowClose = () => {
@@ -69,16 +88,22 @@ function Map({ positions, center, display, zoom }) {
             }
             onClick={() => handleMarkerClick(position)}
             name={position.name}
-          />
+          ></MarkerF>
         ))}
       {activeMarker && (
         <InfoWindowF
-          position={activeMarker}
+          className="map-info-window"
+          position={
+            activeMarker.location
+              ? {
+                  lat: activeMarker.location.lat,
+                  lng: activeMarker.location.lng,
+                }
+              : { lat: activeMarker.lat, lng: activeMarker.lng }
+          }
           onCloseClick={handleInfoWindowClose}
         >
-          <div>
-            <p>{activeMarker.name}</p>
-          </div>
+          <div>{activeName}</div>
         </InfoWindowF>
       )}
     </GoogleMap>

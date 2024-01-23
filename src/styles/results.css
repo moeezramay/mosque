@@ -649,3 +649,11 @@
   width: 100%;
   font-size: 12px;
 }
+
+.map-people {
+  position: absolute;
+}
+
+.map-info-window {
+  display: none;
+}
