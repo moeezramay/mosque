@@ -58,8 +58,13 @@ export default function ResultsNav() {
     localStorage.removeItem("email");
     localStorage.removeItem("username");
     localStorage.removeItem("token");
-    await signOut("google");
-    push("/Pagess/HomePage/home");
+
+    if (session) {
+      await signOut("google");
+    }
+    if (!session) {
+      push("/Pagess/HomePage/home");
+    }
   };
   //das
 
