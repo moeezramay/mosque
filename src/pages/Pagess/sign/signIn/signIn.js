@@ -96,7 +96,7 @@ export default function SignIn() {
     }
     await signIn("google");
   };
-  //Check if user exists
+  //Check if user exis
 
   /*let tempEmail = "";
         let tempName = "";
