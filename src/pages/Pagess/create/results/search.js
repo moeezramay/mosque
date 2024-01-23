@@ -8,7 +8,7 @@ import Envelope from "../../../../../public/envelope";
 import Stop from "../../../../../public/stopsvg";
 import Excalim from "../../../../../public/exclaimsvg";
 import Wali from "../../../../../public/waliSVG";
-import { useLoadScript } from "@react-google-maps/api";
+import { Data, useLoadScript } from "@react-google-maps/api";
 import Map from "./map";
 import HeartClick from "../../../../../public/heartClickSvg";
 
@@ -356,7 +356,6 @@ export default function Search() {
             }));
 
             setMapData((prev) => [...prev, ...updatedMapData]);
-            console.log("New map data :", updatedMapData);
           });
 
           //Getting user selected mosques
@@ -373,14 +372,12 @@ export default function Search() {
               name: data.name,
               type: "mosque2",
             }));
-            console.log("Map data before FILTERING: ", mapData);
             const uniqueMapData = filterUniqueLocations([
               ...mapData,
               ...updatedMapData,
             ]);
 
             setMapData((prev) => [...prev, ...uniqueMapData]);
-            console.log("map data after FILTERING: ", mapData);
           });
 
           setLoadMap(true);
@@ -424,9 +421,6 @@ export default function Search() {
       }
     }
   };
-  useEffect(() => {
-    console.log("Map data:", mapData);
-  }, [mapData]);
 
   const filterUniqueLocations = (data) => {
     const uniqueLocations = new Set();
@@ -604,40 +598,6 @@ export default function Search() {
 
   return (
     <div>
-      <div
-        className="black-sheet-search"
-        style={{ visibility: mapVisible ? "visible" : "hidden" }}
-      ></div>
-      <div
-        className="map-container-search"
-        style={{
-          height: mapVisible ? 500 : 0,
-        }}
-      >
-        <div className="map-header-search">
-          <div>Global Map</div>
-          <button
-            className="close-map-search"
-            onClick={(e) => {
-              e.preventDefault();
-              setMapVisible(false);
-              setMapText("Show Map");
-            }}
-          >
-            Hide Map
-          </button>
-        </div>
-        <div className="map-body-search">
-          {isLoaded ? (
-            <Map
-              positions={mapData}
-              center={mapCenter}
-              display={mapVisible}
-              zoom={zoom}
-            />
-          ) : null}
-        </div>
-      </div>
       <div className="top-container-search">
         <div className="top-left-search">
           <div className="search-heading-search">Search Results</div>
@@ -670,7 +630,24 @@ export default function Search() {
           </div>
         </div>
       </div>
-
+      <div
+        className="map-container-search"
+        style={{
+          height: mapVisible ? 500 : 0,
+        }}
+      >
+        <div className="map-body-search">
+          {isLoaded ? (
+            <Map
+              positions={mapData}
+              center={mapCenter}
+              display={mapVisible}
+              zoom={zoom}
+              people={data}
+            />
+          ) : null}
+        </div>
+      </div>
       <div className="bottom-container-search">
         {filteredData.map((userInfo) => (
           <div key={userInfo.id} className="result-parent-container-search">

@@ -555,42 +555,13 @@
   margin-top: 20px;
 }
 .map-container-search {
-  width: 800px;
-  position: fixed;
-  top: 50%;
-  left: 50%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  transform: translate(-50%, -50%);
   background-color: #b52d3b;
   border-radius: 5px;
   color: white;
-}
-
-.black-sheet-search {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: black;
-  opacity: 0.5;
-}
-
-.map-header-search {
-  margin: 0 20px 0 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: row;
-  background-color: white;
-  width: calc(100% - 40px);
-  height: 60px;
-  background-color: #b52d3b;
-  max-height: 100%;
-  overflow: hidden;
-  font-size: 15px;
+  margin-top: 40px;
 }
 
 .map-header-search button {
@@ -677,4 +648,12 @@
   margin-top: 10px;
   width: 100%;
   font-size: 12px;
+}
+
+.map-people {
+  position: absolute;
+}
+
+.map-info-window {
+  display: none;
 }
