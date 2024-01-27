@@ -10,10 +10,7 @@ export default function SignIn() {
   const [t, i18n] = useTranslation("global");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [googleEmail, setGoogleEmail] = useState("");
-  const [googleUser, setGoogleUser] = useState("");
   const [registered, setRegistered] = useState(true);
-  let check = false;
 
   const { push } = useRouter();
 
@@ -22,6 +19,9 @@ export default function SignIn() {
     push("/Pagess/sign/signUp/signUp");
   };
 
+  const shiftToImam = () => {
+    push("/Pagess/imam/sign/signIn/imamIn");
+  };
   useEffect(() => {
     if (session && session.user && session.user.name) {
       console.log("GOOGLE USER SUCCESSFULLY CONNECTED");
@@ -96,89 +96,6 @@ export default function SignIn() {
     }
     await signIn("google");
   };
-  //Check if user exists
-
-  /*let tempEmail = "";
-        let tempName = "";
-        const checkEmail = session?.user?.email;
-        const checkName = session?.user?.name;
-
-        console.log(checkEmail);
-        console.log(checkName);
-        try {
-            const res = await fetch("/api/google/checkUserExist", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email: checkEmail }),
-            });
-            if (!res.ok) {
-                const errorMessage = await res.json();
-                console.error("Error if:", errorMessage.error);
-                return;
-            }
-            const responseData = await res.json();
-            console.log("User exists:", responseData);
-            if (responseData.user === true) {
-                check = true;
-                console.log("Check set to true", checkEmail);
-                tempEmail = checkEmail;
-                tempName = checkName;
-            } else {
-                alert("User does not exist, please signup first");
-                check = false;
-            }
-        } catch (error) {
-            console.log("Error on first if statement: ", error);
-        }
-        console.log("check", check);
-
-        //If the user exists
-        if (status === "authenticated" && check === true) {
-            console.log("Google SignIn Success", tempEmail);
-            localStorage.setItem("email", tempEmail);
-            localStorage.setItem("username", tempName);
-        } else {
-            console.log("Google SignIn Failed");
-            return;
-        }
-        try {
-            const res = await fetch("/api/google/getToken", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(googleEmail),
-            });
-            if (!res.ok) {
-                const errorMessage = await res.json();
-                console.error("Error if:", errorMessage.error);
-                return;
-            }
-            const responseData = await res.json();
-            const token = responseData.token;
-            localStorage.setItem("token", token);
-            console.log("res", responseData);
-            push("/Pagess/create/results/results");
-        } catch (error) {
-            console.log("Could not create token from google signin", error);
-        }
-    };*/
-  /*useEffect(() => {
-        const checkGoogleUser = async () => {
-            let em = localStorage.getItem("email");
-            let name = localStorage.getItem("username");
-            console.log("Email: " + em, "Name: " + name);
-            if (em != "" && name != "" && em != null && name != null) {
-                console.log("push");
-                push("/Pagess/create/results/results");
-            } else {
-                console.log("OOOOOOOOOOOOOOO push");
-            }
-        };
-        checkGoogleUser();
-    }, []);*/
 
   //---------------^^^^^^^^^-----------------------------
 
@@ -276,6 +193,9 @@ export default function SignIn() {
                 <div className="or-left-signIn"></div>
                 <div className="or-signIn">OR</div>
                 <div className="or-right-signIn"></div>
+              </div>
+              <div className="imam-signIn" onClick={shiftToImam}>
+                SignIn As Imam?
               </div>
               <div className="signGoogle-signIn">
                 <div
