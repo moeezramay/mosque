@@ -1,21 +1,18 @@
+import SignUpGoogle from "../../../../../../public/signupGooglesvg";
+import emailjs from "emailjs-com";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { signIn, useSession, signOut } from "next-auth/react";
-import SignUpGoogle from "../../../../../public/signupGooglesvg";
-import emailjs from "emailjs-com";
 
-export default function SignUp() {
+export default function ImamUp() {
   const { status, data: session } = useSession();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState(false);
   const [flag, setFlag] = useState(false);
-  const [googleUser, setGoogleUser] = useState("");
-  const [googleEmail, setGoogleEmail] = useState("");
 
   const [t, i18n] = useTranslation("global");
 
@@ -25,10 +22,7 @@ export default function SignUp() {
 
   const shiftToSignIn = () => {
     console.log("signIn Clicked");
-    push("/Pagess/sign/signIn/signIn");
-  };
-  const shiftToImam = () => {
-    push("/Pagess/imam/sign/signUn/imamUp");
+    push("/Pagess/imam/sign/signIn/imamIn");
   };
 
   //------------------Email send-----------------------
@@ -52,6 +46,8 @@ export default function SignUp() {
         }
       );
   };
+
+  //------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   //---------------SignUP with google------------------------
   useEffect(() => {
@@ -85,7 +81,7 @@ export default function SignUp() {
         localStorage.setItem("username", session.user.name);
         console.log("res", responseData);
 
-        // push("/Pagess/create/results/results");
+        push("/Pagess/imam/create/mosqueImam");
       };
 
       const validateUser = async () => {
@@ -159,7 +155,7 @@ export default function SignUp() {
             };
             localStorage.setItem("email", session.user.email);
             localStorage.setItem("username", session.user.name);
-            const res = await fetch("/api/createAcc/createAcc", {
+            const res = await fetch("/api/imam/createImam", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -179,7 +175,7 @@ export default function SignUp() {
             const username = "dsa";
             console.log("msg", msg);
 
-            push("/Pagess/create/gender");
+            push("/Pagess/imam/create/mosqueImam");
           } catch (error) {
             console.log("Error caught on try-catch line 181 of signUp", error);
           }
@@ -199,7 +195,7 @@ export default function SignUp() {
     const result = await signIn("google");
   };
   //---------------^^^^^^^^^-----------------------------
-
+  //------------------Handle Submit-----------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -210,7 +206,7 @@ export default function SignUp() {
         lastName: lastName,
       };
 
-      const res = await fetch("/api/createAcc/createAcc", {
+      const res = await fetch("/api/imam/createImam", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -237,12 +233,11 @@ export default function SignUp() {
         console.log("token", token);
       }
       sendEmail(emailAddress);
-      push("/Pagess/create/gender");
+      push("/Pagess/imam/create/mosqueImam");
     } catch (error) {
       console.log("Error cought on last", error);
     }
   };
-
   return (
     <form onSubmit={handleSubmit}>
       <div>
@@ -321,9 +316,6 @@ export default function SignUp() {
                 <div className="or-signIn">OR</div>
                 <div className="or-right-signIn"></div>
               </div>
-              <div className="imam-signIn" onClick={shiftToImam}>
-                SignIn As Imam?
-              </div>
               <div className="signGoogle-signIn">
                 <div
                   onClick={signUpWithGoogle}
@@ -332,20 +324,12 @@ export default function SignUp() {
                   <SignUpGoogle />
                 </div>
               </div>
-              {error && (
-                <div className="user-not-google-signIn">
-                  User is already registered
-                </div>
-              )}
               <div className="no-acc-container-signUp">
                 <div className="no-acc-signUp">
                   {t("signIn.already1")}{" "}
                   <span
                     onClick={shiftToSignIn}
-                    style={{
-                      color: "#b52d3b",
-                      cursor: "pointer",
-                    }}
+                    style={{ color: "#b52d3b", cursor: "pointer" }}
                   >
                     {t("signIn.already2")}
                   </span>

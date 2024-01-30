@@ -90,7 +90,8 @@
     "forgot2": "Forgotten your password?",
     "forgot3": "We've got you covered",
     "remember": "Go back?",
-    "reset": "Reset Password"
+    "reset": "Reset Password",
+    "user": "Login as User?"
   },
   "gender": {
     "heading": "Choose Your Gender",

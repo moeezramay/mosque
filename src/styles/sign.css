@@ -117,6 +117,17 @@
   height: 45px;
   z-index: 1;
 }
+.imam-signIn {
+  text-align: center;
+  margin-top: 20px;
+  color: #b52d3b;
+  cursor: pointer;
+}
+.no-acc-imam-signIn {
+  color: #b52d3b;
+  margin-top: 10px;
+  cursor: pointer;
+}
 @media (max-width: 764px) {
   .logo-signIn {
     padding-top: 14%;
