@@ -23,7 +23,7 @@ export default async function GetUser(req, res) {
             lat: parseFloat(latitude),
             lng: parseFloat(longitude),
           },
-          name: type, // You can modify this field as needed
+          name: type, // You can modify this field as needed s
           type: "mosque2", // Hardcoded as "mosque" for icon
         }));
         console.log(newArray);
