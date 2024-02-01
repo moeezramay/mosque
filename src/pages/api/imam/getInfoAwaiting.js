@@ -18,16 +18,36 @@ export default async function AwaitingUserGET(req, res) {
     //Check if email is already in use
     try {
       console.log("Retrievieng");
-      const checkEmail = await sql`SELECT createAcc.*
-      FROM createAcc
-      LEFT JOIN verify ON createAcc.email = verify.user_email
-      WHERE createAcc.gender = 'male'
-        AND verify.user_email IS NULL;`;
 
-      console.log("rows recieved: ", checkEmail.rows);
-      res.json({ user: checkEmail });
+      //Getting the current imam's mosque names
+      const imamMosque = await sql`SELECT type
+        FROM mosques
+        WHERE email = ${email1};`;
 
-      if (checkEmail.rows.length === 0) {
+      const checkEmail4 = await sql`
+      SELECT createAcc.*
+  FROM createAcc
+  LEFT JOIN verify ON createAcc.email = verify.user_email
+  LEFT JOIN mosques ON createAcc.email = mosques.email
+  WHERE createAcc.gender = 'male'
+    AND verify.user_email IS NULL
+    AND mosques.type = ANY (${imamMosque.rows.map((imam) => imam.type)});
+`;
+
+      const uniqueEmails = new Set();
+
+      // Filtering users in the same mosque as the imam and removing duplicates based on email
+      const uniqueFilteredUsers = checkEmail4.rows.filter((user) => {
+        if (!uniqueEmails.has(user.email)) {
+          uniqueEmails.add(user.email);
+          return true;
+        }
+        return false;
+      });
+
+      res.json({ user: uniqueFilteredUsers });
+
+      if (checkEmail4.rows.length === 0) {
         return res.status(400).json({ error: "Email is not verified" });
       }
     } catch (error) {

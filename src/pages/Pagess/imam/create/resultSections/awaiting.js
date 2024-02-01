@@ -34,13 +34,7 @@ export default function Awaiting() {
         }
         const response = await res.json();
 
-        //Adding a Distance Tracker to the Users
-        response.user.rows = response.user.rows.map((e) => {
-          e["distance"] = "Unknown";
-          return e;
-        });
-
-        setData(response.user.rows);
+        setData(response.user);
       } catch (error) {
         console.error("Error on first try fetching data:", error.message);
       }
