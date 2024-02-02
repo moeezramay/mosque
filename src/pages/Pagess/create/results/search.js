@@ -34,6 +34,7 @@ export default function Search() {
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [heartClicked, setHeartClicked] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   const ethnicities_existing = [
     "asian",
@@ -73,7 +74,7 @@ export default function Search() {
     }
   }, [cLocation]);
 
-  //-------------------Sending Message------------------------
+  //-------------------Sending Message to users and admin------------------------
   const SendMessage = async (e, user) => {
     e.preventDefault();
     console.log("Send message fucntion started", user);
@@ -101,6 +102,32 @@ export default function Search() {
     const response = await res.json();
   };
 
+  const SendMessageAdmin = async (e, user) => {
+    e.preventDefault();
+    console.log("Send message fucntion started", user);
+    const receiver = user;
+    const sender = localStorage.getItem("email");
+
+    const data = {
+      senderEmail: sender,
+      receiverEmail: receiver,
+      messageText: messageText,
+    };
+
+    const res = await fetch("/api/admin/message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const errorMessage = await res.json();
+      console.error("Error if:", errorMessage.error);
+      return;
+    }
+    const response = await res.json();
+  };
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
 
   //-------------------Calculate Distance------------------------
@@ -601,9 +628,57 @@ export default function Search() {
                 <div className="heart-container-search">
                   <Stop />
                 </div>
-                <div className="heart-container-search">
+                <div
+                  className="heart-container-search"
+                  onClick={(e) => {
+                    setSelectedUserInfo(userInfo);
+                    setShowReport(true);
+                  }}
+                >
                   <Excalim />
                 </div>
+                {showReport && (
+                  <div className="msg-container-search">
+                    <div className="msg-sub-search">
+                      <div className="msg-heading-search">
+                        <div className="msg-text-search">Report</div>
+                        <div className="close-msg-search">
+                          <div
+                            onClick={(e) => {
+                              setShowReport(false);
+                            }}
+                          >
+                            X
+                          </div>
+                        </div>
+                      </div>
+                      <div className="divider-msg-search"></div>
+                      <div className="msg-mini-container-search">
+                        <div className="msg-mini-text-search">
+                          Message To Admin
+                        </div>
+                        <textarea
+                          placeholder="Enter your report here"
+                          className="msg-input-search"
+                          onChange={(e) => {
+                            setMessageText(e.target.value);
+                          }}
+                        ></textarea>
+                        <div className="send-msg-container-search">
+                          <button
+                            className="send-msg-search"
+                            onClick={(e) => {
+                              SendMessageAdmin(e, selectedUserInfo.email);
+                              setShowReport(false);
+                            }}
+                          >
+                            Send
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="heart-container-search">
                   <Wali />
                 </div>
