@@ -28,7 +28,6 @@ export default async function SocketHandler(req, res) {
       if (!userToUpdate) {
         users.push({ ids, email, socket });
         console.log("User added");
-        console.log("Users:", users);
       } else {
         console.log("User already added");
       }
@@ -36,7 +35,6 @@ export default async function SocketHandler(req, res) {
 
     //Send recieved messages
     socket.on("getRecievedMessages", async (email) => {
-      console.log("Email Recieved:", email);
       if (!email || email === "" || email === null) {
         console.log("Email empty");
         return "email not recieved on backend";
@@ -52,7 +50,6 @@ export default async function SocketHandler(req, res) {
 
     //Send sent messages
     socket.on("getSentMessages", async (email) => {
-      console.log("Email Sent:", email);
       if (!email || email === "" || email === null) {
         console.log("Email empty");
         return "email not recieved on backend";
@@ -65,6 +62,40 @@ export default async function SocketHandler(req, res) {
         io.emit("getSentMessages", result.rows, email);
       } catch (error) {
         console.log("Error counght on getSentMessages:", error);
+      }
+    });
+
+    //Get Sent messages for admin
+    socket.on("getSentMessagesAdmin", async (email) => {
+      console.log("Email admin:", email);
+      if (!email || email === "" || email === null) {
+        console.log("Email empty");
+        return "email not recieved on backend";
+      }
+      try {
+        console.log("trying");
+        const result =
+          await sql`SELECT * FROM messages WHERE sender_email = ${email};`;
+        console.log("sent messages to send back: ", result.rows);
+        io.emit("getSentMessagesAdmin", result.rows, email);
+      } catch (error) {
+        console.log("Error counght on getSentMessages:", error);
+      }
+    });
+
+    //Get recieved messages admin
+    socket.on("getRecievedMessagesAdmin", async (email) => {
+      console.log("Email Recieved:", email);
+      if (!email || email === "" || email === null) {
+        console.log("Email empty");
+        return "email not recieved on backend";
+      }
+      try {
+        const result = await sql`SELECT * FROM reports;`;
+        console.log("recieved messages to send back: ", result.rows);
+        io.emit("getRecievedMessagesAdmin", result.rows, email);
+      } catch (error) {
+        console.log("Error cought on getRecievedMessages:", error);
       }
     });
 
@@ -97,21 +128,3 @@ export default async function SocketHandler(req, res) {
 
   res.end();
 }
-
-// export async function Trigger(email) {
-//   console.log("Triggered", email);
-//   const io = new Server();
-
-//   io.on("connection", async (socket) => {
-//     console.log("before trying");
-//     try {
-//       console.log("trying");
-//       const result =
-//         await sql`SELECT * FROM messages WHERE receiver_email = ${email};`;
-//       console.log("result: ", result);
-//       io.emit("getReceivedMessages", result.rows);
-//     } catch (error) {
-//       console.log("Error caught on getReceivedMessages:", error);
-//     }
-//   });
-// }
