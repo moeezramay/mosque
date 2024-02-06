@@ -22,12 +22,9 @@ export default function Search() {
   const { filterContext, setFilterContext } = useContext(AppContext);
   //Context Range Variable
   const { rangeContext, setRangeContext } = useContext(AppContext);
-  const [mapText, setMapText] = useState("Show Map");
-  const [mapVisible, setMapVisible] = useState(false);
   const [loadMap, setLoadMap] = useState(false);
   const [locAccess, setLocAccess] = useState(true);
   const [mapData, setMapData] = useState([]);
-  const [tempData, setTempData] = useState([]); //To store temp data for maps
   const [zoom, setZoom] = useState(10);
   const [viewBio, setViewBio] = useState(false);
   const [selectedUserInfo, setSelectedUserInfo] = useState(null); //Temporary storage for users
@@ -74,7 +71,7 @@ export default function Search() {
     }
   }, [cLocation]);
 
-  //-------------------Sending Message to users and admin------------------------
+  //-------------------Sending Message------------------------
   const SendMessage = async (e, user) => {
     e.preventDefault();
     console.log("Send message fucntion started", user);
@@ -128,6 +125,7 @@ export default function Search() {
     }
     const response = await res.json();
   };
+
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
 
   //-------------------Calculate Distance------------------------
@@ -175,6 +173,54 @@ export default function Search() {
   };
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
 
+  const showMap = async () => {
+    navigator.geolocation.watchPosition(async (position) => {
+      const { latitude, longitude } = position.coords;
+      await setcLocation([latitude, longitude]);
+      await setMapCenter({ lat: latitude, lng: longitude });
+      let tempData = [];
+
+      tempData.push({
+        lat: latitude,
+        lng: longitude,
+        name: "You",
+        type: "user",
+      });
+
+      setZoom(15);
+
+      let getData = new Promise((resolve, reject) => {
+        resolve(getMosqueData(latitude, longitude));
+      });
+
+      getData.then((mosquesData) => {
+        const updatedMapData = mosquesData.map((mosque) => ({
+          location: {
+            lat: mosque.location.lat,
+            lng: mosque.location.lng,
+          },
+          name: mosque.name,
+          type: "mosque",
+        }));
+
+        tempData = tempData.concat(updatedMapData);
+
+        console.log(tempData);
+
+        setMapData(tempData);
+        setLoadMap(true);
+        setLocAccess(true);
+        console.log(locAccess + " SUKA");
+      });
+    });
+  };
+
+  useEffect(() => {
+    if (loadMap) {
+      console.log("MAP IS READY");
+    }
+  }, [loadMap]);
+
   //-------------------Api to get user's mosque------------------------
 
   const getUserData = async () => {
@@ -201,112 +247,6 @@ export default function Search() {
     }
   };
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
-
-  const showMap = async (e, user) => {
-    let locationAccessGrant = false;
-    e.preventDefault();
-    if (!loadMap || !locAccess) {
-      navigator.geolocation.watchPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setcLocation([latitude, longitude]);
-          setMapCenter({ lat: latitude, lng: longitude });
-
-          setMapData([]);
-          setMapData((prev) => [
-            ...prev,
-            {
-              lat: latitude,
-              lng: longitude,
-              name: "You",
-              type: "user",
-            },
-          ]);
-
-          setZoom(15);
-
-          let getData = new Promise((resolve, reject) => {
-            //Contains data for 5 closest mosques
-            resolve(getMosqueData(latitude, longitude));
-          });
-
-          getData.then((mosquesData) => {
-            //Data sorted into MapData with closest mosques
-            const updatedMapData = mosquesData.map((mosque) => ({
-              location: {
-                lat: mosque.location.lat,
-                lng: mosque.location.lng,
-              },
-              name: mosque.name,
-              type: "mosque",
-            }));
-
-            setMapData((prev) => [...prev, ...updatedMapData]);
-          });
-
-          //Getting user selected mosques
-          let getData2 = new Promise((resolve, reject) => {
-            resolve(getUserData());
-          });
-
-          getData2.then((userData) => {
-            const updatedMapData = userData.map((data) => ({
-              location: {
-                lat: data.location.lat,
-                lng: data.location.lng,
-              },
-              name: data.name,
-              type: "mosque2",
-            }));
-            const uniqueMapData = filterUniqueLocations([
-              ...mapData,
-              ...updatedMapData,
-            ]);
-
-            setMapData((prev) => [...prev, ...uniqueMapData]);
-          });
-
-          setLoadMap(true);
-          locationAccessGrant = true;
-
-          if (locationAccessGrant) {
-            if (mapVisible === false) {
-              setMapVisible(true);
-              setMapText("Hide Map");
-            } else {
-              setMapVisible(false);
-              setMapText("Show Map");
-            }
-          }
-          setLocAccess(true);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          locationAccessGrant = false;
-          if (locationAccessGrant) {
-            if (mapVisible === false) {
-              setMapVisible(true);
-              setMapText("Hide Map");
-            } else {
-              setMapVisible(false);
-              setMapText("Show Map");
-            }
-          }
-          setLocAccess(false);
-        }
-      );
-    }
-
-    if (loadMap && locAccess) {
-      if (mapVisible === false) {
-        setMapVisible(true);
-        setMapText("Hide Map");
-      } else {
-        setMapVisible(false);
-        setMapText("Show Map");
-      }
-    }
-  };
 
   const filterUniqueLocations = (data) => {
     const uniqueLocations = new Set();
@@ -363,6 +303,7 @@ export default function Search() {
         });
 
         setData(response.user.rows);
+        showMap();
       } catch (error) {
         console.error("Error on first try fetching data:", error.message);
       }
@@ -457,13 +398,15 @@ export default function Search() {
                               if (
                                 check(filterContext.prays, item.religion_pray)
                               ) {
-                                if (
-                                  item.distance != "Unknown" &&
-                                  item.distance < rangeContext * 1
-                                ) {
-                                  return item;
-                                } else if (item.distance == "Unknown") {
-                                  return item;
+                                if (email != item.email) {
+                                  if (
+                                    item.distance != "Unknown" &&
+                                    item.distance < rangeContext * 1
+                                  ) {
+                                    return item;
+                                  } else if (item.distance == "Unknown") {
+                                    return item;
+                                  }
                                 }
                               }
                             }
@@ -487,15 +430,15 @@ export default function Search() {
       <div className="top-container-search">
         <div className="top-left-search">
           <div className="search-heading-search">Search Results</div>
-          <button
-            className="map-show-search"
-            onClick={(e) => {
-              e.preventDefault();
-              showMap(e, email);
-            }}
-          >
-            {mapText}
-          </button>
+          {/*<button
+                        className="map-show-search"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            showMap(e, email);
+                        }}
+                    >
+                        {mapText}
+                    </button>*/}
           {!locAccess && (
             <div className="map-error-search">Access to Location Denied :/</div>
           )}
@@ -516,20 +459,18 @@ export default function Search() {
           </div>
         </div>
       </div>
-      <div
-        className="map-container-search"
-        style={{
-          height: mapVisible ? 500 : 0,
-        }}
-      >
+      <div className="map-container-search">
         <div className="map-body-search">
-          {isLoaded ? (
+          {console.log("IS LOADED: ", isLoaded)}
+
+          {isLoaded && locAccess ? (
             <Map
               positions={mapData}
               center={mapCenter}
-              display={mapVisible}
+              display={loadMap}
               zoom={zoom}
               people={data}
+              email={email}
             />
           ) : null}
         </div>
