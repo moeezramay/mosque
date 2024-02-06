@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, InfoWindowF, MarkerF } from "@react-google-maps/api";
+import { addMosqueUser } from "../../../api/createAcc/addMosqueUser.js";
 
 function scatterCoordinates(latitude, longitude) {
     // Earth's radius in kilometers
     const earthRadius = 6371;
 
     // Generate a random distance between 1 and 0.1 kilometers
-    const randomDistance = Math.random() * (1 - 0.1) + 1;
+    const randomDistance = Math.random() * (0.5 - 0.1) + 0.2;
     const randomAngle = Math.random() * (2 * Math.PI);
     const newLatitude =
         latitude +
@@ -21,15 +22,19 @@ function scatterCoordinates(latitude, longitude) {
     return { latitude: newLatitude, longitude: newLongitude };
 }
 
-function Map({ positions, center, display, zoom, people }) {
+function Map({ positions, center, display, zoom, people, email }) {
     const [activeMarker, setActiveMarker] = useState(null);
     const [activeName, setActiveName] = useState(null);
     const [activePeople, setActivePeople] = useState([]);
     const [mainPositions, setMainPositions] = useState([]);
+    const [isPart, setIsPart] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [defaultPeople, setDefaultPeople] = useState([]);
 
     useEffect(() => {
-        let temp = [];
-        setMainPositions([...positions, ...activePeople]);
+        //Create a copy of activePeople without the current user
+        let temp = activePeople.filter((person) => person.email != email);
+        setMainPositions([...positions, ...temp]);
     }, [positions, activePeople]);
 
     const handleMarkerClick = (marker) => {
@@ -40,7 +45,7 @@ function Map({ positions, center, display, zoom, people }) {
             setActiveMarker(marker);
             setActiveName(marker.name);
             if (marker.type == "mosque" || marker.type == "mosque2") {
-                let unmappedData = people.filter((person) => {
+                let unmappedData = defaultPeople.filter((person) => {
                     let temp = JSON.parse(person.locations);
                     for (let i in temp) {
                         if (temp[i][2] === marker.name) {
@@ -58,6 +63,7 @@ function Map({ positions, center, display, zoom, people }) {
                         for (let i in temp) {
                             return {
                                 name: person.username,
+                                email: person.email,
                                 type: person.gender,
                                 lat: scattered.latitude,
                                 lng: scattered.longitude,
@@ -65,14 +71,40 @@ function Map({ positions, center, display, zoom, people }) {
                         }
                     })
                 );
+                setIsProcessing(true);
             }
         } catch (error) {
             console.log("Error on marker: ", error);
         }
     };
 
+    useEffect(() => {
+        setDefaultPeople(people);
+    }, [people]);
+
+    useEffect(() => {
+        let found = false;
+        for (let i in activePeople) {
+            if (activePeople[i].email == email) {
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            setIsPart(true);
+            console.log("FOUND");
+        } else {
+            setIsPart(false);
+            console.log("NOT FOUND");
+        }
+    }, [activePeople]);
+
     const handleInfoWindowClose = () => {
         setActiveMarker(null);
+        setActiveName(null);
+        setIsPart(false);
+        setActivePeople([]);
+        setIsProcessing(false);
     };
 
     const handleOnLoad = (mapInput) => {
@@ -82,6 +114,56 @@ function Map({ positions, center, display, zoom, people }) {
             positions.forEach((d) => bounds.extend({ lat: d.lat, lng: d.lng }));
             mapInput.fitBounds(bounds);
         }
+    };
+
+    const handleAddMosque = (e) => {
+        e.preventDefault();
+
+        console.log("DATA NOT FOUND");
+        var saveData = async () => {
+            let result = await fetch("/api/createAcc/addMosqueUser", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    lat: activeMarker.location.lat,
+                    lng: activeMarker.location.lng,
+                    mosque: activeMarker.name,
+                }),
+            });
+
+            result = await result.json();
+            if (result.message == "Success") {
+                try {
+                    console.log("SUCCESS");
+                    setIsPart(true);
+                    let temp = defaultPeople.filter(
+                        (person) => person.email == email
+                    );
+                    let temp2 = JSON.parse(temp[0].locations);
+                    temp2.push([
+                        activeMarker.location.lat,
+                        activeMarker.location.lng,
+                        activeMarker.name,
+                    ]);
+                    temp2 = JSON.stringify(temp2);
+                    temp = { ...temp[0], locations: temp2 };
+
+                    let temp3 = defaultPeople.filter(
+                        (person) => person.email != email
+                    );
+                    temp3.push(temp);
+                    setDefaultPeople(temp3);
+                } catch (error) {
+                    console.log("ERROR: ", error);
+                }
+            } else {
+                console.log("ERROR");
+            }
+        };
+        saveData();
     };
 
     const getIconUrl = (type) => {
@@ -106,7 +188,7 @@ function Map({ positions, center, display, zoom, people }) {
             mapContainerStyle={{
                 width: "100%",
                 height: "100%",
-                visibility: display ? "visible" : "hidden",
+                visibility: display ? "visible" : "visible",
             }}
             zoom={zoom}
             center={center}
@@ -137,7 +219,7 @@ function Map({ positions, center, display, zoom, people }) {
                         name={position.name}
                     ></MarkerF>
                 ))}
-            {activeMarker && (
+            {activeMarker && isProcessing && (
                 <InfoWindowF
                     className="map-info-window"
                     position={
@@ -150,7 +232,24 @@ function Map({ positions, center, display, zoom, people }) {
                     }
                     onCloseClick={handleInfoWindowClose}
                 >
-                    <div>{activeName}</div>
+                    <div className="mosque-add-label">
+                        <div>{activeName}</div>
+                        {activeMarker.type == "mosque" && (
+                            <button
+                                className="mosque-add-button"
+                                onClick={handleAddMosque}
+                                style={{
+                                    backgroundColor: isPart
+                                        ? "#ed7b86"
+                                        : "#4CAF50",
+                                    cursor: isPart ? "context-menu" : "pointer",
+                                }}
+                                disabled={isPart}
+                            >
+                                Add Mosque
+                            </button>
+                        )}
+                    </div>
                 </InfoWindowF>
             )}
         </GoogleMap>
