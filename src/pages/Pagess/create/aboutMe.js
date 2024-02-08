@@ -64,7 +64,7 @@ export default function AboutMeSection() {
 
     push("/Pagess/create/eduWork");
   };
-  //------------------^^^^^^^^^^^^^^^----------------
+  //------------------^^^^^^^^^^^^^^^---------------
 
   return (
     <form onSubmit={handleSubmit}>
@@ -76,7 +76,7 @@ export default function AboutMeSection() {
         <div className="box-container-aboutMe">
           <div className="box-aboutMe">
             <div>
-              <div className="location-aboutMe">{t("aboutMe.where")}</div>
+              <div className="location-aboutEdit">{t("aboutMe.where")}</div>
               <div className="select-location-aboutMe">
                 <select
                   value={location}
@@ -90,8 +90,8 @@ export default function AboutMeSection() {
                 </select>
               </div>
             </div>
-            <div className="select-conatiner-aboutMe">
-              <div className="location-aboutMe">{t("aboutMe.country")}</div>
+            <div className="select-conatiner-aboutEdit">
+              <div className="location-aboutEdit">{t("aboutMe.country")}</div>
               <div className="select-location-aboutMe">
                 <select
                   value={country}
@@ -105,8 +105,8 @@ export default function AboutMeSection() {
                 </select>
               </div>
             </div>
-            <div className="select-conatiner-aboutMe">
-              <div className="location-aboutMe">{t("aboutMe.date")}</div>
+            <div className="select-conatiner-aboutEdit">
+              <div className="location-aboutEdit">{t("aboutMe.date")}</div>
               <div className="select-date-aboutMe">
                 <div className="option-date-aboutMe">
                   <select
@@ -146,9 +146,9 @@ export default function AboutMeSection() {
                 </div>
               </div>
             </div>
-            <div className="select-conatiner-aboutMe">
-              <div className="location-aboutMe">{t("aboutMe.tag")}</div>
-              <div className="input-container-aboutMe">
+            <div className="select-conatiner-aboutEdit">
+              <div className="location-aboutEdit">{t("aboutMe.tag")}</div>
+              <div className="input-container-aboutEdit">
                 <input
                   onChange={(e) => {
                     setTag(e.target.value);
@@ -158,9 +158,9 @@ export default function AboutMeSection() {
                 />
               </div>
             </div>
-            <div className="select-conatiner-aboutMe">
+            <div className="select-conatiner-aboutEdit">
               <div className="location-aboutMe">{t("aboutMe.about")}</div>
-              <div className="input-container-aboutMe">
+              <div className="input-container-aboutEdit">
                 <input
                   onChange={(e) => {
                     setAbout(e.target.value);
@@ -170,9 +170,9 @@ export default function AboutMeSection() {
                 />
               </div>
             </div>
-            <div className="select-conatiner-aboutMe">
-              <div className="location-aboutMe">{t("aboutMe.what")}</div>
-              <div className="input-container-aboutMe">
+            <div className="select-conatiner-aboutEdit">
+              <div className="location-aboutEdit">{t("aboutMe.what")}</div>
+              <div className="input-container-aboutEdit">
                 <input
                   onChange={(e) => {
                     setLooking(e.target.value);

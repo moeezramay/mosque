@@ -50,6 +50,10 @@ export default function ResultsNav() {
     push("/Pagess/create/results/results");
   };
 
+  const shiftToEditProfile = () => {
+    push("/Pagess/create/results/profile/editProfile");
+  };
+
   //------------------^^^^^^^^^^^^^^^----------------
 
   //------------------Log out----------------
@@ -99,6 +103,10 @@ export default function ResultsNav() {
       </div>
       {logout && (
         <div className="logout-container-navResult">
+          <div className="edit-profile-navResult" onClick={shiftToEditProfile}>
+            Edit Profile
+          </div>
+          <div className="line-edit-navResult"></div>
           <button
             className="logout-btn-navResult"
             onClick={(e) => {
