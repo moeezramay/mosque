@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import PictureProfile from "./picture";
 
 export default function BasicEdit() {
   const [email, setEmail] = useState("");
@@ -92,13 +93,7 @@ export default function BasicEdit() {
       <div className="picture-container-basicEdit">
         <div>Profile Picture</div>
         <div className="img-container-basicEdit">
-          <Image
-            src="/female.jpeg"
-            alt="default"
-            layout="responsive"
-            width={100}
-            height={100}
-          />
+          <PictureProfile />
         </div>
       </div>
       <div className="firstName-basicEdit">
