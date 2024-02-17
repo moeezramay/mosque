@@ -54,6 +54,10 @@ export default function ResultsNav() {
     push("/Pagess/create/results/profile/editProfile");
   };
 
+  const shiftToInterest = () => {
+    push("/Pagess/create/results/interest/interest");
+  };
+
   //------------------^^^^^^^^^^^^^^^----------------
 
   //------------------Log out----------------
@@ -93,7 +97,7 @@ export default function ResultsNav() {
           <div className="message-navResult" onClick={shiftToMessages}>
             <MessageIcon />
           </div>
-          <div className="message-navResult">
+          <div className="message-navResult" onClick={shiftToInterest}>
             <HeartIcon />
           </div>
         </div>

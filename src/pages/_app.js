@@ -7,6 +7,7 @@ import "@/styles/results.css";
 import "@/styles/messages.css";
 import "@/styles/imam.css";
 import "@/styles/editProfile.css";
+import "@/styles/interest.css";
 
 import global_en from "./translations/en/global.json";
 import global_es from "./translations/es/global.json";
