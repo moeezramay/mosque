@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import NextImage from "next/image";
+import * as StackBlur from "stackblur-canvas";
 
 export default function PictureProfile() {
-  const StackBlur = require("stackblur-canvas");
+  // const StackBlur = require("stackblur-canvas");
 
   const [email, setEmail] = useState("");
   const [image, setImage] = useState(null);
