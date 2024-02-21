@@ -188,3 +188,30 @@
   height: 30px;
   border: 1px solid rgb(172, 172, 172);
 }
+.hide-btn-picture {
+  color: white;
+  background-color: #b52d3b;
+  width: 100px;
+  height: 20px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.profile-select-input {
+}
+.profile-add-button {
+  background-color: #b52d3b;
+  border: none;
+  outline: none;
+  color: white;
+  cursor: pointer;
+}
+
+.public-contianer-photoEdit {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-around;
+}

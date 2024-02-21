@@ -14,7 +14,7 @@ export default async function getProfileImgBulk(req, res) {
         console.log("userdata.emai: ", email);
         // Query the database to retrieve the picture based on the email
         const result =
-          await sql`SELECT picture FROM createacc WHERE email = ${email};`;
+          await sql`SELECT picture FROM picture WHERE email = ${email};`;
 
         if (result.rows.length > 0 && result.rows[0].picture !== null) {
           // Decode the picture

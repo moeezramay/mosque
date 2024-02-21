@@ -116,8 +116,8 @@ export default function PersonalEdit() {
         <div className="horizontal-seprator-edit"></div>
 
         <div>
-          <div className="location-personal">{t("personal.citizen")}</div>
-          <div className="select-location-personal">
+          <div className="location-aboutEdit">{t("personal.citizen")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={citizen}
               onChange={(e) => handleSelectChange(e, setCitizen)}
@@ -130,9 +130,9 @@ export default function PersonalEdit() {
             </select>
           </div>
         </div>
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.origin")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.origin")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={origin}
               onChange={(e) => handleSelectChange(e, setOrigin)}
@@ -146,9 +146,9 @@ export default function PersonalEdit() {
           </div>
         </div>
 
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.relocate")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.relocate")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={relocate}
               onChange={(e) => handleSelectChange(e, setRelocate)}
@@ -161,9 +161,9 @@ export default function PersonalEdit() {
             </select>
           </div>
         </div>
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.income")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.income")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={income}
               onChange={(e) => handleSelectChange(e, setIncome)}
@@ -176,9 +176,9 @@ export default function PersonalEdit() {
             </select>
           </div>
         </div>
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.marriage")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.marriage")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={marriage}
               onChange={(e) => handleSelectChange(e, setMarriage)}
@@ -193,9 +193,9 @@ export default function PersonalEdit() {
           </div>
         </div>
 
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.status")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.status")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={marital}
               onChange={(e) => handleSelectChange(e, setMarital)}
@@ -210,9 +210,9 @@ export default function PersonalEdit() {
             </select>
           </div>
         </div>
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.children1")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.children1")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={children1}
               onChange={(e) => handleSelectChange(e, setChildren1)}
@@ -224,9 +224,9 @@ export default function PersonalEdit() {
             </select>
           </div>
         </div>
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.children2")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.children2")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={children2}
               onChange={(e) => handleSelectChange(e, setChildren2)}
@@ -238,9 +238,9 @@ export default function PersonalEdit() {
             </select>
           </div>
         </div>
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.living")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.living")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={living}
               onChange={(e) => handleSelectChange(e, setLiving)}
@@ -254,9 +254,9 @@ export default function PersonalEdit() {
             </select>
           </div>
         </div>
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.height")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.height")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={height}
               onChange={(e) => handleSelectChange(e, setHeight)}
@@ -269,9 +269,9 @@ export default function PersonalEdit() {
             </select>
           </div>
         </div>
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.build")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.build")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={build}
               onChange={(e) => handleSelectChange(e, setBuild)}
@@ -287,9 +287,9 @@ export default function PersonalEdit() {
             </select>
           </div>
         </div>
-        <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.ethnicity")}</div>
-          <div className="select-location-personal">
+        <div className="select-conatiner-aboutEdit">
+          <div className="location-aboutEdit">{t("personal.ethnicity")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={ethniciting}
               onChange={(e) => handleSelectChange(e, setEthniciting)}
@@ -303,8 +303,8 @@ export default function PersonalEdit() {
           </div>
         </div>
         <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.smoke")}</div>
-          <div className="select-location-personal">
+          <div className="location-aboutEdit">{t("personal.smoke")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={smoke}
               onChange={(e) => handleSelectChange(e, setSmoke)}
@@ -319,8 +319,8 @@ export default function PersonalEdit() {
           </div>
         </div>
         <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.drink")}</div>
-          <div className="select-location-personal">
+          <div className="location-aboutEdit">{t("personal.drink")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={drink}
               onChange={(e) => handleSelectChange(e, setDrink)}
@@ -335,8 +335,8 @@ export default function PersonalEdit() {
           </div>
         </div>
         <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.disability")}</div>
-          <div className="select-location-personal">
+          <div className="location-aboutEdit">{t("personal.disability")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={disability}
               onChange={(e) => handleSelectChange(e, setDisability)}
@@ -358,8 +358,8 @@ export default function PersonalEdit() {
           </div>
         </div>
         <div className="select-conatiner-personal">
-          <div className="location-personal">{t("personal.long")}</div>
-          <div className="select-location-personal">
+          <div className="location-aboutEdit">{t("personal.long")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={long}
               onChange={(e) => handleSelectChange(e, setLong)}

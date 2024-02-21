@@ -115,6 +115,7 @@ export default function SignIn() {
     if (!res.ok) {
       const errorMessage = await res.json();
       console.error("Error if:", errorMessage.error);
+      alert("Invalid Email or Password");
       return;
     }
     const response = await res.json();

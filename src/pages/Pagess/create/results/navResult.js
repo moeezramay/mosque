@@ -81,12 +81,7 @@ export default function ResultsNav() {
   return (
     <div style={{ zIndex: "1" }}>
       <div className="navbar-parent-container-navResult">
-        <div
-          className="navbar-logo-navResult"
-          onClick={() => {
-            push("/Pagess/HomePage/home");
-          }}
-        >
+        <div className="navbar-logo-navResult">
           <span style={{ color: "#358fa1" }}>{t("nav.first")}</span>
           <span style={{ color: "#b52d3b" }}>{t("nav.second")}</span>
         </div>

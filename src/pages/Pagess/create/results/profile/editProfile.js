@@ -5,6 +5,7 @@ import AboutEdit from "./aboutEdit";
 import EduEdit from "./eduEdit";
 import PersonalEdit from "./personalEdit";
 import ReligonEdit from "./religonEdit";
+import PhotoEdit from "./photoEdit";
 
 export default function EditProfile() {
   const [selected, setSelected] = useState("Basic Information");
@@ -48,6 +49,10 @@ export default function EditProfile() {
             Religon
           </div>
           <div className="horizontal-seprator-edit"></div>
+          <div className="subtitle-edit" onClick={() => setSelected("Photo")}>
+            Photo
+          </div>
+          <div className="horizontal-seprator-edit"></div>
         </div>
         <div className="vertical-seprator-edit"></div>
         <div className="right-edit">
@@ -56,6 +61,7 @@ export default function EditProfile() {
           {selected === "Education & Work" && <EduEdit />}
           {selected === "Personal Information" && <PersonalEdit />}
           {selected === "Religon" && <ReligonEdit />}
+          {selected === "Photo" && <PhotoEdit />}
         </div>
       </div>
     </div>

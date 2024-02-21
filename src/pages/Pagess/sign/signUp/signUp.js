@@ -16,6 +16,8 @@ export default function SignUp() {
   const [flag, setFlag] = useState(false);
   const [googleUser, setGoogleUser] = useState("");
   const [googleEmail, setGoogleEmail] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [confirmError, setConfirmError] = useState(false);
 
   const [t, i18n] = useTranslation("global");
 
@@ -202,6 +204,17 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (
+      passwordError ||
+      confirmError ||
+      !firstName ||
+      !lastName ||
+      emailAddress === "" ||
+      password === "" ||
+      confirm === ""
+    ) {
+      return;
+    }
     try {
       const acc = {
         email: emailAddress,
@@ -286,21 +299,47 @@ export default function SignUp() {
                 <div className="name-signUp">{t("signIn.password")}</div>
                 <input
                   onChange={(e) => {
-                    setPassword(e.target.value);
+                    if (
+                      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
+                        e.target.value
+                      )
+                    ) {
+                      setPasswordError(false);
+                      setPassword(e.target.value);
+                    } else {
+                      setPasswordError(true);
+                    }
                   }}
                   type="password"
                   className="input-signUp"
                 />
+                {passwordError && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    Password must contain at least 8 characters, including 1
+                    letter and 1 number
+                  </div>
+                )}
               </div>
               <div className="fields-container-signUp">
                 <div className="name-signUp">{t("signIn.confirm")}</div>
                 <input
                   onChange={(e) => {
-                    setConfirm(e.target.value);
+                    const confirmPwd = e.target.value;
+                    setConfirm(confirmPwd);
+                    if (confirmPwd === password) {
+                      setConfirmError(false);
+                    } else {
+                      setConfirmError(true);
+                    }
                   }}
                   type="password"
                   className="input-signUp"
                 />
+                {confirmError && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    Passwords do not match
+                  </div>
+                )}
               </div>
               <div className="terms-container-signUp">
                 <div className="terms-signUp">

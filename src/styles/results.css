@@ -95,7 +95,9 @@
 /*----------------------------------------*/
 
 .parent-result {
-  background-color: #f5f5f5;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 .box-parent-result {
   background-color: white;
@@ -423,6 +425,151 @@
   margin-top: 5px;
   font-size: 14px;
   color: rgb(150, 150, 150);
+}
+
+@media (max-width: 700px) {
+  .result-right-parent-container {
+    /* Your styles for screens with a width between 350 and 460 pixels */
+    padding-left: 5px;
+    padding-top: 10px;
+    height: 300px;
+  }
+
+  .result-parent-container-search {
+    width: 100%;
+    border: 1px solid rgb(176, 176, 176);
+    display: flex;
+  }
+
+  .bottom-container-search {
+    width: 65%;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .top-container-search {
+    width: 50%;
+    flex-direction: column;
+  }
+  .box-parent-result {
+    width: 100%;
+  }
+
+  .select-top-search,
+  .select-top2-search {
+    font-size: 10px;
+  }
+
+  .active-text-search {
+    /* margin-left: auto; */
+    margin-right: 40px;
+    font-size: 5px;
+  }
+  .view-bio-search {
+    width: 60px; /* Adjust the width as needed */
+    margin-left: 0px; /* Adjust the margin as needed */
+    position: relative;
+    left: -95px;
+    top: 210px;
+  }
+  .heart-container-search {
+    margin-left: 3px;
+    font-size: 4px;
+  }
+
+  .info-search {
+    font-size: 6px;
+    margin-left: 10px;
+  }
+  .result-line1-container-search,
+  .result-line2-container-search,
+  .result-line3-container-search {
+    font-size: 10px;
+  }
+  .result-line4-container-search {
+    flex-direction: column;
+  }
+
+  .result-line5-container-search {
+    font-size: 140px;
+  }
+
+  .filters-searchBtn-result {
+    width: 25%;
+    font-size: 10px;
+    height: 20px;
+    padding-right: 35px;
+  }
+  .filters-saveBtn-result {
+    width: 25%;
+    font-size: 10px;
+    height: 30px;
+    padding-right: 35px;
+    margin-left: 12px;
+  }
+  .map-container-search {
+    width: 10px;
+  }
+}
+
+@media (min-width: 700px) and (max-width: 768px) {
+  .result-right-parent-container {
+    /* Your styles for screens with a width between 350 and 460 pixels */
+    padding-left: 5px;
+    padding-top: 10px;
+    height: 300px;
+  }
+
+  .active-text-search {
+    /* margin-left: auto; */
+    margin-right: 50px;
+    font-size: 10px;
+  }
+  .view-bio-search {
+    width: 60px; /* Adjust the width as needed */
+    margin-left: 0px; /* Adjust the margin as needed */
+    position: relative;
+    left: -170px;
+    top: 210px;
+  }
+  .heart-container-search {
+    margin-left: 8px;
+  }
+
+  .info-search {
+    font-size: 10px;
+    margin-left: 0px;
+  }
+  .result-line4-container-search {
+    flex-direction: column;
+  }
+
+  .result-line5-container-search {
+    font-size: 140px;
+  }
+
+  .filters-searchBtn-result {
+    width: 25%;
+    height: 45px;
+    background-color: #b52d3b;
+    outline: none;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .filters-searchBtn-result {
+    width: 50%;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1400px) {
+  .view-bio-search {
+    width: 40px; /* Adjust the width as needed */
+    margin-right: 10px; /* Adjust the margin as needed */
+  }
 }
 
 /*------------^^^^^^^^^^^^---------------*/

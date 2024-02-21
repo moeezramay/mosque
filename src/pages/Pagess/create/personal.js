@@ -128,9 +128,8 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  {Countries.map((city) => (
-                    <option key={city}>{city}</option>
-                  ))}
+                  <option>Yes</option>
+                  <option>No</option>
                 </select>
               </div>
             </div>
@@ -251,7 +250,6 @@ export default function Personal() {
                   required
                 >
                   <option></option>
-                  <option>Petite</option>
                   <option>Slim</option>
                   <option>Athletic</option>
                   <option>Medium</option>
