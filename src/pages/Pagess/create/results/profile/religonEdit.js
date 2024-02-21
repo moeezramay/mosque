@@ -89,8 +89,8 @@ export default function ReligonEdit() {
         <div className="container-heading-aboutEdit">Religon</div>
         <div className="horizontal-seprator-edit"></div>
         <div>
-          <div className="location-religon">{t("religon.religious")}</div>
-          <div className="select-location-religon">
+          <div className="location-aboutEdit">{t("religon.religious")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={religious}
               onChange={(e) => handleSelectChange(e, setReligious)}
@@ -106,8 +106,8 @@ export default function ReligonEdit() {
           </div>
         </div>
         <div className="select-conatiner-religon">
-          <div className="location-religon">{t("religon.sector")}</div>
-          <div className="select-location-religon">
+          <div className="location-aboutEdit">{t("religon.sector")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={sector}
               onChange={(e) => handleSelectChange(e, setSector)}
@@ -123,8 +123,8 @@ export default function ReligonEdit() {
         </div>
 
         <div className="select-conatiner-religon">
-          <div className="location-religon">{t("religon.prefer")}</div>
-          <div className="select-location-religon">
+          <div className="location-aboutEdit">{t("religon.prefer")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={hijab}
               onChange={(e) => handleSelectChange(e, setHijab)}
@@ -139,8 +139,8 @@ export default function ReligonEdit() {
           </div>
         </div>
         <div className="select-conatiner-religon">
-          <div className="location-religon">{t("religon.beard")}</div>
-          <div className="select-location-religon">
+          <div className="location-aboutEdit">{t("religon.beard")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={beard}
               onChange={(e) => handleSelectChange(e, setBeard)}
@@ -153,8 +153,8 @@ export default function ReligonEdit() {
           </div>
         </div>
         <div className="select-conatiner-religon">
-          <div className="location-religon">{t("religon.revert")}</div>
-          <div className="select-location-religon">
+          <div className="location-aboutEdit">{t("religon.revert")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={revert}
               onChange={(e) => handleSelectChange(e, setRevert)}
@@ -168,8 +168,8 @@ export default function ReligonEdit() {
         </div>
 
         <div className="select-conatiner-religon">
-          <div className="location-religon">{t("religon.halal")}</div>
-          <div className="select-location-religon">
+          <div className="location-aboutEdit">{t("religon.halal")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={halal}
               onChange={(e) => handleSelectChange(e, setHalal)}
@@ -184,8 +184,8 @@ export default function ReligonEdit() {
           </div>
         </div>
         <div className="select-conatiner-religon">
-          <div className="location-religon">{t("religon.pray")}</div>
-          <div className="select-location-religon">
+          <div className="location-aboutEdit">{t("religon.pray")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={pray}
               onChange={(e) => handleSelectChange(e, setPray)}
@@ -200,8 +200,8 @@ export default function ReligonEdit() {
           </div>
         </div>
         <div className="select-conatiner-religon">
-          <div className="location-religon">{t("religon.quran")}</div>
-          <div className="select-location-religon">
+          <div className="location-aboutEdit">{t("religon.quran")}</div>
+          <div className="select-location-aboutEdit">
             <select
               value={quran}
               onChange={(e) => handleSelectChange(e, setQuran)}

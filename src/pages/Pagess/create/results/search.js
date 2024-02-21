@@ -540,6 +540,13 @@ export default function Search() {
   };
   //--------------------^^^^^^^^^^^^^-------------------
 
+  //----------------Change Length of filtered array------------------
+  const changeLength = (length) => {
+    const slicedData = filteredData.slice(0, length);
+    setFilteredData(slicedData);
+  };
+  //--------------------^^^^^^^^^^^^^-------------------
+
   useEffect(() => {
     var filtered = data.filter((item) => {
       if (
@@ -629,10 +636,13 @@ export default function Search() {
               <option>Sort By: ASC</option>
               <option>Sort By: DSC</option>
             </select>
-            <select className="select-top2-search">
-              <option>Per Page: 10</option>
-              <option>Per Page: 15</option>
-              <option>Per Page: 20</option>
+            <select
+              className="select-top2-search"
+              onChange={(e) => changeLength(Number(e.target.value))}
+            >
+              <option value="10">Per Page: 10</option>
+              <option value="15">Per Page: 15</option>
+              <option value="20">Per Page: 20</option>
             </select>
           </div>
         </div>
@@ -941,7 +951,9 @@ export default function Search() {
                 <div className="distance-search">{userInfo.mosque}</div>
               </div>
               <div className="result-line4-container-search">
-                <div>{userInfo.eduwork_profession} -</div>
+                <div className="info-search">
+                  {userInfo.eduwork_profession} -
+                </div>
                 <div className="info-search">{userInfo.religion_sector} - </div>
                 <div className="info-search">{userInfo.eduwork_subject} -</div>
                 <div className="info-search">{userInfo.personal_height} -</div>

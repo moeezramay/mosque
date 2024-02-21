@@ -68,6 +68,33 @@ Find the css for the section youre looking for, here are the different sections:
 /* ---------------^^^^^^^^^^^^^^^^^------------------*/
 
 /* ---------------Home Page------------------*/
+
+@media (max-width: 320px) {
+  .navbar-right-container-nav {
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .title-img-sub-home {
+    font-size: 25px;
+    position: absolute;
+    top: 50px;
+  }
+  .img-subtitle-home {
+    padding-top: 2px;
+    text-align: center;
+    margin: 0;
+  }
+  .img-btn-home {
+    margin: 0;
+    padding: 0;
+  }
+}
+
 .header-home-parent {
   height: 97vh;
 }
@@ -82,7 +109,7 @@ Find the css for the section youre looking for, here are the different sections:
 .title-container-home {
   width: 100%;
   display: flex;
-  margin-top: 15%;
+  margin-top: 10%;
   flex-direction: column;
 }
 .title-img-home {

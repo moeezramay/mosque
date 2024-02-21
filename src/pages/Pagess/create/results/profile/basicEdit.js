@@ -90,12 +90,7 @@ export default function BasicEdit() {
     <div>
       <div className="container-heading-basicEdit">Basic Information</div>
       <div className="horizontal-seprator-edit"></div>
-      <div className="picture-container-basicEdit">
-        <div>Profile Picture</div>
-        <div className="img-container-basicEdit">
-          <PictureProfile />
-        </div>
-      </div>
+
       <div className="firstName-basicEdit">
         <div className="first-basicEdit">First Name</div>
         <input
