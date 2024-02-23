@@ -3,12 +3,13 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useRef } from "react";
 import PictureProfile from "./picture";
+import * as StackBlur from "stackblur-canvas";
 
 export default function PhotoEdit() {
   const { push } = useRouter();
   const [t, i18n] = useTranslation("global");
 
-  const StackBlur = require("stackblur-canvas");
+  // const StackBlur = require("stackblur-canvas");
 
   const [email, setEmail] = useState("");
   const [images, setImages] = useState([
