@@ -32,10 +32,15 @@ export default function PictureProfile() {
         });
         const data = await res.json();
         if (data.error) {
+          console.log("Error: ", data.error);
+
           setImageUrl(null);
         } else {
           setImageUrl("data:image/jpeg;base64," + data.image);
-          setBackup("data:image/jpeg;base64," + data.image);
+          setBackup("data:image/jpeg;base64," + data.backup);
+          if (data.privacy === "yes") {
+            setIsBlurred(true);
+          }
           //Adso Set the image to the state
           setImage(data.image);
         }
@@ -87,11 +92,13 @@ export default function PictureProfile() {
     let imageToUpload = "";
     let privacy = "";
     let type = "profile";
+    let backupToSend = backup.split(",")[1];
+
     if (isBlurred) {
       imageToUpload = uploadBlur;
       privacy = "yes";
     } else {
-      imageToUpload = imageBase64;
+      imageToUpload = imageUrl.split(",")[1];
       privacy = "no";
     }
 
@@ -99,7 +106,7 @@ export default function PictureProfile() {
       setMsg("Error: Cannot Upload Default Image");
       return;
     }
-    if (imageBase64 != "" && loading && email && email != "") {
+    if (loading && email && email != "") {
       try {
         const res = await fetch("/api/createAcc/setProfileImg", {
           method: "POST",
@@ -111,6 +118,7 @@ export default function PictureProfile() {
             type: type,
             privacy: privacy,
             image: imageToUpload,
+            backup: backupToSend,
           }),
         });
         const data = await res.json();

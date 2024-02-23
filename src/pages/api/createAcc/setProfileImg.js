@@ -13,16 +13,17 @@ export default async function setProfileImg(req, res) {
     const email = req.body.email;
     const type = req.body.type;
     const privacy = req.body.privacy;
-    console.log("Email: ", email, "Type: ", type, "Privacy: ", privacy);
+    const backup = req.body.backup;
 
     try {
       const result = await sql`
-      INSERT INTO picture (email, type, privacy, picture) 
-      VALUES (${email}, ${type}, ${privacy}, ${decodedImage})
+      INSERT INTO picture (email, type, privacy, picture, backup) 
+      VALUES (${email}, ${type}, ${privacy}, ${decodedImage}, ${backup})
       ON CONFLICT (email) DO UPDATE SET
           type = excluded.type,
           privacy = excluded.privacy,
-          picture = excluded.picture;
+          picture = excluded.picture,
+          backup = excluded.backup;
   `;
       res.json({ message: "Profile Photo Added" });
     } catch (error) {
