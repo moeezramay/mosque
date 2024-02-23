@@ -85,7 +85,7 @@ export default function ForgotPass() {
       console.log("userEmail: ", userEmail);
       setTokenLink(
         (prevTokenLink) =>
-          `https://www.teksa.co.uk/Pagess/sign/forgotPass/resetPass/${userEmail}/${data2.token}`
+          `https://www.mosquematch.com/Pagess/sign/forgotPass/resetPass/${userEmail}/${data2.token}`
       );
 
       localStorage.setItem("email", email);
