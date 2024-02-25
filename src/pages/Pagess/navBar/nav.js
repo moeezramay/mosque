@@ -17,14 +17,14 @@ export default function NavBar() {
   };
 
   return (
-    <div style={{ zIndex: "1" }}>
+    <div>
       <div className="navbar-parent-container-nav">
         <div className="navbar-logo-nav">
           <span style={{ color: "#358fa1" }}>{t("nav.first")}</span>
           <span style={{ color: "#b52d3b" }}>{t("nav.second")}</span>
         </div>
         <div className="navbar-right-container-nav">
-          <div className="select-language-nav">
+          {/* <div className="select-language-nav">
             <select onChange={handleLanguageChange}>
               <option value="en">English</option>
               <option value="es">español</option>
@@ -36,10 +36,30 @@ export default function NavBar() {
               <option value="ru">русский</option>
               <option value="it">Italiano</option>
             </select>
-          </div>
+          </div> */}
           <div>
             <button onClick={shiftToSignin} className="login-button-nav">
-              {t("nav.login")}
+              Login user
+            </button>
+          </div>
+          <div>
+            <button
+              onClick={() => {
+                push("/Pagess/sign/signUp/signUp");
+              }}
+              className="login-button-imam-nav"
+            >
+              SignUp User
+            </button>
+          </div>
+          <div>
+            <button
+              onClick={() => {
+                push("/Pagess/imam/sign/signIn/imamIn");
+              }}
+              className="login-button-imam-nav"
+            >
+              Login imam
             </button>
           </div>
         </div>
