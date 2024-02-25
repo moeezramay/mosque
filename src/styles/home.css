@@ -542,6 +542,22 @@ Find the css for the section youre looking for, here are the different sections:
   text-decoration: none;
   color: black;
 }
+.bar-footer {
+  width: 100%;
+  height: 1px;
+  color: black;
+  margin-top: 5%;
+}
+.copy-footer {
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 20px;
+}
+
 @media (max-width: 560px) {
   .info-parent-footer {
     flex-direction: column;

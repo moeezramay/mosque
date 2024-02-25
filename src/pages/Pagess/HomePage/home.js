@@ -43,7 +43,12 @@ export default function HomePage() {
           <NavBar />
         </div>
         <div className="image-home">
-          <Image src="/home/homeImageHead1.jpeg" alt="home" layout="fill" />
+          <Image
+            unoptimized
+            src="/home/homeImageHead1.jpeg"
+            alt="home"
+            layout="fill"
+          />
         </div>
         <div className="img-cover-home">
           <div className="changing-container-home">
@@ -60,6 +65,7 @@ export default function HomePage() {
             <div className="register-text-home">Register</div>
             <div className="register-img-home">
               <Image
+                unoptimized
                 src="/home/register.jpeg"
                 alt="register"
                 layout="responsive"
@@ -73,6 +79,7 @@ export default function HomePage() {
             <div className="register-text-home">Fill your Interests</div>
             <div className="register-img-home">
               <Image
+                unoptimized
                 src="/home/interest.jpeg"
                 alt="register"
                 layout="responsive"
@@ -90,6 +97,7 @@ export default function HomePage() {
             <div className="register-text-home">Link to a Mosque</div>
             <div className="register-img-home">
               <Image
+                unoptimized
                 src="/home/mosque.jpeg"
                 alt="register"
                 layout="responsive"
@@ -107,6 +115,7 @@ export default function HomePage() {
             <div className="register-text-home">Connect</div>
             <div className="register-img-home">
               <Image
+                unoptimized
                 src="/home/connect.jpeg"
                 alt="register"
                 layout="responsive"
@@ -124,6 +133,7 @@ export default function HomePage() {
             <div className="register-text-home">Wali</div>
             <div className="register-img-home">
               <Image
+                unoptimized
                 src="/home/wali.jpeg"
                 alt="register"
                 layout="responsive"
