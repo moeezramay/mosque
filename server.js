@@ -3,7 +3,8 @@ const { parse } = require("url");
 const next = require("next");
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
+// const hostname = "localhost";
+const hostname = "www.mosquematch.com";
 const port = process.env.PORT || 3000;
 
 const app = next({ dev, hostname, port });
