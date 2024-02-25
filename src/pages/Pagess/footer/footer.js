@@ -108,6 +108,11 @@ export default function Footer() {
             </div>
           </div>
         </div>
+        <div className="bar-footer "></div>
+        <div className="copy-footer">
+          <div>Copyright 2021 MosqueMatch.Co. All Rights are reserved</div>
+          <div>Privacy Policy | Terms of use</div>
+        </div>
       </div>
     </div>
   );
