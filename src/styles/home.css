@@ -76,18 +76,32 @@ Find the css for the section youre looking for, here are the different sections:
   border: none;
 }
 
+@media (max-width: 660px) {
+  .login-button-nav {
+  }
+  .login-button-imam-nav {
+    width: 70px;
+    height: 30px;
+    margin-left: 10px;
+  }
+  .navbar-right-container-nav {
+    flex-direction: row;
+    margin-top: 10px;
+  }
+  .navbar-parent-container-nav {
+    flex-direction: column;
+    justify-content: center;
+  }
+  .navbar-logo-nav {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+  }
+}
+
 /* ---------------^^^^^^^^^^^^^^^^^------------------*/
 
 /* ---------------Home Page------------------*/
-
-@media (max-width: 320px) {
-  .navbar-right-container-nav {
-    flex-direction: column;
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-}
 
 @media (max-width: 760px) {
   .title-img-sub-home {
@@ -479,7 +493,7 @@ Find the css for the section youre looking for, here are the different sections:
   color: rgb(192, 191, 191);
 }
 
-@media (max-width: 560px) {
+@media (max-width: 660px) {
   .icons-container-home {
     flex-direction: column;
   }
@@ -504,6 +518,14 @@ Find the css for the section youre looking for, here are the different sections:
   .story-detail-home {
     text-align: center;
     margin-left: 40px;
+  }
+  .image-home {
+    height: 200px;
+  }
+  .image-cover-home {
+  }
+  .works-title-home {
+    margin-top: 55%;
   }
 }
 
@@ -558,7 +580,7 @@ Find the css for the section youre looking for, here are the different sections:
   padding-bottom: 20px;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 660px) {
   .info-parent-footer {
     flex-direction: column;
   }
@@ -571,5 +593,9 @@ Find the css for the section youre looking for, here are the different sections:
   }
   .second-info-footer {
     text-align: center;
+  }
+  .copy-footer {
+    flex-direction: column;
+    margin-top: 10%;
   }
 }
