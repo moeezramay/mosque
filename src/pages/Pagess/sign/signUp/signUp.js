@@ -223,7 +223,8 @@ export default function SignUp() {
       !lastName ||
       emailAddress === "" ||
       password === "" ||
-      confirm === ""
+      confirm === "" ||
+      password !== confirm
     ) {
       return;
     }

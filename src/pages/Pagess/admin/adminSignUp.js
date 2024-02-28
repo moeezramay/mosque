@@ -2,6 +2,11 @@ import emailjs from "emailjs-com";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Input } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 export default function ImamUp() {
   const [firstName, setFirstName] = useState("");
@@ -10,6 +15,9 @@ export default function ImamUp() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [flag, setFlag] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [confirmError, setConfirmError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [t, i18n] = useTranslation("global");
 
@@ -21,7 +29,9 @@ export default function ImamUp() {
     console.log("signIn Clicked");
     push("/Pagess/admin/adminSignIn");
   };
-
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   //------------------Email send-----------------------
   const sendEmail = (user) => {
     const templateId = "template_ucwlucj";
@@ -49,6 +59,18 @@ export default function ImamUp() {
   //------------------Handle Submit-----------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (
+      passwordError ||
+      confirmError ||
+      !firstName ||
+      !lastName ||
+      emailAddress === "" ||
+      password === "" ||
+      confirm === "" ||
+      password !== confirm
+    ) {
+      return;
+    }
     try {
       const acc = {
         email: emailAddress,
@@ -133,23 +155,61 @@ export default function ImamUp() {
               </div>
               <div className="fields-container-signUp">
                 <div className="name-signUp">{t("signIn.password")}</div>
-                <input
+                <Input
+                  disableUnderline
+                  className="input-password-signIn"
+                  type={showPassword ? "text" : "password"}
                   onChange={(e) => {
-                    setPassword(e.target.value);
+                    if (
+                      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
+                        e.target.value
+                      )
+                    ) {
+                      setPasswordError(false);
+                      setPassword(e.target.value);
+                    } else {
+                      setPasswordError(true);
+                    }
                   }}
-                  type="password"
-                  className="input-signUp"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleTogglePasswordVisibility}>
+                        {showPassword ? (
+                          <VisibilityIcon />
+                        ) : (
+                          <VisibilityOffIcon />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  }
                 />
+                {passwordError && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    Password must contain at least 8 characters, including 1
+                    letter and 1 number
+                  </div>
+                )}
               </div>
               <div className="fields-container-signUp">
                 <div className="name-signUp">{t("signIn.confirm")}</div>
                 <input
                   onChange={(e) => {
-                    setConfirm(e.target.value);
+                    const confirmPwd = e.target.value;
+                    setConfirm(confirmPwd);
+                    if (confirmPwd === password) {
+                      setConfirmError(false);
+                    } else {
+                      setConfirmError(true);
+                    }
                   }}
                   type="password"
                   className="input-signUp"
                 />
+                {confirmError && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    Passwords do not match
+                  </div>
+                )}
               </div>
               <div className="terms-container-signUp">
                 <div className="terms-signUp">

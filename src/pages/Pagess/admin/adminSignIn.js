@@ -2,17 +2,26 @@ import { useTranslation } from "react-i18next";
 import { use } from "i18next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Input } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 export default function AdminIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const [t, i18n] = useTranslation("global");
   const { push } = useRouter();
 
   const shiftToAdminSignUp = () => {
     push("/Pagess/admin/adminSignUp");
   };
-
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   //---------------^^^^^^^^^-----------------------------
   const SignIn = async () => {
     let data = {
@@ -68,12 +77,23 @@ export default function AdminIn() {
             </div>
             <div className="fields-container-signIn">
               <div className="name-signIn">{t("signIn.password")}</div>
-              <input
-                type="password"
-                className="input-signIn"
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
+              <Input
+                disableUnderline
+                className="input-password-signIn"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleTogglePasswordVisibility}>
+                      {showPassword ? (
+                        <VisibilityIcon />
+                      ) : (
+                        <VisibilityOffIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
             </div>
 

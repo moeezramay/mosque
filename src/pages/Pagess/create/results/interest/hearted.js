@@ -454,9 +454,7 @@ export default function Hearted() {
                     </div>
                   </div>
                 )}
-                <div className="heart-container-search">
-                  <Stop />
-                </div>
+
                 <div
                   className="heart-container-search"
                   onClick={(e) => {
