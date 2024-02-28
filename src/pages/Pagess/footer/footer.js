@@ -63,7 +63,6 @@ export default function Footer() {
             >
               Imam Register
             </div>
-            <div className="second-info-footer">reda@locummeds.co.uk</div>
           </div>
           <div className="sitemap-container-footer">
             <div className="title-info-footer">Our Social </div>

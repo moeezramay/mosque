@@ -1,4 +1,4 @@
-export default function SearchIcon() {
+export default function RedSearchIcon() {
   return (
     <div>
       <svg
@@ -10,7 +10,7 @@ export default function SearchIcon() {
       >
         <path
           d="M18.5 9.5C18.5 13.8467 14.7678 17.5 10 17.5C5.23215 17.5 1.5 13.8467 1.5 9.5C1.5 5.15329 5.23215 1.5 10 1.5C14.7678 1.5 18.5 5.15329 18.5 9.5Z"
-          stroke="black"
+          stroke="#b52d3b"
           stroke-width="3"
         />
         <line
@@ -18,7 +18,7 @@ export default function SearchIcon() {
           x2="10.2629"
           y2="-1.5"
           transform="matrix(0.779509 0.626391 -0.573462 0.819232 16 15)"
-          stroke="black"
+          stroke="#b52d3b"
           stroke-width="3"
         />
         <path

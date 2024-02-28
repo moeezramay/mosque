@@ -162,6 +162,7 @@ export default function Awaiting() {
             <div className="result-img-parent-search">
               <div className="img-container-search">
                 <Image
+                  unoptimized
                   src="/female.jpeg"
                   alt="default"
                   layout="responsive"
@@ -174,7 +175,7 @@ export default function Awaiting() {
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
                 <div className="active-text-search">
-                  <div>active n years ago</div>
+                  <div>active 0 years ago</div>
                 </div>
               </div>
               <div className="result-line2-container-search">

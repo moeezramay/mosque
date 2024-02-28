@@ -12,6 +12,7 @@
   padding-top: 6%;
   font-size: 30px;
   font-weight: bold;
+  cursor: pointer;
 }
 .parent-container-signIn {
   width: 100%;
@@ -81,6 +82,13 @@
   padding-left: 3%;
   padding-right: 3%;
   font-size: 14px;
+}
+.input-password-signIn {
+  width: 95%;
+  margin-top: 10px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  padding-left: 2px;
 }
 .or-container-signIn {
   display: flex;
@@ -163,6 +171,7 @@
   padding-top: 6%;
   font-size: 30px;
   font-weight: bold;
+  cursor: pointer;
 }
 .parent-container-signUp {
   width: 100%;

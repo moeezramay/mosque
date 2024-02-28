@@ -3,7 +3,7 @@ import Camera from "../../../../../../public/camerasvg";
 import Envelope from "../../../../../../public/envelope";
 import Stop from "../../../../../../public/stopsvg";
 import Excalim from "../../../../../../public/exclaimsvg";
-import Wali from "../../../../../../public/waliSVG";
+import WaliRed from "../../../../../../public/search/waliRed";
 import NextImage from "next/image";
 
 export default function Hearted() {
@@ -17,6 +17,7 @@ export default function Hearted() {
   const [heartClicked, setHeartClicked] = useState(false);
   const [heartedEmails, setHeartedEmails] = useState([]);
   const [showReport, setShowReport] = useState(false);
+  const [showPrivate, setShowPrivate] = useState(false);
 
   //-------------Api to retrieve data------------------
   useEffect(() => {
@@ -52,7 +53,36 @@ export default function Hearted() {
   }, []);
 
   //-------------^^^^^^^^^^^^^^^^^^^^------------------
+  //-------------------Request Wali------------------------
 
+  const RequestPrivateImage = async (e, user) => {
+    e.preventDefault();
+    const receiver = user;
+    const sender = localStorage.getItem("email");
+
+    const data = {
+      senderEmail: sender,
+      receiverEmail: receiver,
+      messageText: "Would like to request your private images",
+    };
+
+    const res = await fetch("/api/message/sendMessage", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const errorMessage = await res.json();
+      console.error("Error if:", errorMessage.error);
+      return;
+    }
+    const response = await res.json();
+    console.log("Private Image Request Sent: ", response);
+  };
+
+  //-------------------^^^^^^^^^^^^^^^^^^^^------------------
   //----------------For profile image------------------
   useEffect(() => {
     var getImg = async () => {
@@ -240,6 +270,12 @@ export default function Hearted() {
     console.log(response);
   };
   //--------------------^^^^^^^^^^^^^-------------------
+
+  const reloadPage = () => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  };
   return (
     <div>
       <div className="bottom-container-search">
@@ -253,6 +289,7 @@ export default function Hearted() {
                       .filter((img) => img.email === userInfo.email)
                       .map((img) => (
                         <NextImage
+                          unoptimized
                           key={img.email} // Ensure each NextImage has a unique key
                           src={`data:image/jpeg;base64,${img.image}`}
                           width={100}
@@ -266,6 +303,7 @@ export default function Hearted() {
                     {imageData.filter((img) => img.email === userInfo.email)
                       .length === 0 && (
                       <NextImage
+                        unoptimized
                         src="/female.jpeg" // Set src to "/female.jpeg" if no images found
                         width={100}
                         height={100}
@@ -285,7 +323,7 @@ export default function Hearted() {
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
                 <div className="active-text-search">
-                  <div>active n years ago</div>
+                  <div>active 0 years ago</div>
                 </div>
               </div>
               <div className="result-line2-container-search">
@@ -305,6 +343,7 @@ export default function Hearted() {
                         id="heart"
                         onClick={() => {
                           HeartClickRemove(userInfo.email);
+                          reloadPage();
                         }}
                       ></div>
                     ) : (
@@ -312,6 +351,7 @@ export default function Hearted() {
                         id="blackHeart"
                         onClick={() => {
                           HeartClick(userInfo.email);
+                          reloadPage();
                         }}
                       ></div>
                     )
@@ -368,9 +408,52 @@ export default function Hearted() {
                   </div>
                 )}
                 {/* ^^^^^^^^^^^^^ */}
-                <div className="heart-container-search">
+                <div
+                  className="heart-container-search"
+                  onClick={() => {
+                    setSelectedUserInfo(userInfo);
+                    setShowPrivate(true);
+                  }}
+                >
                   <Camera />
                 </div>
+                {showPrivate && (
+                  <div className="msg-container-search">
+                    <div className="msg-sub-search">
+                      <div className="msg-heading-search">
+                        <div className="msg-text-search">
+                          Request Private Images
+                        </div>
+                        <div className="close-msg-search">
+                          <div
+                            onClick={(e) => {
+                              setShowPrivate(false);
+                            }}
+                          >
+                            X
+                          </div>
+                        </div>
+                      </div>
+                      <div className="divider-msg-search"></div>
+                      <div className="msg-mini-container-search">
+                        <div className="send-msg-container-search">
+                          <button
+                            className="send-msg-search"
+                            onClick={(e) => {
+                              setMessageText(
+                                "I would like to request your Private Images"
+                              );
+                              RequestPrivateImage(e, selectedUserInfo.email);
+                              setShowPrivate(false);
+                            }}
+                          >
+                            Request
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="heart-container-search">
                   <Stop />
                 </div>
@@ -426,7 +509,7 @@ export default function Hearted() {
                   </div>
                 )}
                 <div className="heart-container-search">
-                  <Wali />
+                  <WaliRed />
                 </div>
               </div>
               <div className="result-line3-container-search">

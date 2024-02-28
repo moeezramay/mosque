@@ -4,6 +4,11 @@ import { useTranslation } from "react-i18next";
 import { signIn, useSession, signOut } from "next-auth/react";
 import SignUpGoogle from "../../../../../public/signupGooglesvg";
 import emailjs from "emailjs-com";
+import { Input } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 export default function SignUp() {
   const { status, data: session } = useSession();
@@ -18,6 +23,7 @@ export default function SignUp() {
   const [googleEmail, setGoogleEmail] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [confirmError, setConfirmError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [t, i18n] = useTranslation("global");
 
@@ -30,7 +36,13 @@ export default function SignUp() {
     push("/Pagess/sign/signIn/signIn");
   };
   const shiftToImam = () => {
-    push("/Pagess/imam/sign/signUn/imamUp");
+    push("/Pagess/imam/sign/signIn/imamIn");
+  };
+  const shiftToHome = () => {
+    push("/");
+  };
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   //------------------Email send-----------------------
@@ -260,7 +272,7 @@ export default function SignUp() {
     <form onSubmit={handleSubmit}>
       <div>
         <div className="signUp-parent-signUp">
-          <div className="logo-signUp">
+          <div className="logo-signUp" onClick={shiftToHome}>
             <span style={{ color: "#358fa1" }}>{t("nav.first")}</span>
             <span style={{ color: "#b52d3b" }}>{t("nav.second")}</span>
           </div>
@@ -297,7 +309,11 @@ export default function SignUp() {
               </div>
               <div className="fields-container-signUp">
                 <div className="name-signUp">{t("signIn.password")}</div>
-                <input
+
+                <Input
+                  disableUnderline
+                  className="input-password-signIn"
+                  type={showPassword ? "text" : "password"}
                   onChange={(e) => {
                     if (
                       /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
@@ -310,8 +326,17 @@ export default function SignUp() {
                       setPasswordError(true);
                     }
                   }}
-                  type="password"
-                  className="input-signUp"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleTogglePasswordVisibility}>
+                        {showPassword ? (
+                          <VisibilityIcon />
+                        ) : (
+                          <VisibilityOffIcon />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  }
                 />
                 {passwordError && (
                   <div style={{ color: "red", fontSize: "12px" }}>

@@ -146,7 +146,7 @@ export default function Verified() {
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
                 <div className="active-text-search">
-                  <div>active n years ago</div>
+                  <div>active 0 years ago</div>
                 </div>
               </div>
               <div className="result-line2-container-search">

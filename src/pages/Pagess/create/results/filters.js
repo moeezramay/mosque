@@ -22,7 +22,7 @@ export default function Filters() {
   const [checked, isChecked] = useState(true);
 
   //Setting the Slider Data
-  const [sliderValue, setSliderValue] = useState(100);
+  const [sliderValue, setSliderValue] = useState(7000);
 
   //Context Range Variable
   const { rangeContext, setRangeContext } = useContext(AppContext);
@@ -121,14 +121,14 @@ export default function Filters() {
         name="region-slider"
         className="region-slider"
         min="0"
-        max="100"
+        max="7000"
         value={sliderValue}
         step="1"
         onChange={handleSliderChange}
       />
       <div className="region-slider-labels">
         <div>0 Miles</div>
-        <div>100 Miles</div>
+        <div>7000 Miles</div>
       </div>
 
       <div className="filters-line2-result"></div>

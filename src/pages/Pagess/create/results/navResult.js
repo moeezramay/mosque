@@ -1,10 +1,13 @@
 import { useTranslation } from "react-i18next";
-import SearchIcon from "../../../../../public/searchsvg";
-import MessageIcon from "../../../../../public/messageIconsvg";
-import HeartIcon from "../../../../../public/hearticonSvg";
+import SearchIcon from "../../../../../public/nav/searchsvg";
+import MessageIcon from "../../../../../public/nav/messageIconsvg";
+import HeartIcon from "../../../../../public/nav/hearticonSvg";
 import { useState, useEffect } from "react";
 import { signIn, useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import RedHeartIcon from "../../../../../public/nav/redHeart";
+import RedMessageIcon from "../../../../../public/nav/redMsgs";
+import RedSearchIcon from "../../../../../public/nav/redSearch";
 
 export default function ResultsNav() {
   const { data: session } = useSession();
@@ -12,10 +15,22 @@ export default function ResultsNav() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [logout, setLogout] = useState(false);
+  const [selected, setSelected] = useState("search");
   const { push } = useRouter();
 
   //------------------Retrieves data----------------
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (
+        localStorage.getItem("currentNavOption") === null ||
+        localStorage.getItem("currentNavOption") === undefined ||
+        localStorage.getItem("currentNavOption") === ""
+      ) {
+        setSelected("search");
+      } else {
+        setSelected(localStorage.getItem("currentNavOption"));
+      }
+    }
     const fetchData = async () => {
       if (
         localStorage.getItem("email") === null ||
@@ -78,22 +93,66 @@ export default function ResultsNav() {
 
   //------------------^^^^^^^^^^^^^^^----------------
 
+  //------------------Change Nav Optio----------------
+  const changeNavOption = (option) => {
+    setSelected(option);
+    localStorage.setItem("currentNavOption", option);
+  };
+
+  //------------------^^^^^^^^^^^^^^^----------------
+
   return (
     <div style={{ zIndex: "1" }}>
       <div className="navbar-parent-container-navResult">
-        <div className="navbar-logo-navResult">
+        <div className="navbar-logo-navResult" onClick={shiftToSearch}>
           <span style={{ color: "#358fa1" }}>{t("nav.first")}</span>
           <span style={{ color: "#b52d3b" }}>{t("nav.second")}</span>
         </div>
         <div className="svg-container-navResult">
-          <div className="search-navResult" onClick={shiftToSearch}>
-            <SearchIcon />
+          <div
+            className="search-navResult"
+            onClick={() => {
+              shiftToSearch();
+              changeNavOption("search");
+            }}
+          >
+            {selected === "search" ? (
+              <>
+                <RedSearchIcon />
+              </>
+            ) : (
+              <SearchIcon />
+            )}
           </div>
-          <div className="message-navResult" onClick={shiftToMessages}>
-            <MessageIcon />
+          <div
+            className="message-navResult"
+            onClick={() => {
+              shiftToMessages();
+              changeNavOption("messages");
+            }}
+          >
+            {selected === "messages" ? (
+              <>
+                <RedMessageIcon />
+              </>
+            ) : (
+              <MessageIcon />
+            )}
           </div>
-          <div className="message-navResult" onClick={shiftToInterest}>
-            <HeartIcon />
+          <div
+            className="message-navResult"
+            onClick={() => {
+              shiftToInterest();
+              changeNavOption("interest");
+            }}
+          >
+            {selected === "interest" ? (
+              <>
+                <RedHeartIcon />
+              </>
+            ) : (
+              <HeartIcon />
+            )}
           </div>
         </div>
         <div className="account-navResult" onClick={() => setLogout(!logout)}>
@@ -102,7 +161,13 @@ export default function ResultsNav() {
       </div>
       {logout && (
         <div className="logout-container-navResult">
-          <div className="edit-profile-navResult" onClick={shiftToEditProfile}>
+          <div
+            className="edit-profile-navResult"
+            onClick={() => {
+              shiftToEditProfile();
+              localStorage.setItem("currentNavOption", "editProfile");
+            }}
+          >
             Edit Profile
           </div>
           <div className="line-edit-navResult"></div>

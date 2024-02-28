@@ -4,6 +4,11 @@ import { useTranslation } from "react-i18next";
 import { signIn, useSession, signOut } from "next-auth/react";
 import SignGoogle from "../../../../../public/signGooglesvg";
 import { use } from "i18next";
+import { Input } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 export default function SignIn() {
   const { data: session } = useSession();
@@ -11,6 +16,7 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [registered, setRegistered] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { push } = useRouter();
 
@@ -19,8 +25,14 @@ export default function SignIn() {
     push("/Pagess/sign/signUp/signUp");
   };
 
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   const shiftToImam = () => {
     push("/Pagess/imam/sign/signIn/imamIn");
+  };
+  const shiftToHome = () => {
+    push("/");
   };
   useEffect(() => {
     if (session && session.user && session.user.name) {
@@ -140,7 +152,7 @@ export default function SignIn() {
     return (
       <div>
         <div className="signIn-parent-signIn">
-          <div className="logo-signIn">
+          <div className="logo-signIn" onClick={shiftToHome}>
             <span style={{ color: "#358fa1" }}>{t("nav.first")}</span>
             <span style={{ color: "#b52d3b" }}>{t("nav.second")}</span>
           </div>
@@ -158,12 +170,24 @@ export default function SignIn() {
               </div>
               <div className="fields-container-signIn">
                 <div className="name-signIn">{t("signIn.password")}</div>
-                <input
-                  type="password"
-                  className="input-signIn"
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
+
+                <Input
+                  disableUnderline
+                  className="input-password-signIn"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleTogglePasswordVisibility}>
+                        {showPassword ? (
+                          <VisibilityIcon />
+                        ) : (
+                          <VisibilityOffIcon />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  }
                 />
               </div>
               <div className="terms-container-signIn">

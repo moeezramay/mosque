@@ -12,6 +12,8 @@ import { Data, useLoadScript } from "@react-google-maps/api";
 import Map from "./map";
 import HeartClick from "../../../../../public/heartClickSvg";
 import NextImage from "next/image";
+import WaliBlack from "../../../../../public/search/waliBlack";
+import WaliRed from "../../../../../public/search/waliRed";
 
 export default function Search() {
   const [data, setData] = useState([]);
@@ -39,11 +41,14 @@ export default function Search() {
   const [emailProfile, setEmailProfile] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [imageData, setImageData] = useState(null);
-  //--------------------------
   //-----For Fav icon-----
   const [heartClicked, setHeartClicked] = useState(false);
   const [heartedEmails, setHeartedEmails] = useState([]);
-  //--------------------------
+  //-----For private image request---------
+  const [showPrivate, setShowPrivate] = useState(false);
+  //-----For blocking user---------
+  const [showBlock, setShowBlock] = useState(false);
+  const [blockStart, setBlockStart] = useState(0);
 
   const ethnicities_existing = [
     "asian",
@@ -67,6 +72,9 @@ export default function Search() {
     lng: -87.623177,
   });
 
+  useEffect(() => {
+    localStorage.setItem("currentNavOption", "search");
+  }, []);
   //Updator for Current Location
   useEffect(() => {
     if (cLocation && !locationSet) {
@@ -167,6 +175,37 @@ export default function Search() {
 
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
 
+  //-------------------Request Wali------------------------
+
+  const RequestPrivateImage = async (e, user) => {
+    e.preventDefault();
+    const receiver = user;
+    const sender = localStorage.getItem("email");
+
+    const data = {
+      senderEmail: sender,
+      receiverEmail: receiver,
+      messageText: "Would like to request your private images",
+    };
+
+    const res = await fetch("/api/message/sendMessage", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const errorMessage = await res.json();
+      console.error("Error if:", errorMessage.error);
+      return;
+    }
+    const response = await res.json();
+    console.log("Private Image Request Sent: ", response);
+  };
+
+  //-------------------^^^^^^^^^^^^^^^^^^^^------------------
+
   //-------------------Calculate Distance------------------------
 
   const getDistance = (lat1, lng1, lat2, lng2) => {
@@ -195,7 +234,7 @@ export default function Search() {
       const data = await response.json();
 
       if (response.ok && data.status === "OK" && data.results.length > 0) {
-        const mosquesData = data.results.slice(0, 5).map((result) => ({
+        const mosquesData = data.results.slice(0, 10).map((result) => ({
           location: result.geometry.location,
           name: result.name,
         }));
@@ -311,18 +350,6 @@ export default function Search() {
   };
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
 
-  const filterUniqueLocations = (data) => {
-    const uniqueLocations = new Set();
-    return data.filter((item) => {
-      const key = `${item.location.lat}-${item.location.lng}`;
-      if (!uniqueLocations.has(key)) {
-        uniqueLocations.add(key);
-        return true;
-      }
-      return false;
-    });
-  };
-
   //-------------Checks for token----------------
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -356,16 +383,39 @@ export default function Search() {
           return;
         }
         const response = await res.json();
-        console.log("Incoming Data:");
-        console.log(response.user.rows);
+
+        //Getting blocked users to remove
+        const res2 = await fetch("/api/interest/getBlocked", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+        let data2 = await res2.json();
+        if (data2.error) {
+          console.log("Error on getting blocked: ", data2.error);
+        }
+
+        data2 = data2.data;
+        console.log("DATA DASFGASDGSDAG", response.user.rows);
+        console.log("DATA 22222222222", data2);
 
         //Adding a Distance Tracker to the Users
-        response.user.rows = response.user.rows.map((e) => {
+        const dataToChange = response.user.rows.map((e) => {
           e["distance"] = "Unknown";
           return e;
         });
 
-        setData(response.user.rows);
+        const dataChanged = dataToChange.filter(
+          (user) => !data2.some((item) => item.receiver_email === user.email)
+        );
+
+        console.log("DATA CHAGNEINGEIAGNAEIGNA", dataChanged);
+
+        setData(dataChanged);
         showMap();
       } catch (error) {
         console.error("Error on first try fetching data:", error.message);
@@ -425,6 +475,12 @@ export default function Search() {
     if (item.length == 0 || item.indexOf(userItem.toLowerCase()) !== -1) {
       return 1;
     }
+  };
+
+  const reloadPage = () => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   };
 
   //----------------For profile image------------------
@@ -610,20 +666,36 @@ export default function Search() {
     setFilteredData(filtered);
   }, [filterContext, data, rangeContext]);
 
+  //---------------Block a user----------------
+  const BlockUser = async (e, user) => {
+    e.preventDefault();
+    const res = await fetch("/api/interest/blockUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        blocked: user,
+        blocker: localStorage.getItem("email"),
+      }),
+    });
+    if (!res.ok) {
+      const errorMessage = await res.json();
+      console.error("Error if:", errorMessage.error);
+      return;
+    }
+    const response = await res.json();
+    console.log(response);
+  };
+
+  //-----------------^^^^^^^^^^^^^^----------------
+
   return (
     <div>
       <div className="top-container-search">
         <div className="top-left-search">
           <div className="search-heading-search">Search Results</div>
-          {/*<button
-                        className="map-show-search"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            showMap(e, email);
-                        }}
-                    >
-                        {mapText}
-                    </button>*/}
+
           {!locAccess && (
             <div className="map-error-search">Access to Location Denied :/</div>
           )}
@@ -674,6 +746,7 @@ export default function Search() {
                       .filter((img) => img.email === userInfo.email)
                       .map((img) => (
                         <NextImage
+                          unoptimized
                           key={img.email} // Ensure each NextImage has a unique key
                           src={`data:image/jpeg;base64,${img.image}`}
                           width={100}
@@ -687,6 +760,7 @@ export default function Search() {
                     {imageData.filter((img) => img.email === userInfo.email)
                       .length === 0 && (
                       <NextImage
+                        unoptimized
                         src="/female.jpeg" // Set src to "/female.jpeg" if no images found
                         width={100}
                         height={100}
@@ -706,7 +780,7 @@ export default function Search() {
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
                 <div className="active-text-search">
-                  <div>active n years ago</div>
+                  <div>active 0 years ago</div>
                 </div>
               </div>
               <div className="result-line2-container-search">
@@ -726,6 +800,7 @@ export default function Search() {
                         id="heart"
                         onClick={() => {
                           HeartClickRemove(userInfo.email);
+                          reloadPage();
                         }}
                       ></div>
                     ) : (
@@ -733,6 +808,7 @@ export default function Search() {
                         id="blackHeart"
                         onClick={() => {
                           HeartClick(userInfo.email);
+                          reloadPage();
                         }}
                       ></div>
                     )
@@ -789,12 +865,94 @@ export default function Search() {
                   </div>
                 )}
                 {/* ^^^^^^^^^^^^^ */}
-                <div className="heart-container-search">
+                <div
+                  className="heart-container-search"
+                  onClick={() => {
+                    setSelectedUserInfo(userInfo);
+                    setShowPrivate(true);
+                  }}
+                >
                   <Camera />
                 </div>
-                <div className="heart-container-search">
+                {showPrivate && (
+                  <div className="msg-container-search">
+                    <div className="msg-sub-search">
+                      <div className="msg-heading-search">
+                        <div className="msg-text-search">
+                          Request Private Images
+                        </div>
+                        <div className="close-msg-search">
+                          <div
+                            onClick={(e) => {
+                              setShowPrivate(false);
+                            }}
+                          >
+                            X
+                          </div>
+                        </div>
+                      </div>
+                      <div className="divider-msg-search"></div>
+                      <div className="msg-mini-container-search">
+                        <div className="send-msg-container-search">
+                          <button
+                            className="send-msg-search"
+                            onClick={(e) => {
+                              setMessageText(
+                                "I would like to request your Private Images"
+                              );
+                              RequestPrivateImage(e, selectedUserInfo.email);
+                              setShowPrivate(false);
+                            }}
+                          >
+                            Request
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div
+                  className="heart-container-search"
+                  onClick={() => {
+                    setSelectedUserInfo(userInfo);
+                    setShowBlock(true);
+                  }}
+                >
                   <Stop />
                 </div>
+                {showBlock && (
+                  <div className="msg-container-search">
+                    <div className="msg-sub-search">
+                      <div className="msg-heading-search">
+                        <div className="msg-text-search">Block This User?</div>
+                        <div className="close-msg-search">
+                          <div
+                            onClick={(e) => {
+                              setShowBlock(false);
+                            }}
+                          >
+                            X
+                          </div>
+                        </div>
+                      </div>
+                      <div className="divider-msg-search"></div>
+                      <div className="msg-mini-container-search">
+                        <div className="send-msg-container-search">
+                          <button
+                            className="send-msg-search"
+                            onClick={(e) => {
+                              BlockUser(e, selectedUserInfo.email);
+                              setShowBlock(false);
+                              reloadPage();
+                            }}
+                          >
+                            Block
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div
                   className="heart-container-search"
                   onClick={(e) => {
@@ -853,7 +1011,7 @@ export default function Search() {
                     setShowWali(true);
                   }}
                 >
-                  <Wali />
+                  <WaliRed />
                 </div>
                 {showWali && (
                   <div className="msg-container-search">

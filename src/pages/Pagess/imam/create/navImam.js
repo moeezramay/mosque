@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import SearchIcon from "../../../../../public/searchsvg";
-import MessageIcon from "../../../../../public/messageIconsvg";
-import HeartIcon from "../../../../../public/hearticonSvg";
+import SearchIcon from "../../../../../public/nav/searchsvg";
+import MessageIcon from "../../../../../public/nav/messageIconsvg";
+import HeartIcon from "../../../../../public/nav/hearticonSvg";
 import { useState, useEffect } from "react";
 import { signIn, useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";

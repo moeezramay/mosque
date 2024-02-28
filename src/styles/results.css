@@ -392,6 +392,9 @@
   margin-left: 15px;
   cursor: pointer;
 }
+.svg-container:hover .icon-path {
+  fill: #b52d3b;
+}
 .view-bio-search {
   width: 80px;
   margin-left: 20px;

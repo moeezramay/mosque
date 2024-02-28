@@ -9,6 +9,10 @@ export default function Interest() {
   const { push } = useRouter();
   const [select, setSelect] = useState("1");
 
+  useEffect(() => {
+    localStorage.setItem("currentNavOption", "interest");
+  }, []);
+
   return (
     <div>
       <ResultsNav />

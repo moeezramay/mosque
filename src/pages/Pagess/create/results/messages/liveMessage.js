@@ -25,6 +25,10 @@ export default function MessageHome() {
   const { push } = useRouter();
 
   useEffect(() => {
+    localStorage.setItem("currentNavOption", "messages");
+  }, []);
+
+  useEffect(() => {
     const socketInitializer = async () => {
       const username = localStorage.getItem("username");
       setUsername(username);
@@ -401,10 +405,18 @@ export default function MessageHome() {
                   <div className="input-container-live">
                     <input
                       className="input-live"
+                      value={message}
                       placeholder="Enter a message here.."
                       onChange={(e) => setMessage(e.target.value)}
                     />
-                    <button className="send-msg-live" onClick={handleMessage}>
+                    <button
+                      className="send-msg-live"
+                      onClick={() => {
+                        console.log("message clicked");
+                        handleMessage();
+                        setMessage("");
+                      }}
+                    >
                       <MessageSend />
                     </button>
                   </div>
