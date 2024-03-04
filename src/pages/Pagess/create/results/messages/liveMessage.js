@@ -20,6 +20,8 @@ export default function MessageHome() {
   const [filteredAndSortedMessages, setFilteredAndSortedMessages] = useState(
     []
   );
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [onlineStatus, setOnlineStatus] = useState("Offline");
   const [message, setMessage] = useState(""); //Message to send
   const [selectedUser, setSelectedUser] = useState(""); //Selected user to display messages
   const { push } = useRouter();
@@ -49,6 +51,7 @@ export default function MessageHome() {
       });
 
       newSocket.emit("addUser", email);
+      newSocket.emit("getOnline", email);
 
       newSocket.on("messageFromServer", (message) => {
         console.log(message);
@@ -63,8 +66,7 @@ export default function MessageHome() {
 
       newSocket.on("getSentMessages", (arr, email2) => {
         let em = localStorage.getItem("email");
-        console.log("em", em);
-        console.log("email2", email2);
+
         if (email2 === em) {
           setSentMessages(arr);
         }
@@ -74,7 +76,6 @@ export default function MessageHome() {
         console.log("Email on refreshOther:", email);
         let tempE = localStorage.getItem("email");
         if (email === tempE) {
-          console.log("Email found on refreshOther:", tempE);
           setRecievedMessages(result);
         } else {
           console.log("Refresh false");
@@ -93,12 +94,25 @@ export default function MessageHome() {
     if (socket != null) {
       socket.emit("getRecievedMessages", email);
       socket.emit("getSentMessages", email);
-      console.log("message sent");
+      socket.on("updateOnline", (users) => {
+        const uniqueEmails = {};
+
+        const uniqueUsers = users.filter((user) => {
+          if (!uniqueEmails[user.email]) {
+            uniqueEmails[user.email] = true;
+            return true;
+          }
+          return false;
+        });
+        console.log("USERSDFSAASDF", uniqueEmails);
+
+        setOnlineUsers(uniqueEmails);
+      });
     }
   }, [socket]);
   //--------------------^^^^^^^^^^--------------------
 
-  //-------Filtered array for left pane contact display------
+  //-------Filtered array for left pane contact display-----
 
   useEffect(() => {
     // Combine and filter messages
@@ -275,6 +289,22 @@ export default function MessageHome() {
   };
 
   //--------------------^^^^^^^^^^--------------------
+  useEffect(() => {
+    const getOnlineStatus = async () => {
+      console.log("Function called");
+
+      let newEmail = emailFound;
+      const newOnlineUsers = Object.keys(onlineUsers); // Extract email addresses
+      const emailExistsInState = newOnlineUsers.includes(newEmail);
+      console.log("ONLINE USERS: ", newOnlineUsers);
+      if (emailExistsInState) {
+        setOnlineStatus("Online");
+      } else {
+        setOnlineStatus("Offline");
+      }
+    };
+    getOnlineStatus();
+  }, [selectedUser, emailFound]);
 
   return (
     <div>
@@ -348,7 +378,7 @@ export default function MessageHome() {
                 </div>
                 <div className="name-right-holder">
                   <div className="name-right-live">{selectedUser}</div>
-                  <div className="name-right-status">Offline</div>
+                  <div className="name-right-status">{onlineStatus}</div>
                 </div>
               </div>
               <div className="msgs-body">

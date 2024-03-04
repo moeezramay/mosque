@@ -55,6 +55,14 @@ export default async function CreateAccount(req, res) {
     const result =
       await sql`INSERT INTO createacc(email, password, username) VALUES(${email}, ${encryptedPassword}, ${fullName});`;
 
+    try {
+      const result2 = await sql`INSERT INTO activeTime (email, active_since) 
+      VALUES (${email}, CURRENT_TIMESTAMP) 
+      ON CONFLICT (email) DO UPDATE SET active_since = EXCLUDED.active_since;`;
+    } catch (error) {
+      console.error("Error inserting timestamp on signUp", error);
+    }
+
     res.json({
       message: content.email,
       name: fullName,

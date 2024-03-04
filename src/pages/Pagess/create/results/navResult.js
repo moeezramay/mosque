@@ -92,7 +92,11 @@ export default function ResultsNav() {
   //das
 
   //------------------^^^^^^^^^^^^^^^----------------
-
+  const reloadPage = () => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 10);
+  };
   //------------------Change Nav Optio----------------
   const changeNavOption = (option) => {
     setSelected(option);
@@ -114,6 +118,7 @@ export default function ResultsNav() {
             onClick={() => {
               shiftToSearch();
               changeNavOption("search");
+              reloadPage();
             }}
           >
             {selected === "search" ? (

@@ -56,12 +56,18 @@ export default async function SignIn(req, res) {
 
     console.log("Username: ", user.username);
 
-    console.log("Decrypting password: ", user.password);
     const decryptedPassword = decryptData(user.password, keyBuffer, iv);
 
     if (password !== decryptedPassword) {
       console.log("Wrong password");
       res.status(400).json({ error: "Wrong password." });
+    }
+    try {
+      const result2 = await sql`INSERT INTO activeTime (email, active_since) 
+      VALUES (${email}, CURRENT_TIMESTAMP) 
+      ON CONFLICT (email) DO UPDATE SET active_since = EXCLUDED.active_since;`;
+    } catch (error) {
+      console.error("Error on updating timestamp on signin", error);
     }
 
     const token = jwt.sign({ id: user.id }, KEY);

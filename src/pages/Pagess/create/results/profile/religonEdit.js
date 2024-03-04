@@ -83,6 +83,43 @@ export default function ReligonEdit() {
 
   //-------------^^^^^^^^^^^^^^^^^^^^------------------
 
+  //---------------Get user data from api--------------
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/message/getSingleUser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(email),
+        });
+        if (!res.ok) {
+          const errorMessage = await res.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const response = await res.json();
+        const userData = response.user.rows[0];
+        setReligious(userData.religion_religious);
+        setSector(userData.religion_sector);
+        setHijab(userData.religion_hijab);
+        setBeard(userData.religion_beard);
+        setRevert(userData.religion_revert);
+        setHalal(userData.religion_halal);
+        setPray(userData.religion_pray);
+        setQuran(userData.religon_quran);
+      } catch (error) {
+        console.log(
+          "Error on useEffect aboutEdit.js in profile:",
+          error.message
+        );
+      }
+    };
+    fetchData();
+  });
+
   return (
     <div style={{ paddingBottom: "40px" }}>
       <div>

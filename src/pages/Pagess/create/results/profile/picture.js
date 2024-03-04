@@ -202,7 +202,7 @@ export default function PictureProfile() {
           <input
             id="file-input-profile"
             type="file"
-            accept="image/png, image/gif, image/jpeg"
+            accept="image/*"
             onChange={handleImageChange}
           />
         )}

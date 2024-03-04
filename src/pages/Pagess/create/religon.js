@@ -7,6 +7,7 @@ import { useState, useContext, useEffect } from "react";
 export default function Religon() {
   const [t, i18n] = useTranslation("global");
   const { religonContext, setReligonContext } = useContext(AppContext);
+  const { genderContext, setGenderContext } = useContext(AppContext);
   const { push } = useRouter();
 
   //----------Storing input data in state----------------
@@ -104,37 +105,41 @@ export default function Religon() {
                 </select>
               </div>
             </div>
+            {genderContext === "male" && (
+              <div className="select-conatiner-religon">
+                <div className="location-religon">{t("religon.prefer")}</div>
+                <div className="select-location-religon">
+                  <select
+                    value={hijab}
+                    onChange={(e) => handleSelectChange(e, setHijab)}
+                    required
+                  >
+                    <option></option>
+                    <option>Yes Hijab</option>
+                    <option>Yes Niqab</option>
+                    <option>No</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
+            )}
+            {genderContext === "female" && (
+              <div className="select-conatiner-religon">
+                <div className="location-religon">{t("religon.beard")}</div>
+                <div className="select-location-religon">
+                  <select
+                    value={beard}
+                    onChange={(e) => handleSelectChange(e, setBeard)}
+                    required
+                  >
+                    <option></option>
+                    <option>Beard, Yes</option>
+                    <option>Beard, No</option>
+                  </select>
+                </div>
+              </div>
+            )}
 
-            <div className="select-conatiner-religon">
-              <div className="location-religon">{t("religon.prefer")}</div>
-              <div className="select-location-religon">
-                <select
-                  value={hijab}
-                  onChange={(e) => handleSelectChange(e, setHijab)}
-                  required
-                >
-                  <option></option>
-                  <option>Yes Hijab</option>
-                  <option>Yes Niqab</option>
-                  <option>No</option>
-                  <option>Other</option>
-                </select>
-              </div>
-            </div>
-            <div className="select-conatiner-religon">
-              <div className="location-religon">{t("religon.beard")}</div>
-              <div className="select-location-religon">
-                <select
-                  value={beard}
-                  onChange={(e) => handleSelectChange(e, setBeard)}
-                  required
-                >
-                  <option></option>
-                  <option>Beard, Yes</option>
-                  <option>Beard, No</option>
-                </select>
-              </div>
-            </div>
             <div className="select-conatiner-religon">
               <div className="location-religon">{t("religon.revert")}</div>
               <div className="select-location-religon">

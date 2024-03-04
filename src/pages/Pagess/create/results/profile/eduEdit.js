@@ -82,7 +82,40 @@ export default function EduEdit() {
   };
 
   //-------------^^^^^^^^^^^^^^^^^^^^-----------------
-
+  //---------------Get user data from api--------------
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/message/getSingleUser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(email),
+        });
+        if (!res.ok) {
+          const errorMessage = await res.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const response = await res.json();
+        const userData = response.user.rows[0];
+        setEdulevel(userData.eduwork_education);
+        setSubject(userData.eduwork_subject);
+        setProfession(userData.eduwork_profession);
+        setJob(userData.eduwork_job);
+        setLanguage1(userData.eduwork_language1);
+        setLanguage2(userData.eduwork_language2);
+      } catch (error) {
+        console.log(
+          "Error on useEffect aboutEdit.js in profile:",
+          error.message
+        );
+      }
+    };
+    fetchData();
+  });
   return (
     <div style={{ paddingBottom: "40px" }}>
       <div>
@@ -111,6 +144,7 @@ export default function EduEdit() {
             }}
             className="input-little-aboutEdit"
             required
+            value={subject}
           />
         </div>
       </div>

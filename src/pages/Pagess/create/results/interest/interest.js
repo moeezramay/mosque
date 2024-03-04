@@ -4,6 +4,7 @@ import Viewed from "./viewed";
 import ViewedMe from "./viewedMe";
 import ResultsNav from "../navResult";
 import Hearted from "./hearted";
+import HeartedMe from "./heartedMe";
 
 export default function Interest() {
   const { push } = useRouter();
@@ -50,7 +51,7 @@ export default function Interest() {
           <div className="container-view-interest">
             <div className="left-container-view-interest">
               <div className="view-text-interest">Favourited Me</div>
-              <ViewedMe />
+              <HeartedMe />
             </div>
             <div className="divider-interest"></div>
             <div className="left-container-view-interest">

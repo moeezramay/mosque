@@ -90,6 +90,43 @@ export default function BasicEdit() {
   };
   //------------------^^^^^^^^^^^^^^^----------------
 
+  //---------------Get user data from api--------------
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/message/getSingleUser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(email),
+        });
+        if (!res.ok) {
+          const errorMessage = await res.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const response = await res.json();
+        const userData = response.user.rows[0];
+        setLocation(userData.aboutme_location);
+        setCountry(userData.aboutme_country);
+        setDayDate(userData.aboutme_day);
+        setMonthDate(userData.aboutme_month);
+        setYearDate(userData.aboutme_year);
+        setTag(userData.aboutme_tag);
+        setAbout(userData.aboutme_about);
+        setLooking(userData.aboutme_looking);
+      } catch (error) {
+        console.log(
+          "Error on useEffect aboutEdit.js in profile:",
+          error.message
+        );
+      }
+    };
+    fetchData();
+  });
+
   return (
     <div style={{ paddingBottom: "40px" }}>
       <div className="container-heading-aboutEdit">About Me</div>
@@ -173,6 +210,7 @@ export default function BasicEdit() {
               setTag(e.target.value);
             }}
             className="input-tag-aboutMe"
+            value={tag}
             required
           />
         </div>
@@ -184,6 +222,7 @@ export default function BasicEdit() {
             onChange={(e) => {
               setAbout(e.target.value);
             }}
+            value={about}
             className="input-little-aboutMe"
             required
           />
@@ -196,6 +235,7 @@ export default function BasicEdit() {
             onChange={(e) => {
               setLooking(e.target.value);
             }}
+            value={looking}
             className="input-little-aboutMe"
             required
           />

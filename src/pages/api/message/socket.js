@@ -33,6 +33,16 @@ export default async function SocketHandler(req, res) {
       }
     });
 
+    socket.on("getOnline", () => {
+      console.log("Get online on socket.on dasfadsfsadfsad");
+      const simplifiedUsers = users.map((user) => ({
+        id: user.id,
+        email: user.email,
+      }));
+      console.log(simplifiedUsers);
+      socket.emit("updateOnline", simplifiedUsers);
+    });
+
     //Send recieved messages
     socket.on("getRecievedMessages", async (email) => {
       if (!email || email === "" || email === null) {

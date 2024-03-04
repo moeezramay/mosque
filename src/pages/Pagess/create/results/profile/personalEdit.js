@@ -109,6 +109,51 @@ export default function PersonalEdit() {
 
   //-------------^^^^^^^^^^^^^^^^^^^^------------------
 
+  //---------------Get user data from api--------------
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/message/getSingleUser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(email),
+        });
+        if (!res.ok) {
+          const errorMessage = await res.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const response = await res.json();
+        const userData = response.user.rows[0];
+        setCitizen(userData.personal_citizen);
+        setOrigin(userData.personal_origin);
+        setRelocate(userData.personal_relocate);
+        setIncome(userData.personal_income);
+        setMarriage(userData.personal_marriage);
+        setMarital(userData.personal_marital);
+        setChildren1(userData.personal_children1);
+        setChildren2(userData.personal_children2);
+        setLiving(userData.personal_living);
+        setHeight(userData.personal_height);
+        setBuild(userData.personal_build);
+        setSmoke(userData.personal_smoke);
+        setDrink(userData.personal_drink);
+        setDisability(userData.personal_disability);
+        setLong(userData.personal_long);
+        setEthniciting(userData.personal_ethnicity);
+      } catch (error) {
+        console.log(
+          "Error on useEffect aboutEdit.js in profile:",
+          error.message
+        );
+      }
+    };
+    fetchData();
+  });
+
   return (
     <div style={{ paddingBottom: "40px" }}>
       <div>
@@ -155,9 +200,8 @@ export default function PersonalEdit() {
               required
             >
               <option></option>
-              {Countries.map((city) => (
-                <option key={city}>{city}</option>
-              ))}
+              <option>Yes</option>
+              <option>No</option>
             </select>
           </div>
         </div>

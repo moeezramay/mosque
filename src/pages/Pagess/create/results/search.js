@@ -49,6 +49,8 @@ export default function Search() {
   //-----For blocking user---------
   const [showBlock, setShowBlock] = useState(false);
   const [blockStart, setBlockStart] = useState(0);
+  //------Time Stamps---------
+  const [timeStamp, setTimeStamp] = useState([]);
 
   const ethnicities_existing = [
     "asian",
@@ -251,26 +253,27 @@ export default function Search() {
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
 
   const showMap = async () => {
-    navigator.geolocation.watchPosition(async (position) => {
-      const { latitude, longitude } = position.coords;
-      await setcLocation([latitude, longitude]);
-      await setMapCenter({ lat: latitude, lng: longitude });
-      let tempData = [];
+    let tempVar = 0;
+    navigator.geolocation.watchPosition(
+      async (position) => {
+        tempVar = 1;
+        const { latitude, longitude } = position.coords;
+        await setcLocation([latitude, longitude]);
+        await setMapCenter({ lat: latitude, lng: longitude });
+        let tempData = [];
 
-      tempData.push({
-        lat: latitude,
-        lng: longitude,
-        name: "You",
-        type: "user",
-      });
+        tempData.push({
+          lat: latitude,
+          lng: longitude,
+          name: "You",
+          type: "user",
+        });
 
-      setZoom(15);
+        setZoom(15);
 
-      let getData = new Promise((resolve, reject) => {
-        resolve(getMosqueData(latitude, longitude));
-      });
+        let mosquesData = await getMosqueData(latitude, longitude);
+        let userData = await getUserData();
 
-      getData.then((mosquesData) => {
         let updatedMapData = mosquesData.map((mosque) => ({
           location: {
             lat: mosque.location.lat,
@@ -279,13 +282,9 @@ export default function Search() {
           name: mosque.name,
           type: "mosque",
         }));
-
-        let getData2 = new Promise((resolve, reject) => {
-          resolve(getUserData());
-        });
-
-        getData2.then((userData) => {
-          let updatedMapData2 = userData.map((data) => ({
+        let updatedMapData2;
+        try {
+          updatedMapData2 = userData.map((data) => ({
             location: {
               lat: data.location.lat,
               lng: data.location.lng,
@@ -293,28 +292,42 @@ export default function Search() {
             name: data.name,
             type: "mosque2",
           }));
+        } catch (error) {
+          console.error("Error mapping userData:", error);
+          return;
+        }
+        tempData = tempData.concat(updatedMapData2);
 
-          tempData = tempData.concat(updatedMapData2);
-
-          let tempcat = [];
-          tempData.forEach((e) => {
-            tempcat.push(e.name);
-          });
-
-          updatedMapData = updatedMapData.filter((e) => {
-            if (tempcat.indexOf(e.name) === -1) {
-              return e;
-            }
-          });
-
-          tempData = tempData.concat(updatedMapData);
-
-          setMapData(tempData);
-          setLoadMap(true);
-          setLocAccess(true);
+        let tempcat = [];
+        tempData.forEach((e) => {
+          tempcat.push(e.name);
         });
-      });
-    });
+
+        updatedMapData = updatedMapData.filter((e) => {
+          if (tempcat.indexOf(e.name) === -1) {
+            return e;
+          }
+        });
+
+        tempData = tempData.concat(updatedMapData);
+
+        setMapData(tempData);
+        setLoadMap(true);
+        setLocAccess(true);
+      },
+      (error) => {
+        // Error callback
+        console.error("Error getting user's location:", error);
+        reloadPage();
+      }
+    );
+
+    // If geolocation doesn't work (watchPosition fails immediately), call reloadPage
+    setTimeout(() => {
+      if (tempVar === 0) {
+        reloadPage();
+      }
+    }, 2000); // Adjust the timeout duration as needed
   };
 
   useEffect(() => {
@@ -370,6 +383,7 @@ export default function Search() {
       }
       setEmail(email1);
       try {
+        //Getting all users
         const res = await fetch("/api/createAcc/getInfoAcc", {
           method: "POST",
           headers: {
@@ -384,7 +398,7 @@ export default function Search() {
         }
         const response = await res.json();
 
-        //Getting blocked users to remove
+        //Getting users who you have blocked
         const res2 = await fetch("/api/interest/getBlocked", {
           method: "POST",
           headers: {
@@ -400,8 +414,42 @@ export default function Search() {
         }
 
         data2 = data2.data;
-        console.log("DATA DASFGASDGSDAG", response.user.rows);
-        console.log("DATA 22222222222", data2);
+
+        //getting users who have blocked me so we can filter then also
+
+        const res3 = await fetch("/api/interest/getBlockedMe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+
+        let data3 = await res3.json();
+        if (data3.error) {
+          console.log("Error on getting blocked: ", data3.error);
+        }
+
+        data3 = data3.data;
+
+        const res4 = await fetch("/api/createAcc/getTime", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+
+        let timeData = await res4.json();
+        if (timeData.error) {
+          console.log("Error on getting timestamp", error);
+        }
+        timeData = timeData.data;
+        setTimeStamp(timeData);
 
         //Adding a Distance Tracker to the Users
         const dataToChange = response.user.rows.map((e) => {
@@ -409,13 +457,18 @@ export default function Search() {
           return e;
         });
 
+        //Filtering users who are blocked by current
         const dataChanged = dataToChange.filter(
           (user) => !data2.some((item) => item.receiver_email === user.email)
         );
 
-        console.log("DATA CHAGNEINGEIAGNAEIGNA", dataChanged);
+        //Filtering users who have blocked current user
+        const filteredData = dataChanged.filter(
+          (user) => !data3.some((item) => item.sender_email === user.email)
+        );
+        console.log("FilteredData fadsfasdf,", filteredData);
 
-        setData(dataChanged);
+        setData(filteredData);
         showMap();
       } catch (error) {
         console.error("Error on first try fetching data:", error.message);
@@ -690,6 +743,24 @@ export default function Search() {
 
   //-----------------^^^^^^^^^^^^^^----------------
 
+  //-----------------Format Time------------------
+
+  const formatTimeAgo = (timestamp) => {
+    // Parse timestamp as a Date object
+    const timestampDate = new Date(timestamp);
+
+    // Calculate the difference in milliseconds
+    const differenceMs = Date.now() - timestampDate.getTime();
+
+    if (differenceMs < 24 * 60 * 60 * 1000) {
+      // If less than a day
+      return "A few hours ago";
+    } else {
+      // If greater than or equal to a day
+      const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+      return `${differenceDays} day${differenceDays > 1 ? "s" : ""} ago`;
+    }
+  };
   return (
     <div>
       <div className="top-container-search">
@@ -780,7 +851,17 @@ export default function Search() {
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
                 <div className="active-text-search">
-                  <div>active 0 years ago</div>
+                  Active:
+                  {timeStamp.map((timestampItem) => {
+                    if (timestampItem.email === userInfo.email) {
+                      return (
+                        <div key={timestampItem.email}>
+                          {formatTimeAgo(timestampItem.active_since)}
+                        </div>
+                      );
+                    }
+                    return null; // Return null if no match
+                  })}
                 </div>
               </div>
               <div className="result-line2-container-search">
