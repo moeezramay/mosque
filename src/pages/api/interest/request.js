@@ -15,8 +15,9 @@ export default async function Request(req, res) {
     }
 
     try {
-      const view = await sql`INSERT INTO requests (sender_email, receiver_email)
-      SELECT ${request}, ${requested}
+      const view =
+        await sql`INSERT INTO requests (sender_email, receiver_email, status)
+      SELECT ${request}, ${requested}, null
       WHERE NOT EXISTS (
           SELECT 1 FROM requests
           WHERE sender_email = ${request} AND receiver_email = ${requested}

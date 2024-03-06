@@ -54,6 +54,8 @@ export default function Request() {
 
         const dataToChange = response.data;
 
+        console.log("Data to change: ", dataToChange);
+
         //Getting users who you have blocked
         const res2 = await fetch("/api/interest/getBlocked", {
           method: "POST",
@@ -399,9 +401,9 @@ export default function Request() {
 
   //-----------------^^^^^^^^^^^^^^----------------
 
-  //---------------Handle Approve/Denied Req----------------
+  //---------------Handle Approve/Denied Req---------------
 
-  const HandleRequest = async (emai) => {
+  const HandleRequest = async (emai, access) => {
     try {
       const res = await fetch("/api/interest/requestHandle", {
         method: "POST",
@@ -411,7 +413,7 @@ export default function Request() {
         body: JSON.stringify({
           receiver: localStorage.getItem("email"),
           sender: emai,
-          approve: approve,
+          approve: access,
         }),
       });
       if (!res.ok) {
@@ -421,6 +423,7 @@ export default function Request() {
       }
       const response = await res.json();
       console.log(response);
+      reloadPage();
     } catch (error) {
       console.log("Error on request handle: ", error);
     }
@@ -478,7 +481,7 @@ export default function Request() {
                     className="approve-request-search"
                     onClick={() => {
                       setApprove("approved");
-                      HandleRequest(userInfo.email);
+                      HandleRequest(userInfo.email, "approved");
                     }}
                   >
                     Approve
@@ -487,7 +490,7 @@ export default function Request() {
                     className="deny-request-search"
                     onClick={() => {
                       setApprove("denied");
-                      HandleRequest(userInfo.email);
+                      HandleRequest(userInfo.email, "denied");
                     }}
                   >
                     Deny

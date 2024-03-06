@@ -3,27 +3,27 @@ import { sql } from "@vercel/postgres";
 const dotenv = require("dotenv");
 dotenv.config();
 
-export default async function RequestMe(req, res) {
+export default async function GetAccessImage(req, res) {
   try {
     //Get email from body
-    const email = req.body;
+    const viewer = req.body.viewer;
+    const viewed = req.body.viewed;
 
     //Check if email is valid
-    if (!email || email === "") {
+    if (!viewer || viewer === "") {
       return res.status(400).json({ error: "Email is required" });
     }
 
     //Check if email is already in use
     try {
-      const result = await sql`SELECT requests.*, createAcc.*
+      const result = await sql`SELECT status
       FROM requests
-      JOIN createAcc ON requests.sender_email = createAcc.email
-      WHERE requests.receiver_email = ${email}
-      AND requests.status IS NULL;`;
+      WHERE sender_email = ${viewer}
+      AND receiver_email = ${viewed};`;
 
-      res.json({ data: result.rows });
+      res.json({ access: result.rows });
     } catch (error) {
-      console.log("Error while inserting into verify table", error);
+      console.log("Error in getAccess", error);
     }
   } catch (error) {
     console.log(error);

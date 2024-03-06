@@ -22,6 +22,7 @@ export default function PhotoEditView({ data, routerQuery }) {
   const imageRefs = useRef([]);
   const [msg, setMsg] = useState("");
   const [prevImages, setPrevImages] = useState([]);
+  const [access, setAccess] = useState(false);
 
   //-----------------^^^^^^^^^^--------------------------
   // const StackBlur = require("stackblur-canvas");
@@ -44,7 +45,39 @@ export default function PhotoEditView({ data, routerQuery }) {
 
   useEffect(() => {
     setEmail(userInfo.email);
+    let tempAccess = false;
     var getImg = async () => {
+      //Getting access first to see if the user has access to the images
+      try {
+        const res = await fetch("/api/interest/getAccessImage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            viewed: userInfo.email,
+            viewer: localStorage.getItem("email"),
+          }),
+        });
+        const data1 = await res.json();
+        console.log("Hello");
+        if (data1.error) {
+          console.log("Error: ", data1.error);
+          setAccess(false);
+        } else {
+          console.log("Data1: ", data1.access);
+          if (data1.access[0].status === "approved") {
+            setAccess(true);
+          } else if (
+            data1.access[0].status === "" ||
+            data1.access[0].status === "denied"
+          ) {
+            setAccess(false);
+          }
+        }
+      } catch (error) {
+        console.log("Error: ", error);
+      }
       try {
         const res = await fetch("/api/update/getProfileImgPublic", {
           method: "POST",
@@ -273,7 +306,11 @@ export default function PhotoEditView({ data, routerQuery }) {
 
                 <img
                   ref={(ref) => (imageRefs.current[index] = ref)}
-                  src={image.imageUrl || "/female.jpeg"}
+                  src={
+                    access
+                      ? image.backup || "/female.jpeg"
+                      : image.imageUrl || "/female.jpeg"
+                  }
                   width={100}
                   height={100}
                   alt=""
@@ -291,14 +328,16 @@ export default function PhotoEditView({ data, routerQuery }) {
         ))}
       </div>
 
-      <button
-        className="save-aboutEdit"
-        onClick={(e) => {
-          handleUpload(e);
-        }}
-      >
-        Request Private
-      </button>
+      {!access && (
+        <button
+          className="save-aboutEdit"
+          onClick={(e) => {
+            handleUpload(e);
+          }}
+        >
+          Request Private
+        </button>
+      )}
     </div>
   );
 }
@@ -319,10 +358,40 @@ export function PictureProfile({ userInfo }) {
   const imageRef = useRef(null);
   const [backup, setBackup] = useState(null);
   const [uploadBlur, setUploadBlur] = useState(null);
+  const [access, setAccess] = useState(false);
 
   useEffect(() => {
     setEmail(localStorage.getItem("currentUserViewed"));
     var getImg = async () => {
+      try {
+        const res = await fetch("/api/interest/getAccessImage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            viewed: userInfo.email,
+            viewer: localStorage.getItem("email"),
+          }),
+        });
+        const data1 = await res.json();
+        console.log("Hello");
+        if (data1.error) {
+          console.log("Error: ", data1.error);
+          setAccess(false);
+        } else {
+          if (data1.access[0].status === "approved") {
+            setAccess(true);
+          } else if (
+            data1.access[0].status === "" ||
+            data1.access[0].status === "denied"
+          ) {
+            setAccess(false);
+          }
+        }
+      } catch (error) {
+        console.log("Error: ", error);
+      }
       try {
         const res = await fetch("/api/createAcc/getProfileImg", {
           method: "POST",
@@ -354,42 +423,6 @@ export function PictureProfile({ userInfo }) {
     };
     getImg();
   }, []);
-  const handleImageChange = (e) => {
-    setMsg("");
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        let width = img.width;
-        let height = img.height;
-
-        if (width > 100 || height > 100) {
-          if (width > height) {
-            height *= 100 / width;
-            width = 100;
-          } else {
-            width *= 100 / height;
-            height = 100;
-          }
-        }
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(img, 0, 0, width, height);
-        const resizedBase64 = canvas.toDataURL("image/jpeg");
-        setImageUrl(resizedBase64);
-        setBackup(resizedBase64);
-        setImageBase64(resizedBase64.split(",")[1]);
-      };
-
-      img.src = reader.result;
-    };
-
-    reader.readAsDataURL(file);
-  };
 
   const toggleBlur = () => {
     if (imageUrl == null) {
@@ -436,7 +469,7 @@ export function PictureProfile({ userInfo }) {
 
           <img
             ref={imageRef}
-            src={imageUrl ? imageUrl : "/female.jpeg"}
+            src={access ? backup || "/female.jpeg" : imageUrl || "/female.jpeg"}
             width={100}
             height={100}
             alt=""

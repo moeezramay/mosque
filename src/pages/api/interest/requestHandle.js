@@ -10,8 +10,12 @@ export default async function RequestMe(req, res) {
     const receiver = req.body.receiver;
     const status = req.body.approve;
 
+    console.log("Status: ", status);
+    console.log("Sender: ", sender);
+    console.log("Receiver: ", receiver);
+
     //Check if email is valid
-    if (!sender || sender === "") {
+    if (!status || status === "") {
       return res.status(400).json({ error: "Email is required" });
     }
 

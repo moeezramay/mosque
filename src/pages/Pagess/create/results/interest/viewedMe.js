@@ -25,6 +25,7 @@ export default function ViewedMe() {
   const [blockStart, setBlockStart] = useState(0);
   //------Time Stamps---------
   const [timeStamp, setTimeStamp] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   //-------------Api to retrieve data------------------
   useEffect(() => {
