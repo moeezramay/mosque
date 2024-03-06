@@ -95,7 +95,7 @@ export default function ResultsNav() {
   const reloadPage = () => {
     setTimeout(() => {
       window.location.reload();
-    }, 10);
+    }, 1000);
   };
   //------------------Change Nav Optio----------------
   const changeNavOption = (option) => {

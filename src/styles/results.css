@@ -402,9 +402,13 @@
   margin-left: 20px;
   background-color: #b52d3b;
   color: white;
-  outline: none;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 15px;
 }
 .result-line3-container-search {
   display: flex;
@@ -413,6 +417,31 @@
 }
 .distance-search {
   margin-left: 15px;
+}
+.request-container-search {
+  display: flex;
+  width: 100%;
+}
+.approve-request-search {
+  background-color: #0d6d36;
+  height: 30px;
+  width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  cursor: pointer;
+}
+.deny-request-search {
+  background-color: #b52d3b;
+  height: 30px;
+  width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  margin-left: 20px;
+  cursor: pointer;
 }
 .result-line4-container-search {
   display: flex;

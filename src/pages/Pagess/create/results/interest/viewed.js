@@ -20,6 +20,11 @@ export default function Viewed() {
   const [heartedEmails, setHeartedEmails] = useState([]);
   const [showReport, setShowReport] = useState(false);
   const [showPrivate, setShowPrivate] = useState(false);
+  //-----For blocking user---------
+  const [showBlock, setShowBlock] = useState(false);
+  const [blockStart, setBlockStart] = useState(0);
+  //------Time Stamps---------
+  const [timeStamp, setTimeStamp] = useState([]);
 
   //-------------Api to retrieve data------------------
   useEffect(() => {
@@ -42,10 +47,76 @@ export default function Viewed() {
           return;
         }
         const response = await res.json();
-        console.log("Incoming Data:");
-        console.log(response.data);
 
-        setData(response.data);
+        const dataToChange = response.data;
+
+        //Getting users who you have blocked
+        const res2 = await fetch("/api/interest/getBlocked", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+        let data2 = await res2.json();
+        if (data2.error) {
+          console.log("Error on getting blocked: ", data2.error);
+        }
+
+        data2 = data2.data;
+
+        //getting users who have blocked me so we can filter then also
+
+        const res3 = await fetch("/api/interest/getBlockedMe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+
+        let data3 = await res3.json();
+        if (data3.error) {
+          console.log("Error on getting blocked: ", data3.error);
+        }
+
+        data3 = data3.data;
+
+        //Getting active time
+
+        const res4 = await fetch("/api/createAcc/getTime", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+
+        let timeData = await res4.json();
+        if (timeData.error) {
+          console.log("Error on getting timestamp", error);
+        }
+        timeData = timeData.data;
+        setTimeStamp(timeData);
+
+        //Filtering users who are blocked by current
+        const dataChanged = dataToChange.filter(
+          (user) => !data2.some((item) => item.receiver_email === user.email)
+        );
+
+        //Filtering users who have blocked current user
+        const filteredData = dataChanged.filter(
+          (user) => !data3.some((item) => item.sender_email === user.email)
+        );
+        console.log("FilteredData fadsfasdf,", filteredData);
+
+        setData(filteredData);
       } catch (error) {
         console.error("Error on first try fetching data:", error.message);
       }
@@ -278,6 +349,49 @@ export default function Viewed() {
       window.location.reload();
     }, 1500);
   };
+
+  //-----------------Format Time------------------
+
+  const formatTimeAgo = (timestamp) => {
+    // Parse timestamp as a Date object
+    const timestampDate = new Date(timestamp);
+
+    // Calculate the difference in milliseconds
+    const differenceMs = Date.now() - timestampDate.getTime();
+
+    if (differenceMs < 24 * 60 * 60 * 1000) {
+      // If less than a day
+      return "A few hours ago";
+    } else {
+      // If greater than or equal to a day
+      const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+      return `${differenceDays} day${differenceDays > 1 ? "s" : ""} ago`;
+    }
+  };
+
+  //---------------Block a user----------------
+  const BlockUser = async (e, user) => {
+    e.preventDefault();
+    const res = await fetch("/api/interest/blockUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        blocked: user,
+        blocker: localStorage.getItem("email"),
+      }),
+    });
+    if (!res.ok) {
+      const errorMessage = await res.json();
+      console.error("Error if:", errorMessage.error);
+      return;
+    }
+    const response = await res.json();
+    console.log(response);
+  };
+
+  //-----------------^^^^^^^^^^^^^^----------------
   return (
     <div>
       <div className="bottom-container-search">
@@ -325,7 +439,17 @@ export default function Viewed() {
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
                 <div className="active-text-search">
-                  <div>active 0 years ago</div>
+                  Active:
+                  {timeStamp.map((timestampItem) => {
+                    if (timestampItem.email === userInfo.email) {
+                      return (
+                        <div key={timestampItem.email}>
+                          {formatTimeAgo(timestampItem.active_since)}
+                        </div>
+                      );
+                    }
+                    return null; // Return null if no match
+                  })}
                 </div>
               </div>
               <div className="result-line2-container-search">
@@ -338,6 +462,7 @@ export default function Viewed() {
                   )}
                 </div>
                 <div className="mini-seprator-search"></div>
+
                 <div className="heart-container-search">
                   {Array.isArray(heartedEmails) ? (
                     heartedEmails.includes(userInfo.email) ? (
@@ -456,7 +581,48 @@ export default function Viewed() {
                     </div>
                   </div>
                 )}
-
+                <div
+                  className="heart-container-search"
+                  onClick={() => {
+                    setSelectedUserInfo(userInfo);
+                    setShowBlock(true);
+                  }}
+                >
+                  <Stop />
+                </div>
+                {showBlock && (
+                  <div className="msg-container-search">
+                    <div className="msg-sub-search">
+                      <div className="msg-heading-search">
+                        <div className="msg-text-search">Block This User?</div>
+                        <div className="close-msg-search">
+                          <div
+                            onClick={(e) => {
+                              setShowBlock(false);
+                            }}
+                          >
+                            X
+                          </div>
+                        </div>
+                      </div>
+                      <div className="divider-msg-search"></div>
+                      <div className="msg-mini-container-search">
+                        <div className="send-msg-container-search">
+                          <button
+                            className="send-msg-search"
+                            onClick={(e) => {
+                              BlockUser(e, selectedUserInfo.email);
+                              setShowBlock(false);
+                              reloadPage();
+                            }}
+                          >
+                            Block
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div
                   className="heart-container-search"
                   onClick={(e) => {

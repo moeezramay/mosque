@@ -6,6 +6,7 @@ import Apple from "../../../../public/applesvg";
 import Head from "next/head";
 import Footer from "../footer/footer";
 import { useEffect, useState } from "react";
+import TextSlider from "./text-slider";
 
 export default function HomePage() {
   const [t, i18n] = useTranslation("global");
@@ -51,10 +52,11 @@ export default function HomePage() {
           />
         </div>
         <div className="img-cover-home">
-          <div className="changing-container-home">
+          {/* <div className="changing-container-home">
             <div>Match within a certain Mosque</div>
             <div>Or organization</div>
-          </div>
+          </div> */}
+          <TextSlider />
         </div>
         <div className="works-title-home">How it Works!</div>
         <div className="works-sub-home">

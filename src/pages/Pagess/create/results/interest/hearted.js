@@ -18,6 +18,8 @@ export default function Hearted() {
   const [heartedEmails, setHeartedEmails] = useState([]);
   const [showReport, setShowReport] = useState(false);
   const [showPrivate, setShowPrivate] = useState(false);
+  //------Time Stamps---------
+  const [timeStamp, setTimeStamp] = useState([]);
 
   //-------------Api to retrieve data------------------
   useEffect(() => {
@@ -40,8 +42,24 @@ export default function Hearted() {
           return;
         }
         const response = await res.json();
-        console.log("Incoming Data:");
-        console.log(response.data);
+
+        //Getting time
+        const res4 = await fetch("/api/createAcc/getTime", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+
+        let timeData = await res4.json();
+        if (timeData.error) {
+          console.log("Error on getting timestamp", error);
+        }
+        timeData = timeData.data;
+        setTimeStamp(timeData);
 
         setData(response.data);
       } catch (error) {
@@ -276,6 +294,25 @@ export default function Hearted() {
       window.location.reload();
     }, 1500);
   };
+
+  //-----------------Format Time------------------
+
+  const formatTimeAgo = (timestamp) => {
+    // Parse timestamp as a Date object
+    const timestampDate = new Date(timestamp);
+
+    // Calculate the difference in milliseconds
+    const differenceMs = Date.now() - timestampDate.getTime();
+
+    if (differenceMs < 24 * 60 * 60 * 1000) {
+      // If less than a day
+      return "A few hours ago";
+    } else {
+      // If greater than or equal to a day
+      const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+      return `${differenceDays} day${differenceDays > 1 ? "s" : ""} ago`;
+    }
+  };
   return (
     <div>
       <div className="bottom-container-search">
@@ -323,7 +360,17 @@ export default function Hearted() {
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
                 <div className="active-text-search">
-                  <div>active 0 years ago</div>
+                  Active:
+                  {timeStamp.map((timestampItem) => {
+                    if (timestampItem.email === userInfo.email) {
+                      return (
+                        <div key={timestampItem.email}>
+                          {formatTimeAgo(timestampItem.active_since)}
+                        </div>
+                      );
+                    }
+                    return null; // Return null if no match
+                  })}
                 </div>
               </div>
               <div className="result-line2-container-search">

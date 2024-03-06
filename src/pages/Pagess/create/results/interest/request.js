@@ -8,7 +8,7 @@ import WaliRed from "../../../../../../public/search/waliRed";
 import HeartClick from "../../../../../../public/heartClickSvg";
 import NextImage from "next/image";
 
-export default function ViewedMe() {
+export default function Request() {
   const [data, setData] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [imageData, setImageData] = useState(null);
@@ -17,14 +17,18 @@ export default function ViewedMe() {
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [heartClicked, setHeartClicked] = useState(false);
-  const [showReport, setShowReport] = useState(false);
   const [heartedEmails, setHeartedEmails] = useState([]);
+  const [showReport, setShowReport] = useState(false);
   const [showPrivate, setShowPrivate] = useState(false);
   //-----For blocking user---------
   const [showBlock, setShowBlock] = useState(false);
   const [blockStart, setBlockStart] = useState(0);
   //------Time Stamps---------
   const [timeStamp, setTimeStamp] = useState([]);
+  //------Loading State---------
+  const [loading, setLoading] = useState(false);
+  //-------Requests Approve/Deny------
+  const [approve, setApprove] = useState("");
 
   //-------------Api to retrieve data------------------
   useEffect(() => {
@@ -34,7 +38,7 @@ export default function ViewedMe() {
         return;
       }
       try {
-        const res = await fetch("/api/interest/viewedMe", {
+        const res = await fetch("/api/interest/requestMe", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -47,6 +51,7 @@ export default function ViewedMe() {
           return;
         }
         const response = await res.json();
+
         const dataToChange = response.data;
 
         //Getting users who you have blocked
@@ -85,6 +90,8 @@ export default function ViewedMe() {
 
         data3 = data3.data;
 
+        //Getting active time
+
         const res4 = await fetch("/api/createAcc/getTime", {
           method: "POST",
           headers: {
@@ -107,6 +114,8 @@ export default function ViewedMe() {
           (user) => !data2.some((item) => item.receiver_email === user.email)
         );
 
+        console.log("Data Changed: ", dataChanged);
+
         //Filtering users who have blocked current user
         const filteredData = dataChanged.filter(
           (user) => !data3.some((item) => item.sender_email === user.email)
@@ -123,7 +132,36 @@ export default function ViewedMe() {
   }, []);
 
   //-------------^^^^^^^^^^^^^^^^^^^^------------------
+  //-------------------Request Wali------------------------
 
+  const RequestPrivateImage = async (e, user) => {
+    e.preventDefault();
+    const receiver = user;
+    const sender = localStorage.getItem("email");
+
+    const data = {
+      senderEmail: sender,
+      receiverEmail: receiver,
+      messageText: "Would like to request your private images",
+    };
+
+    const res = await fetch("/api/message/sendMessage", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const errorMessage = await res.json();
+      console.error("Error if:", errorMessage.error);
+      return;
+    }
+    const response = await res.json();
+    console.log("Private Image Request Sent: ", response);
+  };
+
+  //-------------------^^^^^^^^^^^^^^^^^^^^------------------
   //----------------For profile image------------------
   useEffect(() => {
     var getImg = async () => {
@@ -231,36 +269,7 @@ export default function ViewedMe() {
   };
 
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
-  //-------------------Request Wali------------------------
 
-  const RequestPrivateImage = async (e, user) => {
-    e.preventDefault();
-    const receiver = user;
-    const sender = localStorage.getItem("email");
-
-    const data = {
-      senderEmail: sender,
-      receiverEmail: receiver,
-      messageText: "Would like to request your private images",
-    };
-
-    const res = await fetch("/api/message/sendMessage", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-      const errorMessage = await res.json();
-      console.error("Error if:", errorMessage.error);
-      return;
-    }
-    const response = await res.json();
-    console.log("Private Image Request Sent: ", response);
-  };
-
-  //-------------------^^^^^^^^^^^^^^^^^^^^------------------
   //----------------For favs------------------
   useEffect(() => {
     var getHearts = async () => {
@@ -340,6 +349,7 @@ export default function ViewedMe() {
     console.log(response);
   };
   //--------------------^^^^^^^^^^^^^-------------------
+
   const reloadPage = () => {
     setTimeout(() => {
       window.location.reload();
@@ -388,6 +398,36 @@ export default function ViewedMe() {
   };
 
   //-----------------^^^^^^^^^^^^^^----------------
+
+  //---------------Handle Approve/Denied Req----------------
+
+  const HandleRequest = async (emai) => {
+    try {
+      const res = await fetch("/api/interest/requestHandle", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          receiver: localStorage.getItem("email"),
+          sender: emai,
+          approve: approve,
+        }),
+      });
+      if (!res.ok) {
+        const errorMessage = await res.json();
+        console.error("Error if:", errorMessage.error);
+        return;
+      }
+      const response = await res.json();
+      console.log(response);
+    } catch (error) {
+      console.log("Error on request handle: ", error);
+    }
+  };
+
+  //-----------------^^^^^^^^^^^^^^----------------
+
   return (
     <div>
       <div className="bottom-container-search">
@@ -433,7 +473,26 @@ export default function ViewedMe() {
             </div>
             <div className="result-right-parent-container">
               <div className="result-line1-container-search">
-                <div>{userInfo.aboutme_looking}</div>
+                <div className="request-container-search">
+                  <div
+                    className="approve-request-search"
+                    onClick={() => {
+                      setApprove("approved");
+                      HandleRequest(userInfo.email);
+                    }}
+                  >
+                    Approve
+                  </div>
+                  <div
+                    className="deny-request-search"
+                    onClick={() => {
+                      setApprove("denied");
+                      HandleRequest(userInfo.email);
+                    }}
+                  >
+                    Deny
+                  </div>
+                </div>
                 <div className="active-text-search">
                   Active:
                   {timeStamp.map((timestampItem) => {
@@ -458,6 +517,7 @@ export default function ViewedMe() {
                   )}
                 </div>
                 <div className="mini-seprator-search"></div>
+
                 <div className="heart-container-search">
                   {Array.isArray(heartedEmails) ? (
                     heartedEmails.includes(userInfo.email) ? (
@@ -673,9 +733,7 @@ export default function ViewedMe() {
                   <WaliRed />
                 </div>
               </div>
-              <div className="result-line3-container-search">
-                <div className="distance-search">{userInfo.mosque}</div>
-              </div>
+
               <div className="result-line4-container-search">
                 <div>{userInfo.eduwork_profession} -</div>
                 <div className="info-search">{userInfo.religion_sector} - </div>

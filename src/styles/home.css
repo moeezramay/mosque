@@ -409,6 +409,38 @@ Find the css for the section youre looking for, here are the different sections:
 
 /*--------NEW CSS-------*/
 
+.flexRow {
+  justify-content: center;
+  display: flex;
+}
+
+.dotsContainer {
+  width: 100px;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+}
+
+.dotPlaceholder {
+  visibility: hidden;
+}
+
+.dot {
+  cursor: pointer;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 20px;
+  background-color: #659898; /* Color of the dots */
+  margin-right: 8px; /* Adjust the spacing between dots */
+  border: 2px solid transparent; /* Initial transparent border */
+}
+
+.dot.selected {
+  border-color: #fff; /* Border color for the selected dot */
+}
+
 .img-cover-home {
   width: 100%;
   height: 550px;
@@ -506,7 +538,11 @@ Find the css for the section youre looking for, here are the different sections:
     margin-right: auto;
   }
   .changing-container-home {
-    font-size: 20px;
+    font-size: 15px;
+  }
+  .dot {
+    height: 2px;
+    width: 2px;
   }
   .stories-container-home {
     flex-direction: column;

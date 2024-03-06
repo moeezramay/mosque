@@ -1,19 +1,15 @@
 import { useState, useEffect, useContext, use } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { AppContext } from "../../AppContext";
-import ResultHeart from "../../../../../public/resultheartsvg";
 import Camera from "../../../../../public/camerasvg";
 import Envelope from "../../../../../public/envelope";
 import Stop from "../../../../../public/stopsvg";
 import Excalim from "../../../../../public/exclaimsvg";
-import Wali from "../../../../../public/waliSVG";
 import { Data, useLoadScript } from "@react-google-maps/api";
 import Map from "./map";
-import HeartClick from "../../../../../public/heartClickSvg";
 import NextImage from "next/image";
-import WaliBlack from "../../../../../public/search/waliBlack";
 import WaliRed from "../../../../../public/search/waliRed";
+import Link from "next/link";
 
 export default function Search() {
   const [data, setData] = useState([]);
@@ -51,6 +47,8 @@ export default function Search() {
   const [blockStart, setBlockStart] = useState(0);
   //------Time Stamps---------
   const [timeStamp, setTimeStamp] = useState([]);
+
+  const router = useRouter();
 
   const ethnicities_existing = [
     "asian",
@@ -1132,16 +1130,25 @@ export default function Search() {
                   </div>
                 )}
                 <div className="mini-seprator-search"></div>
-                <button
+
+                <Link
                   className="view-bio-search"
                   onClick={(e) => {
+                    e.preventDefault(); // Prevent the default behavior of the link
                     setSelectedUserInfo(userInfo);
                     ViewBio(e, userInfo.email);
-                    setViewBio(true);
+                    router.push({
+                      pathname:
+                        "/Pagess/create/results/viewProfile/viewProfile",
+                      query: {
+                        name: JSON.stringify(userInfo),
+                      },
+                    });
                   }}
+                  href="/Pagess/create/results/viewProfile/viewProfile"
                 >
-                  View bio
-                </button>
+                  View Bio
+                </Link>
                 {/* Shows Bio Details */}
                 {viewBio && (
                   <div className="bio-container-search">

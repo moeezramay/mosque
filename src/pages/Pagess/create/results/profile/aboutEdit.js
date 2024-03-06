@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { WhereLive, Countries, Dates, Months, Years } from "@/data/dataAcc";
 
-export default function BasicEdit() {
+export default function AboutEdit() {
   const [t, i18n] = useTranslation("global");
   const { push } = useRouter();
   //----------Storing input data in state----------------
