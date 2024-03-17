@@ -130,6 +130,7 @@
   margin-left: 10%;
   font-size: 24px;
   font-weight: bolder;
+  cursor: default;
 }
 
 @media (max-width: 764px) {
@@ -152,7 +153,11 @@
   text-align: center;
   padding-top: 2%;
 }
-
+.skip-for-now-aboutMe {
+  color: #b52d3b;
+  text-decoration: underline;
+  cursor: pointer;
+}
 .heading-aboutMe {
   font-size: 34px;
   font-weight: bold;
@@ -672,15 +677,23 @@
   font-size: 34px;
   font-weight: bold;
 }
-
+.mosque-added-mosque {
+  margin-top: 20px;
+}
+.added-title-mosque {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #b52d3b;
+}
 .box-container-mosque {
   padding-bottom: 5%;
+  display: flex;
+  justify-content: space-around;
 }
 .box-mosque {
   background-color: white;
   width: 40%;
-  margin-left: auto;
-  margin-right: auto;
   margin-top: 3%;
   padding: 1.5%;
 }
@@ -700,13 +713,32 @@
   padding-left: 2%;
   font-size: 14px;
 }
+.remove-added-mosque {
+  color: #b52d3b;
+  text-decoration: underline;
+  cursor: pointer;
+}
 .option-container-mosque {
+  display: flex;
+  flex-direction: column;
 }
 .mini-option-mosque {
   display: flex;
   justify-content: space-between;
 }
 .check-option-mosque {
+  margin-top: 3.5%;
+}
+.check-option-mosque:checked {
+  border: 5px solid red;
+  background-color: red;
+  border: none;
+}
+
+.check-option-mosque:not(:checked) {
+  background-color: #b52d3b;
+  border: none;
+  height: 4%;
 }
 .button-container-mosque {
   width: 100%;

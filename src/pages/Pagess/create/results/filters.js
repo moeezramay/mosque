@@ -21,8 +21,32 @@ export default function Filters() {
 
   const [checked, isChecked] = useState(true);
 
-  //Setting the Slider Data
+  //Setting the Slider Data and checkboxes and mosques
   const [sliderValue, setSliderValue] = useState(7000);
+  const [arrPlaces, setArrPlaces] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [checkedCheckboxes, setCheckedCheckboxes] = useState([]);
+  const [showAll, setShowAll] = useState(false);
+  const [currentMosques, setCurrentMosques] = useState([]);
+  const [visibleMosques, setVisibleMosques] = useState([]);
+  const initialDisplayCount = 5;
+
+  //Mosques visiblility
+
+  useEffect(() => {
+    setVisibleMosques(currentMosques.slice(0, initialDisplayCount));
+  }, [currentMosques]);
+
+  useEffect(() => {
+    setVisibleMosques(
+      showAll ? currentMosques : currentMosques.slice(0, initialDisplayCount)
+    );
+  }, [showAll, currentMosques]);
+
+  const toggleShowAll = () => {
+    setShowAll(!showAll);
+  };
 
   //Context Range Variable
   const { rangeContext, setRangeContext } = useContext(AppContext);
@@ -87,11 +111,21 @@ export default function Filters() {
     halals: [],
     prays: [],
     qurans: [],
+    location: [],
   });
 
   useEffect(() => {
     setFilterContext(filterRules);
   }, [filterRules]);
+
+  const handleRemoveLocation = (indexToRemove) => {
+    setFilterContext({
+      ...filterContext,
+      location: filterContext.location.filter(
+        (_, index) => index !== indexToRemove
+      ),
+    });
+  };
 
   let handleSliderChange = (e) => {
     setSliderValue(parseInt(e.target.value, 10));
@@ -102,18 +136,194 @@ export default function Filters() {
     setRangeContext(sliderValue);
     rangeInputRef.current.value = sliderValue + " MILES";
   }, [sliderValue]);
+  /*----------^^^^^^^^^^^^^^^^^-----------*/
+
+  //-----------------Updates the input suggestions----------------
+  const handleInputChangePlaces = async (value) => {
+    //Clearing out location to uncheck all checkboxes
+    if (value.trim() === "") {
+      setArrPlaces([]); // Clear places array if input is empty
+      setCheckedCheckboxes([]); // Clear checked checkboxes array
+      return;
+    }
+    setInputValue(value);
+
+    const res = await fetch("/api/getMosque/getPlaces", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ input: value }),
+    });
+    if (!res.ok) {
+      const errorMessage = await res.json();
+      console.error("Error if:", errorMessage.error);
+      return;
+    }
+    const response = await res.json();
+    setArrPlaces(response);
+    setCheckedCheckboxes([]);
+  };
+  //------------------^^^^^^^^^^^^^^^----------------
+
+  //-----------------Get current users mosques----------------
+
+  useEffect(() => {
+    const getMosques = async () => {
+      try {
+        const res = await fetch("/api/getMosque/getCurrentUserMosque", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: localStorage.getItem("email"),
+          }),
+        });
+        if (!res.ok) {
+          const errorMessage = await res.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const response = await res.json();
+
+        setCurrentMosques(response.mosques);
+        console.log("Current Mosques:", response.mosques);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    getMosques();
+  }, []);
+  /*-------------^^^^^^^^^-------------------*/
+  const handleRemoveMosque = async (name) => {
+    try {
+      const res = await fetch("/api/getMosque/removeUserMosque", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: localStorage.getItem("email"),
+          name: name,
+        }),
+      });
+      if (!res.ok) {
+        const errorMessage = await res.json();
+        console.error("Error if:", errorMessage.error);
+        return;
+      }
+      const response = await res.json();
+      reloadPage();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const reloadPage = () => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  };
 
   /*-------------^^^^^^^^^-------------------*/
+
   return (
     <div className="filters-parent-result">
       <div className="filters-heading-result">Filters</div>
       <div className="filters-sub-result">Search By Location</div>
+      <input
+        className="filters-location-result"
+        onChange={(e) => handleInputChangePlaces(e.target.value)}
+        required
+        placeholder="Address, city, etc"
+      />
+      {arrPlaces && arrPlaces.length > 0 && (
+        <div className="option-container-mosque">
+          {arrPlaces.map((mosque, index) => (
+            <div className="mini-option-mosque" key={index}>
+              <p>{mosque.name}</p>
+              <input
+                type="checkbox"
+                className="check-option-filter"
+                checked={checkedCheckboxes.includes(index)}
+                onChange={(e) => {
+                  const isChecked = e.target.checked;
+                  if (isChecked) {
+                    setCheckedCheckboxes((prev) => [...prev, index]);
+                    setFilterRules({
+                      ...filterRules,
+                      location: [
+                        ...filterRules.location,
+                        mosque.name.split(/[,\s]+/)[0].toLowerCase(),
+                      ],
+                    });
+                  } else {
+                    setCheckedCheckboxes((prev) =>
+                      prev.filter((item) => item !== index)
+                    );
+                    setFilterRules({
+                      ...filterRules,
+                      location: filterRules.location.filter(
+                        (item) =>
+                          item !== mosque.name.split(/[,\s]+/)[0].toLowerCase()
+                      ),
+                    });
+                  }
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="filters-sub-result">
+        {filterContext.location && filterContext.location.length > 0 && (
+          <div>
+            <div>Added Locations</div>
+
+            {filterContext.location.map((location, index) => (
+              <div className="container-add-filter">
+                <div key={index}>- {location}</div>
+                <div
+                  className="remove-location-filter"
+                  onClick={() => handleRemoveLocation(index)}
+                >
+                  Remove
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="filters-sub-result">
+        <div>
+          <div className="your-mosque-filter">Your Mosques:</div>
+          {visibleMosques.map((mosque, index) => (
+            <div className="container-add-filter" key={index}>
+              <div>- {mosque.type}</div>
+              <div
+                onClick={() => handleRemoveMosque(mosque.type)}
+                className="remove-location-filter"
+              >
+                Remove
+              </div>
+            </div>
+          ))}
+          {!showAll && currentMosques.length > initialDisplayCount && (
+            <div className="show-more-filter" onClick={toggleShowAll}>
+              Show more
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="filters-sub-result">Search By Distance</div>
 
       {/* Input for masjid filter*/}
       <input
         className="filters-location-result"
         ref={rangeInputRef}
         placeholder="City, post code, region, area, etc"
+        readOnly
       />
 
       <input
@@ -135,37 +345,6 @@ export default function Filters() {
       {/* <div className="options-heading-result">Options</div> */}
 
       <div className="checkbox-container-option-result">
-        {/*
-        <div className="checkbox-option-result">
-          <div>
-            <input type="checkbox" />
-            Viewed
-          </div>
-          <div className="option2-check-result">
-            <input type="checkbox" />
-            Viewed Me
-          </div>
-        </div>
-        <div className="checkbox-option-result-2">
-          <div>
-            <input type="checkbox" />
-            Favorited
-          </div>
-          <div className="option2-check-result2">
-            <input type="checkbox" />
-            Favorited Me
-          </div>
-        </div>
-        <div className="checkbox-option-result-2">
-          <div>
-            <input type="checkbox" />
-            Pictures
-          </div>
-          <div className="option2-check-result3">
-            <input type="checkbox" />
-            Has A Wali
-          </div>
-        </div> */}
         <div className="personalInfo-head-filter-result">
           Personal Information
         </div>

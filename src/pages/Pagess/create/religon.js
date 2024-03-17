@@ -19,20 +19,42 @@ export default function Religon() {
   const [halal, setHalal] = useState("");
   const [pray, setPray] = useState("");
   const [quran, setQuran] = useState("");
+  const [localData, setLocalData] = useState("");
   //-----------------^^^^^^^^^^--------------------------
 
   //------------------Checks for token----------------
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-  //   if (token === null && !token) {
-  //     console.log("token not found");
-  //     push("/Pagess/sign/signIn/signIn");
-  //   } else {
-  //     console.log("Token found!");
-  //   }
-  // }, []);
+    if (token === null && !token) {
+      console.log("token not found");
+      push("/Pagess/sign/signIn/signIn");
+    } else {
+      if (localStorage.getItem("religon") !== null) {
+        let temp = localStorage.getItem("religon");
+        temp = JSON.parse(temp);
+        setLocalData(temp);
+      }
+      console.log("Token found!");
+    }
+  }, []);
   //------------------^^^^^^^^^^^^^^^----------------
+
+  //------Updates State if local data is present-----------
+  useEffect(() => {
+    setReligious(localData.religious);
+    setSector(localData.sector);
+    setHijab(localData.hijab);
+    setBeard(localData.beard);
+    setRevert(localData.revert);
+    setHalal(localData.halal);
+    setPray(localData.pray);
+    setQuran(localData.quran);
+
+    console.log("localData: ", localData);
+  }, [localData]);
+
+  //---------------^^^^^^^^^^^^^^^----------------
 
   //------------------Updates State----------------
 
@@ -59,9 +81,9 @@ export default function Religon() {
 
     setReligonContext(religonData); //Updates context
 
-    console.log("religon: ", religonContext);
+    localStorage.setItem("religon", JSON.stringify(religonData)); //Stores data in local storage
 
-    push("/Pagess/create/mosque");
+    push("/Pagess/create/image");
   };
   return (
     <form onSubmit={handleSubmit}>
@@ -69,6 +91,12 @@ export default function Religon() {
       <div className="parent-religon">
         <div className="heading-container-religon">
           <div className="heading-religon">{t("religon.heading")}</div>
+          <div
+            className="skip-for-now-aboutMe"
+            onClick={() => push("/Pagess/create/image")}
+          >
+            Skip for now
+          </div>
         </div>
         <div className="box-container-religon">
           <div className="box-religon">

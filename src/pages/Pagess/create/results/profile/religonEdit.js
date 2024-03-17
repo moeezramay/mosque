@@ -118,7 +118,7 @@ export default function ReligonEdit() {
       }
     };
     fetchData();
-  });
+  }, []);
 
   return (
     <div style={{ paddingBottom: "40px" }}>

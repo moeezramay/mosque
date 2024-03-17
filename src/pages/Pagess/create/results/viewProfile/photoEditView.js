@@ -60,12 +60,10 @@ export default function PhotoEditView({ data, routerQuery }) {
           }),
         });
         const data1 = await res.json();
-        console.log("Hello");
         if (data1.error) {
           console.log("Error: ", data1.error);
           setAccess(false);
         } else {
-          console.log("Data1: ", data1.access);
           if (data1.access[0].status === "approved") {
             setAccess(true);
           } else if (
@@ -111,52 +109,6 @@ export default function PhotoEditView({ data, routerQuery }) {
     getImg();
   }, [userInfo]);
 
-  const handleImageChange = (e) => {
-    setMsg("");
-    const files = e.target.files;
-
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-          let width = img.width;
-          let height = img.height;
-
-          if (width > 100 || height > 100) {
-            if (width > height) {
-              height *= 100 / width;
-              width = 100;
-            } else {
-              width *= 100 / height;
-              height = 100;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          ctx.drawImage(img, 0, 0, width, height);
-          const resizedBase64 = canvas.toDataURL("image/jpeg");
-
-          setImages((prevState) => [
-            ...prevState,
-            {
-              imageUrl: resizedBase64,
-              isBlurred: false,
-              backup: resizedBase64,
-              imageBase64: resizedBase64.split(",")[1],
-            },
-          ]);
-        };
-
-        img.src = reader.result;
-      };
-      console.log("Images: ", images);
-      reader.readAsDataURL(file);
-    });
-  };
-
   //------------------UPLOAD DATA------------------
 
   const handleUpload = async (e) => {
@@ -183,70 +135,6 @@ export default function PhotoEditView({ data, routerQuery }) {
       console.log("Data: ", data);
     } catch (error) {
       console.log("Error: ", error);
-    }
-  };
-
-  //------------------BLUR 1------------------
-
-  const toggleBlur = (index) => {
-    const imageUrlValue = images[index].imageUrl;
-    const isBlurredValue = images[index].isBlurred;
-    const backupValue = images[index].backup;
-
-    if (imageUrlValue == null) {
-      return;
-    }
-
-    setImages((prevState) => {
-      const updatedImages = [...prevState];
-      updatedImages[index] = {
-        ...prevState[index],
-        isBlurred: !isBlurredValue,
-      };
-      return updatedImages;
-    });
-
-    const imageRef = imageRefs.current[index];
-
-    if (!imageRef) {
-      return;
-    }
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = 100;
-    canvas.height = 100;
-
-    ctx.drawImage(imageRef, 0, 0, 100, 100);
-
-    if (!isBlurredValue) {
-      canvas.remove();
-      // Apply the blur effect if not already blurred
-      StackBlur.canvasRGB(canvas, 0, 0, 100, 100, 10); // 10 is the blur radius
-      const blurredImageUrl = canvas.toDataURL();
-      const saveBlur = canvas.toDataURL("image/jpeg");
-
-      setImages((prevState) => {
-        const updatedImages = [...prevState];
-        updatedImages[index] = {
-          ...prevState[index],
-          imageUrl: blurredImageUrl,
-        };
-        console.log("images", updatedImages);
-
-        return updatedImages;
-      });
-    } else {
-      setImages((prevState) => {
-        const updatedImages = [...prevState];
-        updatedImages[index] = {
-          ...prevState[index],
-          imageUrl: backupValue,
-        };
-        console.log("images", updatedImages);
-        return updatedImages;
-      });
     }
   };
 
@@ -424,35 +312,6 @@ export function PictureProfile({ userInfo }) {
     getImg();
   }, []);
 
-  const toggleBlur = () => {
-    if (imageUrl == null) {
-      return;
-    }
-
-    setIsBlurred(!isBlurred); // Toggle blur state = true
-
-    const canvas = document.createElement("canvas"); // Create a new canvas element
-    const ctx = canvas.getContext("2d");
-
-    // Set canvas width and height
-    canvas.width = 100;
-    canvas.height = 100;
-
-    // Draw the image onto the canvas
-    ctx.drawImage(imageRef.current, 0, 0, 100, 100);
-
-    if (isBlurred === false) {
-      canvas.remove();
-      // Apply the blur effect if not already blurred
-      StackBlur.canvasRGB(canvas, 0, 0, 100, 100, 10); // 10 is the blur radius
-      const blurredImageUrl = canvas.toDataURL();
-      const saveBlur = canvas.toDataURL("image/jpeg");
-      setUploadBlur(saveBlur.split(",")[1]);
-      setImageUrl(blurredImageUrl);
-    } else {
-      setImageUrl(backup);
-    }
-  };
   return (
     <div>
       {loading ? (
@@ -466,10 +325,9 @@ export function PictureProfile({ userInfo }) {
               display: "none",
             }}
           ></canvas>
-
           <img
             ref={imageRef}
-            src={access ? backup || "/female.jpeg" : imageUrl || "/female.jpeg"}
+            src={access ? imageUrl || "/female.jpeg" : backup || "/female.jpeg"}
             width={100}
             height={100}
             alt=""

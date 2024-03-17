@@ -1,9 +1,10 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import ResultsNav from "../navResult";
 import Image from "next/image";
 import MessageSend from "../../../../../../public/sendMsgSvg";
+import { useRef } from "react";
 
 export default function MessageHome() {
   const [inputText, setInputText] = useState("");
@@ -25,11 +26,66 @@ export default function MessageHome() {
   const [message, setMessage] = useState(""); //Message to send
   const [selectedUser, setSelectedUser] = useState(""); //Selected user to display messages
   const { push } = useRouter();
+  //State for image Profile
+  const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const canvasRef = useRef(null);
+  const imageRef = useRef(null);
+  const canvasRef2 = useRef(null);
+  const imageRef2 = useRef(null);
+  const [selectedUserUrl, setSelectedUserUrl] = useState(null);
+
+  //States for others images
+  const [images, setImages] = useState([
+    {
+      email: "",
+      username: "",
+      imageUrl: null,
+      isBlurred: false,
+      backup: null,
+      imageBase64: "",
+    },
+  ]);
+  const [initEmailsz, setInitEmailsz] = useState(false);
+  const imageRefs = useRef([]);
+  const [otherloading, setOtherLoading] = useState(false);
+  const [loading2, setLoading2] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("currentNavOption", "messages");
   }, []);
 
+  //--------------Get Profile Image-----------
+  useEffect(() => {
+    var getImg = async () => {
+      try {
+        const res = await fetch("/api/createAcc/getProfileImg", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: localStorage.getItem("email"),
+          }),
+        });
+        const data = await res.json();
+        if (data.error) {
+          console.log("Error: ", data.error);
+          setImageUrl(null);
+        } else {
+          setImageUrl("data:image/jpeg;base64," + data.backup);
+        }
+        setLoading(true);
+      } catch (error) {
+        console.log("Error: ", error);
+      }
+    };
+    getImg();
+  }, []);
+
+  //--------------------^^^^^^^^^^--------------------
+
+  //--------------------Socket Initializer--------------------
   useEffect(() => {
     const socketInitializer = async () => {
       const username = localStorage.getItem("username");
@@ -104,7 +160,6 @@ export default function MessageHome() {
           }
           return false;
         });
-        console.log("USERSDFSAASDF", uniqueEmails);
 
         setOnlineUsers(uniqueEmails);
       });
@@ -130,8 +185,6 @@ export default function MessageHome() {
     const uniqueEmails = Array.from(
       new Set(allMessages.map((message) => message.email))
     );
-    console.log("sent messg", sentMessages);
-    console.log("Unique Emails:", uniqueEmails);
     setFilteredMessage(uniqueEmails);
   }, [sentMessages, recievedMessages]);
   //--------------------^^^^^^^^^^--------------------------
@@ -164,11 +217,110 @@ export default function MessageHome() {
           console.error("Error on fetching data:", error.message);
         }
       }
+
       setUniqueUsers(Array.from(uniqueUsersSet));
     };
 
     fetchData();
   }, [filteredMessage]);
+
+  //-----get unique Emails and usernames and store in images,setImages------
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/message/getEmailsAndUsername", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(localStorage.getItem("email")),
+        });
+
+        if (!res.ok) {
+          const errorMessage = await res.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const response = await res.json();
+
+        const tempImages = [];
+
+        response.forEach(({ email, username }) => {
+          tempImages.push({
+            email,
+            username,
+            imageUrl: null,
+            isBlurred: false,
+            backup: null,
+            imageBase64: "",
+          });
+        });
+
+        const filteredImages = tempImages.filter(
+          (image) => image.email.trim() !== ""
+        );
+        //Now images contain all the emails and usernames
+        setInitEmailsz(true);
+        setImages(filteredImages);
+      } catch (error) {
+        console.error("Error on fetching data:", error.message);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  //---------Fetch Profile Image for other users--------------
+  useEffect(() => {
+    const getImg = async () => {
+      try {
+        const updatedImages = [];
+        for (const image of images) {
+          const { email } = image; // Destructure email property from the image object
+          try {
+            const res = await fetch("/api/createAcc/getProfileImg", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email }), // Ensure email is sent as an object
+            });
+            const data = await res.json();
+
+            const imageUrl = data.image ? data.image : null;
+            const backup = data.backup ? data.backup : null;
+            const imageBase64 = data.image ? data.image : null;
+            let blur = false;
+            if (data.privacy === "yes") {
+              blur = true;
+            }
+
+            updatedImages.push({
+              email,
+              username: image.username,
+              imageUrl,
+              isBlurred: blur,
+              backup,
+              imageBase64,
+            });
+          } catch (error) {
+            console.error("Error fetching profile image:", error);
+            // Push null to maintain index consistency
+            updatedImages.push(null);
+          }
+        }
+
+        // Set the images array with the updated images
+        setImages(updatedImages);
+        setOtherLoading(true);
+        console.log("Images updated:", updatedImages);
+      } catch (error) {
+        console.error("Error updating images:", error);
+      }
+    };
+
+    getImg();
+  }, [initEmailsz]);
 
   //--------------------^^^^^^^^^^--------------------------
 
@@ -204,8 +356,10 @@ export default function MessageHome() {
   //--------------------^^^^^^^^^^--------------------
 
   //---------Get email of selected user--------------
-  const selectUser = async (user) => {
+  const selectUser = async (user, url) => {
     console.log("User selected", user);
+    setSelectedUserUrl(url);
+    console.log("Selected user url:", url);
     setSelectedUser(user);
     const res = await fetch("/api/message/getEmailbyName", {
       method: "POST",
@@ -305,6 +459,14 @@ export default function MessageHome() {
     };
     getOnlineStatus();
   }, [selectedUser, emailFound]);
+  const handleImageRefLoaded = (index) => {
+    const imageRef = imageRefs.current[index];
+    // Do nothing if the imageRef is already set
+    if (imageRef) return;
+
+    // Set the imageRef once it's loaded
+    imageRefs.current[index] = imageRef;
+  };
 
   return (
     <div>
@@ -314,14 +476,31 @@ export default function MessageHome() {
           <div className="left-container-live">
             <div className="header-left0-live">
               <div className="header-left1-live">
-                <Image
-                  src="/female.jpeg"
-                  alt="default"
-                  layout="responsive"
-                  width={100}
-                  height={100}
-                  className="profile-image-live"
-                />
+                {loading ? (
+                  <div>
+                    <canvas
+                      ref={canvasRef}
+                      width={50}
+                      height={50}
+                      style={{
+                        border: "1px solid black",
+                        display: "none",
+                      }}
+                    ></canvas>
+
+                    <img
+                      ref={imageRef}
+                      src={imageUrl ? imageUrl : "/female.jpeg"}
+                      width={50}
+                      height={50}
+                      alt=""
+                    />
+                  </div>
+                ) : (
+                  <div className="loader">
+                    <div></div>
+                  </div>
+                )}
               </div>
               <div className="header-left1-holder">
                 <div className="header-left1-heading">Personal Chats</div>
@@ -330,29 +509,54 @@ export default function MessageHome() {
             </div>
             <div className="body-left-container-live">
               {/* Mapping username for left pane */}
-              {uniqueUsers.map((user, index) => (
+
+              {images.map((image, index) => (
                 <div
-                  key={index}
                   className="container-user-live"
+                  key={index}
                   onClick={() => {
-                    selectUser(user);
+                    selectUser(image.username, image.imageUrl);
+                    setLoading2(true);
                   }}
                 >
-                  <div className="parent-select-user-live">
-                    <div className="parent-select-user-sub-live">
-                      <div className="profile-user-live">
-                        <Image
-                          src="/female.jpeg"
-                          alt="default"
-                          layout="responsive"
-                          width={80}
-                          height={80}
-                          className="profile-image-live"
-                        />
-                      </div>
-                      <div className="name-user-live">{user}</div>
+                  {otherloading ? (
+                    <div className="parent-select-user-live">
+                      <canvas
+                        ref={(ref) => (imageRefs.current[index] = ref)}
+                        width={100}
+                        height={100}
+                        style={{
+                          border: "1px solid black",
+                          display: "none",
+                        }}
+                      ></canvas>
+
+                      <img
+                        ref={(ref) => (imageRefs.current[index] = ref)}
+                        src={
+                          image.isBlurred
+                            ? image.imageUrl
+                              ? "data:image/jpeg;base64," + image.imageUrl
+                              : "/female.jpeg"
+                            : image.backup
+                            ? "data:image/jpeg;base64," + image.backup
+                            : "/female.jpeg"
+                        }
+                        unoptimized
+                        width={50}
+                        height={50}
+                        alt=""
+                        onLoad={() => handleImageRefLoaded(index)}
+                      />
+                      <div className="name-user-live">{image.username}</div>
                     </div>
-                  </div>
+                  ) : (
+                    image.imageUrl && (
+                      <div className="loader">
+                        <div></div>
+                      </div>
+                    )
+                  )}
                 </div>
               ))}
               {/* Mapping username for left pane^^^^^^*/}
@@ -366,15 +570,35 @@ export default function MessageHome() {
           ) : (
             <div className="right-container-live">
               <div className="header-right0-live">
-                <div className="header-right1-live">
-                  <Image
-                    src="/female.jpeg"
-                    alt="default"
-                    layout="responsive"
-                    width={100}
-                    height={100}
-                    className="header-right0-image-live"
-                  />
+                <div className="header-left1-live">
+                  {loading2 ? (
+                    <div>
+                      <canvas
+                        ref={canvasRef2}
+                        width={100}
+                        height={100}
+                        style={{
+                          border: "1px solid black",
+                          display: "none",
+                        }}
+                      ></canvas>
+
+                      <img
+                        ref={imageRef2}
+                        src={
+                          selectedUserUrl
+                            ? "data:image/jpeg;base64," + selectedUserUrl
+                            : "/female.jpeg"
+                        }
+                        className="image-right-live-message"
+                        alt=""
+                      />
+                    </div>
+                  ) : (
+                    <div className="loader">
+                      <div></div>
+                    </div>
+                  )}
                 </div>
                 <div className="name-right-holder">
                   <div className="name-right-live">{selectedUser}</div>

@@ -89,7 +89,6 @@ export default function ForgotPass() {
       );
 
       localStorage.setItem("email", email);
-      console.log("Token link: ", tokenLink);
     } catch (error) {
       console.log("Error while getting token on forgot pass: ", error);
     }

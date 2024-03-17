@@ -2,10 +2,13 @@ import React, { useState } from "react";
 
 function TextSlider() {
   const words = [
-    { id: 0, value: "Match within a certain Mosque" },
-    { id: 1, value: "Match within a certain organization!" },
-    { id: 2, value: "Find your partner!" },
-    { id: 3, value: "Find your soul mate!" },
+    { id: 0, value: "Find a partner in any Mosque in any location" },
+    { id: 1, value: "Find someone local that is known in the community" },
+    {
+      id: 2,
+      value: "A online solution for Marriage only",
+    },
+    { id: 3, value: "Wali feature for full confidence" },
   ];
 
   const [wordData, setWordData] = useState(words[0].value);

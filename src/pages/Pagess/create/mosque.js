@@ -13,7 +13,8 @@ export default function Mosque() {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const [arrMosque, setArrMosque] = useState([]);
-
+  const [checkedMosques, setCheckedMosques] = useState([]);
+  const [reset, setReset] = useState(false);
   //-----------------Data to send to database----------------
 
   const { genderContext, setGenderContext } = useContext(AppContext);
@@ -26,6 +27,7 @@ export default function Mosque() {
   //-----------------Updates the input suggestions----------------
   const handleInputChange = async (value) => {
     setInputValue(value);
+    setReset(!reset);
 
     const res = await fetch("/api/getMosque/getNames", {
       method: "POST",
@@ -55,6 +57,28 @@ export default function Mosque() {
       console.log("Token found!");
     }
   }, []);
+
+  //In case of page refresh, the data is stored in local storage
+  useEffect(() => {
+    if (localStorage.getItem("aboutMe") !== null) {
+      let about = localStorage.getItem("aboutMe");
+      about = JSON.parse(about);
+      setAboutmeContext(about);
+      let personal = localStorage.getItem("personal");
+      personal = JSON.parse(personal);
+      setPersonalContext(personal);
+      let eduwork = localStorage.getItem("eduwork");
+      eduwork = JSON.parse(eduwork);
+      setEduworkContext(eduwork);
+      let religon = localStorage.getItem("religon");
+      religon = JSON.parse(religon);
+      setReligonContext(religon);
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("aboutmeContext: ", religonContext);
+  }, [aboutmeContext]);
   //------------------^^^^^^^^^^^^^^^----------------
 
   //------------------Updates data and shifts to next page----------------
@@ -69,14 +93,19 @@ export default function Mosque() {
     }
     console.log("email found:", email);
 
+    if (mosqueContext.length === 0) {
+      alert("Please select a mosque");
+      return;
+    }
+
     const dataToSend = {
       email,
       gender: genderContext,
-      aboutMe: aboutmeContext,
-      personal: personalContext,
-      eduwork: eduworkContext,
-      religion: religonContext,
-      mosque: mosqueContext,
+      aboutMe: aboutmeContext || "",
+      personal: personalContext || "",
+      eduwork: eduworkContext || "",
+      religion: religonContext || "",
+      mosque: mosqueContext || [],
     };
 
     const res = await fetch("/api/createAcc/addInfoAcc", {
@@ -93,7 +122,7 @@ export default function Mosque() {
     }
     const response = await res.json();
     const username = response.username;
-    console.log("username", username);
+    console.log("username success", username);
 
     push("/Pagess/create/results/results");
   };
@@ -102,18 +131,35 @@ export default function Mosque() {
   const handleCheckboxChange = (mosque) => {
     const { id, name } = mosque;
 
-    // Check if the mosqueName is already in the array
-    const isSelected = mosqueContext.some((item) => item.id === id);
+    // Check if the mosque is already checked
+    const isChecked = checkedMosques.some((item) => item.id === id);
 
-    if (isSelected) {
-      // If already selected, remove it
+    if (isChecked) {
+      // If already checked, remove it from checkedMosques and mosqueContext
+      setCheckedMosques((prev) => prev.filter((item) => item.id !== id));
       setMosqueContext((prev) => prev.filter((item) => item.id !== id));
     } else {
-      // If not selected, add it
+      // If not checked, add it to checkedMosques and mosqueContext
+      setCheckedMosques((prev) => [...prev, { id, name }]);
       setMosqueContext((prev) => [...prev, { id, name }]);
     }
-    console.log("mosqueContext: ", mosqueContext);
   };
+
+  // Reset all checkboxes when input changes
+  useEffect(() => {
+    setCheckedMosques([]);
+  }, [reset]);
+
+  useEffect(() => {
+    console.log("checkedMosques:", mosqueContext);
+  }, [mosqueContext]);
+
+  //------------------Remove added mosque----------------
+
+  const removeAddedMosque = (mosque) => {
+    setMosqueContext((prev) => prev.filter((item) => item.id !== mosque.id));
+  };
+  //------------------^^^^^^^^^^^^^^^----------------
   return (
     <form onSubmit={handleSubmit}>
       <NavMini />
@@ -128,17 +174,19 @@ export default function Mosque() {
                 <input
                   className="input-little-mosque"
                   onChange={(e) => handleInputChange(e.target.value)}
+                  required
                 />
                 {arrMosque && arrMosque.length > 0 && (
                   <div className="option-container-mosque">
                     {arrMosque.map((mosque, index) => (
                       <div className="mini-option-mosque">
                         <p key={index}>{mosque.name} </p>
-                        <input
-                          type="checkbox"
-                          className="check-option-mosque"
-                          onChange={() => handleCheckboxChange(mosque)}
-                        />
+                        <label className="check-option-mosque">
+                          <input
+                            type="checkbox"
+                            onChange={() => handleCheckboxChange(mosque)}
+                          />
+                        </label>
                       </div>
                     ))}
                   </div>
@@ -149,6 +197,34 @@ export default function Mosque() {
               <button type="submit" className="button-mosque">
                 Next
               </button>
+            </div>
+          </div>
+          <div className="box-mosque">
+            <div className="select-conatiner-mosque">
+              <div className="input-container-mosque">
+                <div className="added-title-mosque">Mosques Added</div>
+                {mosqueContext.length > 0 ? (
+                  <div>
+                    {mosqueContext.map((mosque, index) => (
+                      <div key={index}>
+                        <div className="mosque-added-mosque">
+                          - {mosque.name}
+                        </div>
+                        <div
+                          className="remove-added-mosque"
+                          onClick={() => {
+                            removeAddedMosque(mosque);
+                          }}
+                        >
+                          Remove
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+              </div>
             </div>
           </div>
         </div>

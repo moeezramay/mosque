@@ -17,6 +17,7 @@ export default function Educwork() {
   const [job, setJob] = useState("");
   const [language1, setLanguage1] = useState("");
   const [language2, setLanguage2] = useState("");
+  const [localData, setLocalData] = useState("");
   //-----------------^^^^^^^^^^--------------------------
 
   //------------------Checks for token----------------
@@ -27,16 +28,33 @@ export default function Educwork() {
       console.log("token not found");
       push("/Pagess/sign/signIn/signIn");
     } else {
+      if (localStorage.getItem("eduWork") !== null) {
+        let temp = localStorage.getItem("eduWork");
+        temp = JSON.parse(temp);
+        setLocalData(temp);
+      }
       console.log("Token found!");
     }
   }, []);
   //------------------^^^^^^^^^^^^^^^----------------
 
+  //------Updates State if local data is present-----------
+  useEffect(() => {
+    setEdulevel(localData.education);
+    setSubject(localData.subject);
+    setProfession(localData.profession);
+    setJob(localData.job);
+    setLanguage1(localData.language1);
+    setLanguage2(localData.language2);
+    console.log("localData: ", localData);
+  }, [localData]);
+
+  //---------------^^^^^^^^^^^^^^^----------------
+
   //------------------Updates State----------------
 
   const handleSelectChange = (e, setFunction) => {
     setFunction(e.target.value);
-    console.log("about:", edulevel);
   };
   //------------------^^^^^^^^^^^^^^^----------------
 
@@ -56,8 +74,7 @@ export default function Educwork() {
 
     setEduworkContext(eduWorkData); //Updates context
 
-    console.log("eduwork: ", eduworkContext);
-
+    localStorage.setItem("eduWork", JSON.stringify(eduWorkData)); //Stores data in local storage
     push("/Pagess/create/personal");
   };
   //------------------^^^^^^^^^^^^^^^----------------
@@ -68,6 +85,12 @@ export default function Educwork() {
       <div className="parent-eduwork">
         <div className="heading-container-eduwork">
           <div className="heading-eduwork">{t("eduWork.heading")}</div>
+          <div
+            className="skip-for-now-aboutMe"
+            onClick={() => push("/Pagess/create/personal")}
+          >
+            Skip for now
+          </div>
         </div>
         <div className="box-container-eduwork">
           <div className="box-eduwork">
@@ -93,6 +116,7 @@ export default function Educwork() {
                   onChange={(e) => {
                     setSubject(e.target.value);
                   }}
+                  value={subject}
                   className="input-little-eduwork"
                   required
                 />

@@ -64,6 +64,7 @@ export default async function CreateAccount(req, res) {
     }
 
     res.json({
+      check: true,
       message: content.email,
       name: fullName,
       token: jwt.sign(

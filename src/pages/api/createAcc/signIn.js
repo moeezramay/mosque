@@ -42,6 +42,22 @@ export default async function SignIn(req, res) {
     const email = content.email;
     const password = content.password;
 
+    try {
+      //checking if gender is set to confirm user is signedUp
+      const check = await sql`
+      SELECT gender FROM createAcc WHERE email = ${email};`;
+
+      const gender = check.rows[0].gender;
+
+      if (gender === null) {
+        res.status(400).json({ error: "User is not signed up." });
+      } else {
+        console.log("User is signed up", gender);
+      }
+    } catch (error) {
+      console.log("Error on sign in backend ./signIn.js", error);
+    }
+
     const result = await sql`SELECT * FROM createAcc WHERE email = ${email};`;
     if (result.error || result.length === 0 || !result) {
       console.log("Database Error:", result.error);

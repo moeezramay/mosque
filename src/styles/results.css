@@ -152,6 +152,39 @@
   background-color: grey;
   margin-top: 30px;
 }
+.check-option-filter {
+}
+.your-mosque-filter {
+  font-weight: bold;
+}
+.location-added-filter {
+  margin-top: 20px;
+}
+.container-add-filter {
+  margin-top: 20px;
+  display: flex;
+
+  justify-content: flex-start;
+}
+.show-more-filter {
+  color: #b52d3b;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.parent-locations-filter {
+  display: flex;
+  flex-direction: column;
+}
+.remove-location-filter {
+  margin-left: 10px;
+  color: #b52d3b;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.input-little-filter {
+  width: 100%;
+  margin-top: 10px;
+}
 .filters-button-container-result {
   width: 100%;
   display: flex;

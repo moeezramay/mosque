@@ -27,7 +27,7 @@ export default function Personal() {
   const [disability, setDisability] = useState("");
   const [long, setLong] = useState("");
   const [ethniciting, setEthniciting] = useState("");
-
+  const [localData, setLocalData] = useState("");
   //-----------^^^^^^^^^^^^^^^^^^^^^^^----------------
 
   //------------------Checks for token----------------
@@ -38,10 +38,38 @@ export default function Personal() {
       console.log("token not found");
       push("/Pagess/sign/signIn/signIn");
     } else {
+      if (localStorage.getItem("personal") !== null) {
+        let temp = localStorage.getItem("personal");
+        temp = JSON.parse(temp);
+        setLocalData(temp);
+      }
       console.log("Token found!");
     }
   }, []);
   //------------------^^^^^^^^^^^^^^^----------------
+
+  //------Updates State if local data is present-----------
+  useEffect(() => {
+    setCitizen(localData.citizen);
+    setOrigin(localData.origin);
+    setRelocate(localData.relocate);
+    setIncome(localData.income);
+    setMarriage(localData.marriage);
+    setMarital(localData.marital);
+    setChildren1(localData.children1);
+    setChildren2(localData.children2);
+    setLiving(localData.living);
+    setHeight(localData.height);
+    setBuild(localData.build);
+    setSmoke(localData.smoke);
+    setDrink(localData.drink);
+    setDisability(localData.disability);
+    setLong(localData.long);
+    setEthniciting(localData.ethnicity);
+    console.log("localData: ", localData);
+  }, [localData]);
+
+  //---------------^^^^^^^^^^^^^^^----------------
 
   //------------------Updates State----------------
 
@@ -75,7 +103,7 @@ export default function Personal() {
     };
     setPersonalContext(personalData);
 
-    console.log("personal: ", personalContext);
+    localStorage.setItem("personal", JSON.stringify(personalData));
 
     push("/Pagess/create/religon");
   };
@@ -85,6 +113,12 @@ export default function Personal() {
       <div className="parent-personal">
         <div className="heading-container-personal">
           <div className="heading-personal">{t("personal.heading")}</div>
+          <div
+            className="skip-for-now-aboutMe"
+            onClick={() => push("/Pagess/create/religon")}
+          >
+            Skip for now
+          </div>
         </div>
         <div className="box-container-personal">
           <div className="box-personal">

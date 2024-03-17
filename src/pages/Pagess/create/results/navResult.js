@@ -62,6 +62,7 @@ export default function ResultsNav() {
   };
 
   const shiftToSearch = () => {
+    localStorage.setItem("currentNavOption", "search");
     push("/Pagess/create/results/results");
   };
 
@@ -108,7 +109,13 @@ export default function ResultsNav() {
   return (
     <div style={{ zIndex: "1" }}>
       <div className="navbar-parent-container-navResult">
-        <div className="navbar-logo-navResult" onClick={shiftToSearch}>
+        <div
+          className="navbar-logo-navResult"
+          onClick={() => {
+            shiftToSearch();
+            reloadPage();
+          }}
+        >
           <span style={{ color: "#358fa1" }}>{t("nav.first")}</span>
           <span style={{ color: "#b52d3b" }}>{t("nav.second")}</span>
         </div>
@@ -116,6 +123,8 @@ export default function ResultsNav() {
           <div
             className="search-navResult"
             onClick={() => {
+              localStorage.setItem("turn", 1);
+
               shiftToSearch();
               changeNavOption("search");
               reloadPage();
@@ -132,6 +141,8 @@ export default function ResultsNav() {
           <div
             className="message-navResult"
             onClick={() => {
+              localStorage.setItem("turn", 0);
+
               shiftToMessages();
               changeNavOption("messages");
             }}
@@ -147,6 +158,8 @@ export default function ResultsNav() {
           <div
             className="message-navResult"
             onClick={() => {
+              localStorage.setItem("turn", 0);
+
               shiftToInterest();
               changeNavOption("interest");
             }}
@@ -169,6 +182,8 @@ export default function ResultsNav() {
           <div
             className="edit-profile-navResult"
             onClick={() => {
+              localStorage.setItem("turn", 0);
+
               shiftToEditProfile();
               localStorage.setItem("currentNavOption", "editProfile");
             }}

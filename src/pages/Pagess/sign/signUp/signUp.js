@@ -24,6 +24,7 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = useState(false);
   const [confirmError, setConfirmError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [tokenLink, setTokenLink] = useState("");
 
   const [t, i18n] = useTranslation("global");
 
@@ -50,10 +51,11 @@ export default function SignUp() {
     const templateId = "template_ucwlucj";
     console.log(emailAddress);
     const templateParams = {
-      to_name: user,
+      to_name: localStorage.getItem("username"),
       to_email: emailAddress,
+      message: tokenLink,
     };
-
+    console.log("tokenLink: ", tokenLink);
     // Send the email
     emailjs
       .send("service_2offjoq", templateId, templateParams, "N3l8CQkoHqaZ8p5Ro")
@@ -65,6 +67,8 @@ export default function SignUp() {
           console.log(error.text);
         }
       );
+    alert("Email sent, please check your inbox");
+    push("/");
   };
 
   //---------------SignUP with google------------------------
@@ -210,6 +214,7 @@ export default function SignUp() {
   //---------------SignUpWith GOOGLE----------------------------
 
   const signUpWithGoogle = async () => {
+    localStorage.setItem("sign", 1);
     const result = await signIn("google");
   };
   //---------------^^^^^^^^^-----------------------------
@@ -236,12 +241,13 @@ export default function SignUp() {
         lastName: lastName,
       };
 
-      const res = await fetch("/api/createAcc/createAcc", {
+      //First checking if email is valid
+      const res = await fetch("/api/forgotPass/forgot", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(acc),
+        body: JSON.stringify({ email: emailAddress }),
       });
       if (!res.ok) {
         const errorMessage = await res.json();
@@ -251,23 +257,62 @@ export default function SignUp() {
       }
       const response = await res.json();
 
-      const token = response.token;
-      const msg = response.message;
-      const username = "dsa";
-      console.log("msg", msg);
-
-      if (token) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("email", msg);
-        localStorage.setItem("username", username);
-        console.log("token", token);
+      if (response.check === true) {
+        alert("Email Already Exists");
+        return;
       }
-      sendEmail(emailAddress);
-      push("/Pagess/create/gender");
+
+      try {
+        //If the User Exists the Token Is fetched
+        const res2 = await fetch("/api/forgotPass/getToken", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: emailAddress }),
+        });
+        if (!res2.ok) {
+          const errorMessage = await res2.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const data2 = await res2.json();
+        const userEmail = emailAddress;
+        const fullName = firstName + " " + lastName;
+
+        console.log("userEmail: ", userEmail);
+        setTokenLink(
+          (prevTokenLink) =>
+            `https://www.mosquematch.com/Pagess/sign/signUp/confirm/${userEmail}/${password}/${firstName}/${lastName}/${data2.token}`
+        );
+
+        localStorage.setItem("email", emailAddress);
+
+        localStorage.setItem("username", fullName);
+      } catch (error) {
+        console.log("Error while getting token on signUp: ", error);
+      }
+
+      // if (token) {
+      //   localStorage.setItem("token", token);
+      //   localStorage.setItem("email", msg);
+      //   localStorage.setItem("username", username);
+      //   console.log("token", token);
+      // }
+      // sendEmail(emailAddress);
+      // push("/Pagess/create/gender");
     } catch (error) {
       console.log("Error cought on last", error);
     }
   };
+
+  useEffect(() => {
+    if (tokenLink !== "" && tokenLink !== undefined && tokenLink !== null) {
+      // Token link has been updated, call sendEmail
+      sendEmail();
+      setTokenLink("");
+    }
+  }, [tokenLink]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -316,11 +361,7 @@ export default function SignUp() {
                   className="input-password-signIn"
                   type={showPassword ? "text" : "password"}
                   onChange={(e) => {
-                    if (
-                      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
-                        e.target.value
-                      )
-                    ) {
+                    if (/^(?=.*\d)[A-Za-z\d]{6,}$/.test(e.target.value)) {
                       setPasswordError(false);
                       setPassword(e.target.value);
                     } else {
@@ -341,8 +382,8 @@ export default function SignUp() {
                 />
                 {passwordError && (
                   <div style={{ color: "red", fontSize: "12px" }}>
-                    Password must contain at least 8 characters, including 1
-                    letter and 1 number
+                    Password must contain at least 6 characters, including
+                    atleast one number
                   </div>
                 )}
               </div>

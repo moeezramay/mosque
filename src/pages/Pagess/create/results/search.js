@@ -74,6 +74,10 @@ export default function Search() {
 
   useEffect(() => {
     localStorage.setItem("currentNavOption", "search");
+    if (localStorage.getItem("turn") == 0) {
+      localStorage.setItem("turn", 1);
+      reloadPage();
+    }
   }, []);
   //Updator for Current Location
   useEffect(() => {
@@ -88,6 +92,112 @@ export default function Search() {
       });
     }
   }, [cLocation]);
+
+  //-------------Api to retrieve data------------------
+  useEffect(() => {
+    const fetchData = async () => {
+      const email1 = localStorage.getItem("email");
+      if (email1 === "" || !email1 || email1 === null) {
+        return;
+      }
+      setEmail(email1);
+      try {
+        //Getting all users
+        const res = await fetch("/api/createAcc/getInfoAcc", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(email1),
+        });
+        if (!res.ok) {
+          const errorMessage = await res.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const response = await res.json();
+
+        //Getting users who you have blocked
+        const res2 = await fetch("/api/interest/getBlocked", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+        let data2 = await res2.json();
+        if (data2.error) {
+          console.log("Error on getting blocked: ", data2.error);
+        }
+
+        data2 = data2.data;
+
+        //getting users who have blocked me so we can filter then also
+
+        const res3 = await fetch("/api/interest/getBlockedMe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+
+        let data3 = await res3.json();
+        if (data3.error) {
+          console.log("Error on getting blocked: ", data3.error);
+        }
+
+        data3 = data3.data;
+
+        const res4 = await fetch("/api/createAcc/getTime", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: localStorage.getItem("email"),
+          }),
+        });
+
+        let timeData = await res4.json();
+        if (timeData.error) {
+          console.log("Error on getting timestamp", error);
+        }
+        timeData = timeData.data;
+        setTimeStamp(timeData);
+
+        //Adding a Distance Tracker to the Users
+        const dataToChange = response.user.rows.map((e) => {
+          e["distance"] = "Unknown";
+          return e;
+        });
+
+        //Filtering users who are blocked by current
+        const dataChanged = dataToChange.filter(
+          (user) => !data2.some((item) => item.receiver_email === user.email)
+        );
+
+        //Filtering users who have blocked current user
+        const filteredData = dataChanged.filter(
+          (user) => !data3.some((item) => item.sender_email === user.email)
+        );
+        console.log("FilteredData fadsfasdf,", filteredData);
+
+        setData(filteredData);
+        showMap();
+      } catch (error) {
+        console.error("Error on first try fetching data:", error.message);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  //-------------^^^^^^^^^^^^^^^^^^^^------------------
 
   //-------------------Sending Message------------------------
   const SendMessage = async (e, user) => {
@@ -179,29 +289,29 @@ export default function Search() {
 
   const RequestPrivateImage = async (e, user) => {
     e.preventDefault();
-    const receiver = user;
-    const sender = localStorage.getItem("email");
+    console.log("Requesting Images");
+    try {
+      const res = await fetch("/api/interest/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          viewed: user,
+          viewer: localStorage.getItem("email"),
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        console.log("Error: ", data.error);
+        return;
+      }
+      alert("Private Images Requested");
 
-    const data = {
-      senderEmail: sender,
-      receiverEmail: receiver,
-      messageText: "Would like to request your private images",
-    };
-
-    const res = await fetch("/api/message/sendMessage", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-      const errorMessage = await res.json();
-      console.error("Error if:", errorMessage.error);
-      return;
+      console.log("Data: ", data);
+    } catch (error) {
+      console.log("Error: ", error);
     }
-    const response = await res.json();
-    console.log("Private Image Request Sent: ", response);
   };
 
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
@@ -323,9 +433,9 @@ export default function Search() {
     // If geolocation doesn't work (watchPosition fails immediately), call reloadPage
     setTimeout(() => {
       if (tempVar === 0) {
-        reloadPage();
+        // reloadPage();
       }
-    }, 2000); // Adjust the timeout duration as needed
+    }, 3000); // Adjust the timeout duration as needed
   };
 
   useEffect(() => {
@@ -372,112 +482,6 @@ export default function Search() {
   }, []);
   //-------------^^^^^^^^^^^^^^^-----------------
 
-  //-------------Api to retrieve data------------------
-  useEffect(() => {
-    const fetchData = async () => {
-      const email1 = localStorage.getItem("email");
-      if (email1 === "" || !email1 || email1 === null) {
-        return;
-      }
-      setEmail(email1);
-      try {
-        //Getting all users
-        const res = await fetch("/api/createAcc/getInfoAcc", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(email1),
-        });
-        if (!res.ok) {
-          const errorMessage = await res.json();
-          console.error("Error if:", errorMessage.error);
-          return;
-        }
-        const response = await res.json();
-
-        //Getting users who you have blocked
-        const res2 = await fetch("/api/interest/getBlocked", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user: localStorage.getItem("email"),
-          }),
-        });
-        let data2 = await res2.json();
-        if (data2.error) {
-          console.log("Error on getting blocked: ", data2.error);
-        }
-
-        data2 = data2.data;
-
-        //getting users who have blocked me so we can filter then also
-
-        const res3 = await fetch("/api/interest/getBlockedMe", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user: localStorage.getItem("email"),
-          }),
-        });
-
-        let data3 = await res3.json();
-        if (data3.error) {
-          console.log("Error on getting blocked: ", data3.error);
-        }
-
-        data3 = data3.data;
-
-        const res4 = await fetch("/api/createAcc/getTime", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user: localStorage.getItem("email"),
-          }),
-        });
-
-        let timeData = await res4.json();
-        if (timeData.error) {
-          console.log("Error on getting timestamp", error);
-        }
-        timeData = timeData.data;
-        setTimeStamp(timeData);
-
-        //Adding a Distance Tracker to the Users
-        const dataToChange = response.user.rows.map((e) => {
-          e["distance"] = "Unknown";
-          return e;
-        });
-
-        //Filtering users who are blocked by current
-        const dataChanged = dataToChange.filter(
-          (user) => !data2.some((item) => item.receiver_email === user.email)
-        );
-
-        //Filtering users who have blocked current user
-        const filteredData = dataChanged.filter(
-          (user) => !data3.some((item) => item.sender_email === user.email)
-        );
-        console.log("FilteredData fadsfasdf,", filteredData);
-
-        setData(filteredData);
-        showMap();
-      } catch (error) {
-        console.error("Error on first try fetching data:", error.message);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  //-------------^^^^^^^^^^^^^^^^^^^^------------------
-
   //-------------Function to calculate age------------------
   function calculateAge(year, month, day) {
     const dateOfBirth = `${year}-${month}-${day}`;
@@ -517,13 +521,17 @@ export default function Search() {
       console.error("Error if:", errorMessage.error);
       return;
     }
+
     const response = await res.json();
     console.log(response);
   };
   //--------------------^^^^^^^^^^^^^-------------------
 
   const check = (item, userItem) => {
-    if (item.length == 0 || item.indexOf(userItem.toLowerCase()) !== -1) {
+    if (
+      item.length === 0 ||
+      (userItem && item.indexOf(userItem.toLowerCase()) !== -1)
+    ) {
       return 1;
     }
   };
@@ -655,65 +663,71 @@ export default function Search() {
   //--------------------^^^^^^^^^^^^^-------------------
 
   useEffect(() => {
+    // if (
+    //   !filterContext.ethnicities ||
+    //   !filterContext.bodytype ||
+    //   !filterContext.income ||
+    //   !filterContext.maritalStatus ||
+    //   !filterContext.smoking ||
+    //   !filterContext.drinking ||
+    //   !filterContext.phone ||
+    //   !filterContext.religiousness ||
+    //   !filterContext.sects ||
+    //   !filterContext.reverts ||
+    //   !filterContext.halals ||
+    //   !filterContext.hijabs ||
+    //   !filterContext.prays ||
+    //   !filterContext.location
+    // ) {
+    //   // If any filter value is undefined or empty at the start, set filteredData to the original data
+    //   setFilteredData(data);
+    //   return;
+    // }
+
     var filtered = data.filter((item) => {
+      console.log("Filter Context Location:", item.aboutme_location);
+
       if (
-        filterContext.ethnicities.length == 0 ||
-        filterContext.ethnicities.indexOf(
-          item.personal_ethnicity.toLowerCase()
-        ) !== -1 ||
-        (ethnicities_existing.indexOf(item.personal_ethnicity.toLowerCase()) ===
-          -1 &&
-          filterContext.ethnicities.indexOf("other") !== -1)
+        filterContext.ethnicities.length === 0 ||
+        (item.personal_ethnicity?.toLowerCase() &&
+          (filterContext.ethnicities.indexOf(
+            item.personal_ethnicity.toLowerCase()
+          ) !== -1 ||
+            (ethnicities_existing.indexOf(
+              item.personal_ethnicity.toLowerCase()
+            ) === -1 &&
+              filterContext.ethnicities.indexOf("other") !== -1)))
       ) {
-        if (check(filterContext.bodytype, item.personal_build)) {
-          if (check(filterContext.income, item.personal_income)) {
-            if (check(filterContext.maritalStatus, item.personal_marital)) {
-              if (check(filterContext.smoking, item.personal_smoke)) {
-                if (check(filterContext.drinking, item.personal_drink)) {
-                  if (check(filterContext.phone, item.personal_long)) {
-                    if (
-                      check(
-                        filterContext.religiousness,
-                        item.religion_religious
-                      )
-                    ) {
-                      if (check(filterContext.sects, item.religion_sector)) {
-                        if (
-                          check(filterContext.reverts, item.religion_revert)
-                        ) {
-                          if (
-                            check(filterContext.halals, item.religion_halal)
-                          ) {
-                            if (
-                              check(filterContext.hijabs, item.religion_hijab)
-                            ) {
-                              if (
-                                check(filterContext.prays, item.religion_pray)
-                              ) {
-                                if (email != item.email) {
-                                  if (
-                                    item.distance != "Unknown" &&
-                                    item.distance < rangeContext * 1
-                                  ) {
-                                    return item;
-                                  } else if (item.distance == "Unknown") {
-                                    return item;
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+        if (
+          check(filterContext.bodytype, item.personal_build) &&
+          check(filterContext.income, item.personal_income) &&
+          check(filterContext.maritalStatus, item.personal_marital) &&
+          check(filterContext.smoking, item.personal_smoke) &&
+          check(filterContext.drinking, item.personal_drink) &&
+          check(filterContext.phone, item.personal_long) &&
+          check(filterContext.religiousness, item.religion_religious) &&
+          check(filterContext.sects, item.religion_sector) &&
+          check(filterContext.reverts, item.religion_revert) &&
+          check(filterContext.halals, item.religion_halal) &&
+          check(filterContext.hijabs, item.religion_hijab) &&
+          check(filterContext.prays, item.religion_pray) &&
+          check(filterContext.location, item.aboutme_location)
+        ) {
+          if (email !== item.email) {
+            if (
+              item.distance !== "Unknown" &&
+              item.distance < rangeContext * 1
+            ) {
+              return true;
+            } else if (item.distance === "Unknown") {
+              return true;
             }
           }
         }
       }
+      return false;
     });
+
     setFilteredData(filtered);
   }, [filterContext, data, rangeContext]);
 
@@ -771,12 +785,6 @@ export default function Search() {
         </div>
         <div className="top-right-search">
           <div className="select-container-right-search">
-            <select className="select-top-search">
-              <option>Sort By: Online</option>
-              <option>Sort By: Age</option>
-              <option>Sort By: ASC</option>
-              <option>Sort By: DSC</option>
-            </select>
             <select
               className="select-top2-search"
               onChange={(e) => changeLength(Number(e.target.value))}
@@ -796,10 +804,11 @@ export default function Search() {
             <Map
               positions={mapData}
               center={mapCenter}
-              display={loadMap}
+              display={true}
               zoom={zoom}
               people={data}
               email={email}
+              radius={rangeContext}
             />
           ) : null}
         </div>
@@ -809,15 +818,43 @@ export default function Search() {
           <div key={userInfo.id} className="result-parent-container-search">
             <div className="result-img-parent-search">
               <div className="img-container-search">
-                {loaded ? (
-                  <div>
-                    {imageData
-                      .filter((img) => img.email === userInfo.email)
-                      .map((img) => (
+                <Link
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent the default behavior of the link
+                    setSelectedUserInfo(userInfo);
+                    ViewBio(e, userInfo.email);
+                    router.push({
+                      pathname:
+                        "/Pagess/create/results/viewProfile/viewProfile",
+                      query: {
+                        name: JSON.stringify(userInfo),
+                      },
+                    });
+                  }}
+                  href="/Pagess/create/results/viewProfile/viewProfile"
+                >
+                  {loaded ? (
+                    <div>
+                      {imageData
+                        .filter((img) => img.email === userInfo.email)
+                        .map((img) => (
+                          <NextImage
+                            unoptimized
+                            key={img.email} // Ensure each NextImage has a unique key
+                            src={`data:image/jpeg;base64,${img.image}`}
+                            width={100}
+                            height={100}
+                            style={{
+                              border: "1px solid black",
+                            }}
+                            alt=""
+                          />
+                        ))}
+                      {imageData.filter((img) => img.email === userInfo.email)
+                        .length === 0 && (
                         <NextImage
                           unoptimized
-                          key={img.email} // Ensure each NextImage has a unique key
-                          src={`data:image/jpeg;base64,${img.image}`}
+                          src="/female.jpeg" // Set src to "/female.jpeg" if no images found
                           width={100}
                           height={100}
                           style={{
@@ -825,24 +862,12 @@ export default function Search() {
                           }}
                           alt=""
                         />
-                      ))}
-                    {imageData.filter((img) => img.email === userInfo.email)
-                      .length === 0 && (
-                      <NextImage
-                        unoptimized
-                        src="/female.jpeg" // Set src to "/female.jpeg" if no images found
-                        width={100}
-                        height={100}
-                        style={{
-                          border: "1px solid black",
-                        }}
-                        alt=""
-                      />
-                    )}
-                  </div>
-                ) : (
-                  <div></div>
-                )}
+                      )}
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                </Link>
               </div>
             </div>
             <div className="result-right-parent-container">
@@ -976,9 +1001,6 @@ export default function Search() {
                           <button
                             className="send-msg-search"
                             onClick={(e) => {
-                              setMessageText(
-                                "I would like to request your Private Images"
-                              );
                               RequestPrivateImage(e, selectedUserInfo.email);
                               setShowPrivate(false);
                             }}
@@ -1144,6 +1166,7 @@ export default function Search() {
                         name: JSON.stringify(userInfo),
                       },
                     });
+                    localStorage.setItem("turn", 0);
                   }}
                   href="/Pagess/create/results/viewProfile/viewProfile"
                 >

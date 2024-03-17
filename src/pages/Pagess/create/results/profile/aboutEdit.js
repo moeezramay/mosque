@@ -23,6 +23,7 @@ export default function AboutEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const email1 = localStorage.getItem("email");
+    console.log("location:", location);
     if (
       !location ||
       !country ||
@@ -88,6 +89,7 @@ export default function AboutEdit() {
   const handleSelectChange = (e, setFunction) => {
     setFunction(e.target.value);
   };
+
   //------------------^^^^^^^^^^^^^^^----------------
 
   //---------------Get user data from api--------------
@@ -125,7 +127,7 @@ export default function AboutEdit() {
       }
     };
     fetchData();
-  });
+  }, []);
 
   return (
     <div style={{ paddingBottom: "40px" }}>

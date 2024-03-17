@@ -1,13 +1,26 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
-      redirectUri: "https://www.mosquematch.com/api/auth/callback/google",
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-  secret: process.env.JWT_SECRET,
-});
+  debug: process.env.NODE_ENV === "development",
+  secret: process.env.NEXT_AUTH_SECRET,
+  cookies: {
+    callbackUrl: {
+      name: `__Secure-next-auth.callback-url`,
+      options: {
+        sameSite: "lax",
+        path: "/Pages/Pagess/sign/signIn",
+        httpOnly: true,
+        encode: () => process.env.NEXTAUTH_URL,
+        secure: true,
+      },
+    },
+  },
+};
+export default NextAuth(authOptions);

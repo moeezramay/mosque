@@ -7,9 +7,11 @@ import Head from "next/head";
 import Footer from "../footer/footer";
 import { useEffect, useState } from "react";
 import TextSlider from "./text-slider";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
   const [t, i18n] = useTranslation("global");
+  const { push } = useRouter();
 
   useEffect(() => {
     const GetResponse = async () => {
@@ -32,6 +34,19 @@ export default function HomePage() {
       }
     };
     GetResponse();
+  }, []);
+
+  useEffect(() => {
+    console.log("Local Storage 1:", localStorage.getItem("sign"));
+
+    if (localStorage.getItem("sign") == 0) {
+      console.log("Local Storage:", localStorage.getItem("sign"));
+
+      push("/Pagess/sign/signIn/signIn");
+    }
+    if (localStorage.getItem("sign") == 1) {
+      push("/Pagess/sign/signUp/signUp");
+    }
   }, []);
 
   return (

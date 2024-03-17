@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { GoogleMap, InfoWindowF, MarkerF } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  InfoWindowF,
+  MarkerF,
+  CircleF,
+} from "@react-google-maps/api";
 import { addMosqueUser } from "../../../api/createAcc/addMosqueUser.js";
 
 function scatterCoordinates(latitude, longitude) {
-  // Earth's radius in kilometers
   const earthRadius = 6371;
 
-  // Generate a random distance between 1 and 0.1 kilometers
   const randomDistance = Math.random() * (0.5 - 0.1) + 0.2;
   const randomAngle = Math.random() * (2 * Math.PI);
   const newLatitude =
@@ -18,7 +21,7 @@ function scatterCoordinates(latitude, longitude) {
   return { latitude: newLatitude, longitude: newLongitude };
 }
 
-function Map({ positions, center, display, zoom, people, email }) {
+function Map({ positions, center, display, zoom, people, email, radius }) {
   const [activeMarker, setActiveMarker] = useState(null);
   const [activeName, setActiveName] = useState(null);
   const [activePeople, setActivePeople] = useState([]);
@@ -28,15 +31,11 @@ function Map({ positions, center, display, zoom, people, email }) {
   const [defaultPeople, setDefaultPeople] = useState([]);
 
   useEffect(() => {
-    //Create a copy of activePeople without the current user
-    let temp = activePeople.filter((person) => person.email != email);
-    setMainPositions([...positions, ...temp]);
-  }, [positions, activePeople]);
+    //let temp = activePeople.filter((person) => person.email != email);
+    setMainPositions(positions);
+  }, [positions]);
 
   const handleMarkerClick = (marker) => {
-    /*if(marker.type == "male" || marker.type == "female") {
-          // This Function Executes When the User Clicks on a Person
-        }*/
     try {
       setActiveMarker(marker);
       setActiveName(marker.name);
@@ -112,6 +111,11 @@ function Map({ positions, center, display, zoom, people, email }) {
     }
   };
 
+  useEffect(() => {
+    console.log("MAP IS BEING INITIALIZED");
+    console.log(display);
+  }, []);
+
   const handleAddMosque = (e) => {
     e.preventDefault();
 
@@ -173,75 +177,103 @@ function Map({ positions, center, display, zoom, people, email }) {
     }
   };
 
-  return (
-    <GoogleMap
-      onLoad={handleOnLoad}
-      onClick={() => setActiveMarker(null)}
-      mapContainerStyle={{
-        width: "100%",
-        height: "100%",
-        visibility: display ? "visible" : "visible",
-      }}
-      zoom={zoom}
-      center={center}
-    >
-      {mainPositions &&
-        mainPositions.map((position) => (
-          <MarkerF
-            icon={{
-              url: getIconUrl(position.type),
-              scaledSize: new window.google.maps.Size(30, 30),
-              origin: new window.google.maps.Point(0, 0),
-              anchor: new window.google.maps.Point(15, 15),
-            }}
-            key={`${position.location?.lat || position.lat || "unknown"}-${
-              position.location?.lng || position.lng || "unknown"
-            }`}
-            position={
-              position.location
-                ? {
-                    lat: position.location.lat,
-                    lng: position.location.lng,
-                  }
-                : { lat: position.lat, lng: position.lng }
-            }
-            onClick={() => handleMarkerClick(position)}
-            name={position.name}
-          ></MarkerF>
-        ))}
-      {activeMarker && isProcessing && (
-        <InfoWindowF
-          className="map-info-window"
-          position={
-            activeMarker.location
-              ? {
-                  lat: activeMarker.location.lat,
-                  lng: activeMarker.location.lng,
-                }
-              : { lat: activeMarker.lat, lng: activeMarker.lng }
-          }
-          onCloseClick={handleInfoWindowClose}
-        >
-          <div className="mosque-add-label">
-            <div>{activeName}</div>
-            {activeMarker.type == "mosque" && (
-              <button
-                className="mosque-add-button"
-                onClick={handleAddMosque}
-                style={{
-                  backgroundColor: isPart ? "#ed7b86" : "#4CAF50",
-                  cursor: isPart ? "context-menu" : "pointer",
+  if (display) {
+    return (
+      <GoogleMap
+        onLoad={handleOnLoad}
+        onClick={() => setActiveMarker(null)}
+        mapContainerStyle={{
+          width: "100%",
+          height: "100%",
+        }}
+        zoom={zoom}
+        center={center}
+      >
+        {mainPositions &&
+          mainPositions.map((position) => (
+            <>
+              {position.type === "user" && ( // Conditionally render Circle for type "user"
+                <CircleF
+                  center={{
+                    lat: position.lat,
+                    lng: position.lng,
+                  }}
+                  radius={radius} // Adjust the radius as needed
+                  options={{
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.35,
+                  }}
+                />
+              )}
+              <MarkerF
+                icon={{
+                  url: getIconUrl(position.type),
+                  scaledSize: new window.google.maps.Size(30, 30),
+                  origin: new window.google.maps.Point(0, 0),
+                  anchor: new window.google.maps.Point(15, 15),
                 }}
-                disabled={isPart}
-              >
-                Add Mosque
-              </button>
-            )}
-          </div>
-        </InfoWindowF>
-      )}
-    </GoogleMap>
-  );
+                key={`${position.location?.lat || position.lat || "unknown"}-${
+                  position.location?.lng || position.lng || "unknown"
+                }`}
+                position={
+                  position.location
+                    ? {
+                        lat: position.location.lat,
+                        lng: position.location.lng,
+                      }
+                    : {
+                        lat: position.lat,
+                        lng: position.lng,
+                      }
+                }
+                onClick={() => handleMarkerClick(position)}
+                name={position.name}
+              />
+            </>
+          ))}
+        {activeMarker && isProcessing && (
+          <InfoWindowF
+            className="map-info-window"
+            position={
+              activeMarker.location
+                ? {
+                    lat: activeMarker.location.lat,
+                    lng: activeMarker.location.lng,
+                  }
+                : {
+                    lat: activeMarker.lat,
+                    lng: activeMarker.lng,
+                  }
+            }
+            onCloseClick={handleInfoWindowClose}
+          >
+            <div className="mosque-add-label">
+              <div>{activeName}</div>
+              {(activeMarker.type == "mosque" ||
+                activeMarker.type == "mosque2") && (
+                <button
+                  className="mosque-add-button"
+                  onClick={handleAddMosque}
+                  style={{
+                    backgroundColor: isPart ? "#ed7b86" : "#4CAF50",
+                    cursor: isPart ? "context-menu" : "pointer",
+                  }}
+                  disabled={isPart}
+                >
+                  {isPart ? "Mosque Added" : "Add mosque"}
+                </button>
+              )}
+            </div>
+          </InfoWindowF>
+        )}
+      </GoogleMap>
+    );
+  } else {
+    return null;
+  }
 }
 
 export default Map;

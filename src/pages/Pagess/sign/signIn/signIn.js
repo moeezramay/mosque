@@ -34,8 +34,11 @@ export default function SignIn() {
   const shiftToHome = () => {
     push("/");
   };
+
   useEffect(() => {
     if (session && session.user && session.user.name) {
+      localStorage.setItem("sign", 0);
+
       console.log("GOOGLE USER SUCCESSFULLY CONNECTED");
       console.log(session.user.name);
       console.log(session.user.email);
@@ -101,6 +104,8 @@ export default function SignIn() {
   }, [session]);
 
   const signInWithGoogle = async () => {
+    localStorage.setItem("sign", 0); //0 means user signIn
+
     if (navigator.userAgent.includes("Mac")) {
       if (!localStorage.getItem("goog")) {
         localStorage.setItem("goog", 1);
@@ -126,7 +131,31 @@ export default function SignIn() {
     });
     if (!res.ok) {
       const errorMessage = await res.json();
-      console.error("Error if:", errorMessage.error);
+      console.log("Error if:", errorMessage.error);
+      if (errorMessage.error === "User is not signed up.") {
+        alert("User is not completely signed up.");
+        //Getting token for the user and redirecting to gender section
+
+        const res2 = await fetch("/api/forgotPass/getToken", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: email }),
+        });
+        if (!res2.ok) {
+          const errorMessage = await res2.json();
+          console.error("Error if:", errorMessage.error);
+          return;
+        }
+        const data2 = await res2.json();
+        const token = data2.token;
+        localStorage.setItem("token", token);
+        localStorage.setItem("email", email);
+        push("/Pagess/create/gender");
+        return;
+      }
+
       alert("Invalid Email or Password");
       return;
     }

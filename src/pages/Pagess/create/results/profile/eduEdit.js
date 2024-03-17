@@ -22,6 +22,9 @@ export default function EduEdit() {
   const handleSelectChange = (e, setFunction) => {
     setFunction(e.target.value);
   };
+  useEffect(() => {
+    console.log("location:", edulevel);
+  }, [edulevel]);
   //------------------^^^^^^^^^^^^^^^----------------
 
   //-------------Api to update data------------------
@@ -115,7 +118,7 @@ export default function EduEdit() {
       }
     };
     fetchData();
-  });
+  }, []);
   return (
     <div style={{ paddingBottom: "40px" }}>
       <div>

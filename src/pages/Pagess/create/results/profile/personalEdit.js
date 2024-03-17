@@ -152,7 +152,7 @@ export default function PersonalEdit() {
       }
     };
     fetchData();
-  });
+  }, []);
 
   return (
     <div style={{ paddingBottom: "40px" }}>

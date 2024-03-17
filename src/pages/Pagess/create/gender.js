@@ -40,6 +40,7 @@ export default function Gender() {
     }
     setGenderContext(selectedOption);
 
+    localStorage.setItem("gender", selectedOption);
     console.log("Selected option: ", genderContext);
     push("/Pagess/create/aboutMe");
   };

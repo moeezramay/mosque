@@ -19,8 +19,49 @@ export default function AboutMeSection() {
   const [tag, setTag] = useState("");
   const [about, setAbout] = useState("");
   const [looking, setLooking] = useState("");
+  const [localData, setLocalData] = useState("");
   //-----------------^^^^^^^^^^----------------
 
+  //----------Storing Places in state----------------
+  const [arrPlaces, setArrPlaces] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const handleOptionChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedOption(selectedValue);
+
+    // Find the selected option in the arrPlaces array
+    const selectedPlace = arrPlaces.find((place) => place.id === selectedValue);
+
+    if (selectedPlace) {
+      console.log("Selected place:", selectedPlace.name);
+      setLocation(selectedPlace.name);
+    } else {
+      console.log("Selected place not found");
+    }
+  };
+
+  //-----------------Updates the input suggestions----------------
+  const handleInputChangePlaces = async (value) => {
+    setInputValue(value);
+
+    const res = await fetch("/api/getMosque/getPlaces", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ input: value }),
+    });
+    if (!res.ok) {
+      const errorMessage = await res.json();
+      console.error("Error if:", errorMessage.error);
+      return;
+    }
+    const response = await res.json();
+    setArrPlaces(response);
+  };
+  //------------------^^^^^^^^^^^^^^^----------------
   //------------------Checks for token----------------
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,10 +71,29 @@ export default function AboutMeSection() {
       push("/Pagess/sign/signIn/signIn");
     } else {
       console.log("Token found!");
+      if (localStorage.getItem("aboutMe") !== null) {
+        let temp = localStorage.getItem("aboutMe");
+        temp = JSON.parse(temp);
+        setLocalData(temp);
+      }
     }
   }, []);
   //------------------^^^^^^^^^^^^^^^----------------
 
+  //------Updates State if local data is present-----------
+  useEffect(() => {
+    setLocation(localData.location);
+    setCountry(localData.country);
+    setDayDate(localData.day);
+    setMonthDate(localData.month);
+    setYearDate(localData.year);
+    setTag(localData.tag);
+    setAbout(localData.about);
+    setLooking(localData.looking);
+    console.log("localData: ", localData.tag);
+  }, [localData]);
+
+  //---------------^^^^^^^^^^^^^^^----------------
   //------------------Updates State----------------
 
   const handleSelectChange = (e, setFunction) => {
@@ -58,9 +118,9 @@ export default function AboutMeSection() {
     };
     setAboutmeContext(aboutMeData); //Updates context
 
-    console.log("About me: ", aboutmeContext);
-
     e.preventDefault();
+
+    localStorage.setItem("aboutMe", JSON.stringify(aboutMeData)); //Stores data in local storage
 
     push("/Pagess/create/eduWork");
   };
@@ -72,22 +132,39 @@ export default function AboutMeSection() {
       <div className="parent-aboutMe">
         <div className="heading-container-aboutMe">
           <div className="heading-aboutMe">{t("aboutMe.heading")}</div>
+          <div
+            className="skip-for-now-aboutMe"
+            onClick={() => push("/Pagess/create/eduWork")}
+          >
+            Skip for now
+          </div>
         </div>
         <div className="box-container-aboutMe">
           <div className="box-aboutMe">
             <div>
               <div className="location-aboutMe">{t("aboutMe.where")}</div>
-              <div className="select-location-aboutMe">
-                <select
-                  value={location}
-                  onChange={(e) => handleSelectChange(e, setLocation)}
+              <div className="input-container-mosque">
+                <input
+                  className="input-little-mosque"
+                  onChange={(e) => handleInputChangePlaces(e.target.value)}
                   required
-                >
-                  <option></option>
-                  {WhereLive.map((city) => (
-                    <option key={city}>{city}</option>
-                  ))}
-                </select>
+                />
+                {arrPlaces && arrPlaces.length > 0 && (
+                  <div className="option-container-mosque">
+                    {arrPlaces.map((mosque, index) => (
+                      <div className="mini-option-mosque" key={index}>
+                        <p>{mosque.name}</p>
+                        <input
+                          type="radio"
+                          className="check-option-mosque"
+                          value={mosque.id}
+                          checked={selectedOption === mosque.id}
+                          onChange={handleOptionChange}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <div className="select-conatiner-aboutMe">
@@ -153,6 +230,7 @@ export default function AboutMeSection() {
                   onChange={(e) => {
                     setTag(e.target.value);
                   }}
+                  value={tag}
                   className="input-tag-aboutMe"
                   required
                 />
@@ -165,6 +243,7 @@ export default function AboutMeSection() {
                   onChange={(e) => {
                     setAbout(e.target.value);
                   }}
+                  value={about}
                   className="input-little-aboutMe"
                   required
                 />
@@ -177,6 +256,7 @@ export default function AboutMeSection() {
                   onChange={(e) => {
                     setLooking(e.target.value);
                   }}
+                  value={looking}
                   className="input-little-aboutMe"
                   required
                 />
